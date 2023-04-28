@@ -23,3 +23,5 @@ db.sequelize.sync({alter: true}).then(() => {
         console.log(`The server has been started on port ${port}`)
     })
 })
+
+module.exports = app;
