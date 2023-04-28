@@ -9,7 +9,7 @@ app.use(express.json())
 
 // Main Route
 app.get("/", (request, response) => {
-    response.send("Welcome to the learning space")
+    response.send("Welcome to TProject API")
 })
 
 // Routes
