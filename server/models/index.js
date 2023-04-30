@@ -12,9 +12,10 @@ let sequelize = new Sequelize(
     {
         host: process.env.DB_HOST,
         port: process.env.DB_PORT,
-        dialect: 'sqlite',
+        dialect: 'mysql',
         storage: 'data/tproject.sqlite',
-        logging: false
+        logging: false,
+        timezone: '+08:00'
     }
 );
 fs
