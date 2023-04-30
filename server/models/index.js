@@ -13,6 +13,7 @@ let sequelize = new Sequelize(
         host: process.env.DB_HOST,
         port: process.env.DB_PORT,
         dialect: 'mysql',
+        dialectModule: require('mysql2'),
         storage: 'data/tproject.sqlite',
         logging: false,
         timezone: '+08:00'
