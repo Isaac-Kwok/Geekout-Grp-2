@@ -7,14 +7,16 @@ const app = express();
 app.use(cors())
 app.use(express.json())
 
-// Main Route
+// Main Route (Status check)
 app.get("/", (request, response) => {
-    response.send("Welcome to TProject API")
+    response.json({ message: "Welcome to TProject. API Server is operational." })
 })
 
 // Routes
-//const tutorialRoutes = require("./routes/tutorial")
-//app.use("/tutorial", tutorialRoutes)
+const userRoutes = require("./routes/user")
+const authRoutes = require("./routes/auth")
+app.use("/user", userRoutes)
+app.use("/auth", authRoutes)
 
 
 db.sequelize.sync({alter: true}).then(() => {

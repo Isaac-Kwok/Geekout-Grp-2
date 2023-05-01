@@ -11,7 +11,7 @@ function App() {
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
-        <Button LinkComponent={Link} variant="contained" color="primary" to="/test">Learn React</Button>
+        <Button LinkComponent={Link} variant="contained" color="primary" to="/test">Test Page</Button>
       </header>
     </div>
   );

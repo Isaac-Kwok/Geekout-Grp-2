@@ -11,6 +11,7 @@ import {
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
 import Navbar from './components/Navbar';
+import { Typography } from '@mui/material';
 
 
 const router = createBrowserRouter([
@@ -40,7 +41,9 @@ root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <Navbar />
-      <RouterProvider router={router} />
+      <Typography>
+        <RouterProvider router={router} />
+      </Typography>
     </ThemeProvider>
   </React.StrictMode>
 );
