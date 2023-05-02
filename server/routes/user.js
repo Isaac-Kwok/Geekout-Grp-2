@@ -16,6 +16,12 @@ router.post("/", async (req, res) => {
         const newUser = await User.create({ email, name, password })
         res.json(newUser)
     } catch (error) {
+        // check if error is because of duplicate email
+        if (error instanceof Sequelize.UniqueConstraintError) {
+            res.status(400).json({ message: "Email already exists." })
+            return
+        }
+        
         res.status(400).json({ message: error.message })
     }
 })

@@ -1,29 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+
+// Import pages
 import App from './pages/App';
 import Test from './pages/Test';
+import Login from './pages/Login';
+import NotFound from './pages/errors/NotFound';
+
+
 import reportWebVitals from './reportWebVitals';
 import {
-  createBrowserRouter,
-  RouterProvider,
+  BrowserRouter,
+  Routes,
+  Route,
 } from "react-router-dom";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
 import Navbar from './components/Navbar';
-import { Typography } from '@mui/material';
-
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <App />,
-  },
-  {
-    path: "/test",
-    element: <Test />,
-  }
-]);
+import { Typography, Box } from '@mui/material';
 
 const theme = createTheme({
   palette: {
@@ -40,9 +35,17 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      <Navbar />
       <Typography>
-        <RouterProvider router={router} />
+        <BrowserRouter>
+          <Navbar />
+          <Box sx={{ height: 16 }} />
+          <Routes>
+            <Route path='*' element={<NotFound />} />
+            <Route path="/" element={<App />} />
+            <Route path="/test" element={<Test />} />
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </BrowserRouter>
       </Typography>
     </ThemeProvider>
   </React.StrictMode>
