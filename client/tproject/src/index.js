@@ -14,11 +14,14 @@ import {
   BrowserRouter,
   Routes,
   Route,
+  useLocation,
 } from "react-router-dom";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
 import Navbar from './components/Navbar';
 import { Typography, Box } from '@mui/material';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import { SnackbarProvider } from 'notistack';
 
 const theme = createTheme({
   palette: {
@@ -31,20 +34,44 @@ const theme = createTheme({
   },
 });
 
+
+function MainApp() {
+  const location = useLocation();
+
+  return (
+    <>
+      <Navbar />
+      <Box sx={{ height: 16 }} />
+      <TransitionGroup>
+        <CSSTransition
+          key={location.key}
+          classNames="fade"
+          timeout={300}
+          unmountOnExit
+        >
+          <Routes location={location}>
+            <Route path='*' element={<NotFound />} />
+            <Route path="/" element={<App />} />
+            <Route path="/test" element={<Test />} />
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </CSSTransition>
+      </TransitionGroup>
+    </>
+    
+  )
+    
+}
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <Typography>
         <BrowserRouter>
-          <Navbar />
-          <Box sx={{ height: 16 }} />
-          <Routes>
-            <Route path='*' element={<NotFound />} />
-            <Route path="/" element={<App />} />
-            <Route path="/test" element={<Test />} />
-            <Route path="/login" element={<Login />} />
-          </Routes>
+          <SnackbarProvider maxSnack={3}>
+            <MainApp/>
+          </SnackbarProvider>
         </BrowserRouter>
       </Typography>
     </ThemeProvider>

@@ -1,11 +1,35 @@
 import { Button, Container, Card, CardContent, CardActions, Stack, Typography, TextField } from "@mui/material"
+import LoadingButton from '@mui/lab/LoadingButton';
 import LoginIcon from '@mui/icons-material/Login';
-import { useEffect } from "react";
+import AddIcon from '@mui/icons-material/Add';
+import { useEffect, useState } from "react";
+import { useSnackbar } from "notistack";
+import { Navigate } from "react-router-dom";
 
 function Login() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const { enqueueSnackbar } = useSnackbar();
+    const [toHome, setToHome] = useState(false);
+
     useEffect(() => {
         document.title = "Login";
     }, []);
+
+    if (toHome === true) {
+        return <Navigate to="/" />
+    }
+
+    function loginUser() {
+        setLoading(true);
+        setTimeout(() => {
+            setLoading(false);
+            enqueueSnackbar("Login Successful", { variant: "success" });
+            // Go to home page
+            setToHome(true);
+        }, 2000);
+    }
 
     return (
         <Container maxWidth="xl">
@@ -18,13 +42,13 @@ function Login() {
                         </Typography>
                     </Stack>
                     <Stack spacing={2} sx={{ marginTop: 2 }}>
-                        <TextField fullWidth label="Email" variant="outlined" />
-                        <TextField fullWidth label="Password" variant="outlined" />
+                        <TextField type="email" onChange={(e) => {setEmail(e.target.value)}} fullWidth label="E-mail" variant="outlined" />
+                        <TextField type="password" onChange={(e) => {setPassword(e.target.value)}} fullWidth label="Password" variant="outlined" />
                     </Stack>
                 </CardContent>
                 <CardActions>
-                    <Button size="small" variant="text" color="primary" href="/">Login</Button>
-                    <Button size="small" variant="text" color="primary" href="/">Register</Button>
+                    <LoadingButton loadingPosition="start" loading={loading} size="small" variant="text" color="primary" onClick={loginUser} startIcon={<LoginIcon/>}>Login</LoadingButton>
+                    <Button size="small" variant="text" color="primary" href="/" startIcon={<AddIcon/>}>Register</Button>
                 </CardActions>
             </Card>
 
