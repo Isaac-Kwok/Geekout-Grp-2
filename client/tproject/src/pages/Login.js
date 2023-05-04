@@ -5,6 +5,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { useEffect, useState } from "react";
 import { useSnackbar } from "notistack";
 import { Navigate } from "react-router-dom";
+import login from "../functions/user";
 
 function Login() {
     const [email, setEmail] = useState("");
@@ -23,12 +24,15 @@ function Login() {
 
     function loginUser() {
         setLoading(true);
-        setTimeout(() => {
+        login(email, password).then((res) => {
+            if (res === true) {
+                enqueueSnackbar("Login successful!", { variant: "success" });
+                setToHome(true);
+            } else {
+                enqueueSnackbar("Login failed! Check your username and password.", { variant: "error" });
+            }
             setLoading(false);
-            enqueueSnackbar("Login Successful", { variant: "success" });
-            // Go to home page
-            setToHome(true);
-        }, 2000);
+        });
     }
 
     return (
