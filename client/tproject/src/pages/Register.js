@@ -1,36 +1,36 @@
 import { Button, Container, Card, CardContent, CardActions, Stack, Typography, TextField } from "@mui/material"
 import LoadingButton from '@mui/lab/LoadingButton';
-import LoginIcon from '@mui/icons-material/Login';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import AddIcon from '@mui/icons-material/Add';
 import { useEffect, useState } from "react";
 import { useSnackbar } from "notistack";
 import { Navigate } from "react-router-dom";
-import { login } from "../functions/user";
-import { Link } from "react-router-dom";
+import { register } from "../functions/user";
 
-function Login() {
+function Register() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [name, setName] = useState("");
     const [loading, setLoading] = useState(false);
     const { enqueueSnackbar } = useSnackbar();
     const [toHome, setToHome] = useState(false);
 
     useEffect(() => {
-        document.title = "Login";
+        document.title = "Register an account";
     }, []);
 
     if (toHome === true) {
         return <Navigate to="/" />
     }
 
-    function loginUser() {
+    function registerUser() {
         setLoading(true);
-        login(email, password).then((res) => {
-            if (res === true) {
-                enqueueSnackbar("Login successful!", { variant: "success" });
+        register(email, password, name).then((res) => {
+            if (res.status === 200) {
+                enqueueSnackbar("Registration successful!", { variant: "success" });
                 setToHome(true);
             } else {
-                enqueueSnackbar("Login failed! Check your username and password.", { variant: "error" });
+                enqueueSnackbar("Registration failed! " + res.data.message, { variant: "error" });
             }
             setLoading(false);
         });
@@ -41,19 +41,19 @@ function Login() {
             <Card variant="outlined" sx={{ maxWidth: 500, margin: "auto" }}>
                 <CardContent>
                     <Stack direction="row" alignItems={"center"} spacing={2}>
-                        <LoginIcon color="text.secondary" />
+                        <PersonAddIcon color="text.secondary" />
                         <Typography sx={{ fontSize: 18, fontWeight: 700 }} color="text.secondary" gutterBottom>
-                            Login
+                            Register
                         </Typography>
                     </Stack>
                     <Stack spacing={2} sx={{ marginTop: 2 }}>
                         <TextField type="email" onChange={(e) => {setEmail(e.target.value)}} fullWidth label="E-mail" variant="outlined" />
+                        <TextField type="text" onChange={(e) => {setName(e.target.value)}} fullWidth label="Name" variant="outlined" />
                         <TextField type="password" onChange={(e) => {setPassword(e.target.value)}} fullWidth label="Password" variant="outlined" />
                     </Stack>
                 </CardContent>
                 <CardActions>
-                    <LoadingButton loadingPosition="start" loading={loading} size="small" variant="text" color="primary" onClick={loginUser} startIcon={<LoginIcon/>}>Login</LoadingButton>
-                    <Button size="small" variant="text" color="primary" href="/" startIcon={<AddIcon/>} LinkComponent={Link} to="/register">Register</Button>
+                    <LoadingButton loadingPosition="start" loading={loading} size="small" variant="text" color="primary" onClick={registerUser} startIcon={<AddIcon/>}>Register</LoadingButton>
                 </CardActions>
             </Card>
 
@@ -61,4 +61,4 @@ function Login() {
     )
 }
 
-export default Login
+export default Register

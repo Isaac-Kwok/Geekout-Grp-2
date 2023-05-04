@@ -26,4 +26,20 @@ export async function login(email, password) {
     return true;
 }
 
-export default login;
+// Function to register the user and return the response
+export async function register(email, password, name) {
+    // Send a POST request to the server
+    var response = null
+
+    await axios.post('/user', {
+        email: email,
+        password: password,
+        name: name
+    }).then((res) => {
+        response = res;
+    }).catch((err) => {
+        response = err.response;
+    });
+
+    return response;
+}

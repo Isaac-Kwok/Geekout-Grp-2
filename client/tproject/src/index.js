@@ -6,6 +6,7 @@ import './index.css';
 import App from './pages/App';
 import Test from './pages/Test';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import NotFound from './pages/errors/NotFound';
 
 
@@ -58,6 +59,7 @@ function MainApp() {
             <Route path="/" element={<App />} />
             <Route path="/test" element={<Test />} />
             <Route path="/login" element={<Login />} />
+            <Route path='/register' element={<Register />} />
           </Routes>
         </CSSTransition>
       </TransitionGroup>
