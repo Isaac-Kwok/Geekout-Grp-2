@@ -1,12 +1,12 @@
 // User authentication
-import axios from 'axios';
+import http from '../http';
 
 // Function to login the user and store the token in the local storage
 export async function login(email, password) {
     // Send a POST request to the server
     var response = null
 
-    await axios.post('/auth', {
+    await http.post('/auth', {
         email: email,
         password: password
     }).then((res) => {
@@ -31,7 +31,7 @@ export async function register(email, password, name) {
     // Send a POST request to the server
     var response = null
 
-    await axios.post('/user', {
+    await http.post('/user', {
         email: email,
         password: password,
         name: name

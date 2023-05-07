@@ -23,11 +23,7 @@ import Navbar from './components/Navbar';
 import { Typography, Box } from '@mui/material';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { SnackbarProvider } from 'notistack';
-import axios from 'axios';
 
-// Get API URL from .env file
-axios.defaults.baseURL = import.meta.env.VITE_API_URL;
-axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 const theme = createTheme({
   palette: {
