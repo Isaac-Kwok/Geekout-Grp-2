@@ -2,7 +2,7 @@ const express = require("express")
 const yup = require("yup")
 const { User, Sequelize } = require("../models")
 const router = express.Router()
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 
 router.post("/", async (req, res) => {
