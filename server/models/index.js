@@ -16,7 +16,11 @@ let sequelize = new Sequelize(
         dialectModule: require('mysql2'),
         storage: 'data/tproject.sqlite',
         logging: false,
-        timezone: '+08:00'
+        timezone: '+08:00',
+        retry: {
+            match: [Sequelize.ConnectionTimedOutError],
+            max: 3
+        }
     }
 );
 fs
