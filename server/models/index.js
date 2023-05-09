@@ -18,7 +18,7 @@ let sequelize = new Sequelize(
         logging: false,
         timezone: '+08:00',
         retry: {
-            match: [Sequelize.ConnectionTimedOutError],
+            match: [Sequelize.ConnectionError],
             max: 3
         }
     }
