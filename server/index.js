@@ -11,7 +11,7 @@ app.use(express.json())
 
 // Main Route (Status check)
 app.get("/", (request, response) => {
-    response.json({ message: "Welcome to TProject. API Server is operational." })
+    response.json({ message: "Welcome to TProject. API Server is operational. Now with automatic deployments" })
 })
 
 // Routes
