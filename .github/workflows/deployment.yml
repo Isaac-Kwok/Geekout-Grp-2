@@ -14,7 +14,9 @@ jobs:
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
         script: |
-          cd projects/TProject/server
+          cd projects/TProject
+          git pull
+          cd server
           forever stopall
           npm i
           forever start index.js
