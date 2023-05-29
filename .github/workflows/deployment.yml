@@ -17,6 +17,6 @@ jobs:
           cd projects/TProject
           git pull
           cd server
-          forever stopall
+          sudo forever stopall
           npm i
           sudo forever start index.js
