@@ -19,4 +19,4 @@ jobs:
           cd server
           forever stopall
           npm i
-          forever start index.js
+          sudo forever start index.js
