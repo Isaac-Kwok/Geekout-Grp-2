@@ -40,6 +40,9 @@ function Login() {
                     enqueueSnackbar("Login failed! Check your e-mail and password.", { variant: "error" });
                     setLoading(false);
                 }
+            }).catch((err) => {
+                enqueueSnackbar("Login failed! " + err.response.data.message, { variant: "error" });
+                setLoading(false);
             })
         }
 

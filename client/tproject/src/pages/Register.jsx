@@ -42,6 +42,9 @@ function Register() {
                     enqueueSnackbar("Registration failed! Check your e-mail and password.", { variant: "error" });
                     setLoading(false);
                 }
+            }).catch((err) => {
+                enqueueSnackbar("Registration failed! " + err.response.data.message, { variant: "error" });
+                setLoading(false);
             })
         }
     })
