@@ -28,7 +28,7 @@ import { SnackbarProvider } from 'notistack';
 const theme = createTheme({
   palette: {
     primary: {
-      main: grey[900],
+      main: "#5D8A5C",
     },
     secondary: {
       main: grey[500],

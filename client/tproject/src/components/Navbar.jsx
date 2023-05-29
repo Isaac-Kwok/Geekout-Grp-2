@@ -8,7 +8,7 @@ function Navbar() {
         <AppBar position="sticky">
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>Transport Project</Typography>
+                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>EnviroGo</Typography>
                     <Button LinkComponent={Link} variant="text" color="inherit" to="/login">Login</Button>
                 </Toolbar>
             </Container>
