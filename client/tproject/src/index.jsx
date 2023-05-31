@@ -39,11 +39,10 @@ const theme = createTheme({
 
 function MainApp() {
   const location = useLocation();
-
+  
   return (
     <>
       <Navbar />
-      <Box sx={{ height: 16 }} />
       <TransitionGroup>
         <CSSTransition
           key={location.key}

@@ -9,6 +9,7 @@ export default defineConfig(() => {
     server: {
         open: true,
         port: 3000,
+        host: true,
     },
     plugins: [react({
         jsxImportSource: '@emotion/react',

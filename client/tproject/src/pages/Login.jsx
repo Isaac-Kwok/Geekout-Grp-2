@@ -35,6 +35,8 @@ function Login() {
             http.post("/auth", data).then((res) => {
                 if (res.status === 200) {
                     enqueueSnackbar("Login successful!", { variant: "success" });
+                    // Store token in local storage
+                    localStorage.setItem("token", res.data.token);
                     navigate("/")
                 } else {
                     enqueueSnackbar("Login failed! Check your e-mail and password.", { variant: "error" });
