@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 
@@ -19,10 +19,12 @@ import {
 } from "react-router-dom";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
-import Navbar from './components/Navbar';
+import { Navbar } from './components/Navbar';
 import { Typography, Box } from '@mui/material';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { SnackbarProvider } from 'notistack';
+import jwt_decode from "jwt-decode";
+
 
 
 const theme = createTheme({
@@ -36,33 +38,46 @@ const theme = createTheme({
   },
 });
 
+export const UserContext = React.createContext(null);
 
 function MainApp() {
   const location = useLocation();
-  
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    try {
+      setUser(jwt_decode(localStorage.getItem("token")))
+    } catch {
+      setUser(null)
+    }
+
+  }, [])
   return (
     <>
-      <Navbar />
-      <TransitionGroup>
-        <CSSTransition
-          key={location.key}
-          classNames="fade"
-          timeout={300}
-          unmountOnExit
-        >
-          <Routes location={location}>
-            <Route path='*' element={<NotFound />} />
-            <Route path="/" element={<App />} />
-            <Route path="/test" element={<Test />} />
-            <Route path="/login" element={<Login />} />
-            <Route path='/register' element={<Register />} />
-          </Routes>
-        </CSSTransition>
-      </TransitionGroup>
+      <UserContext.Provider value={{ user: user, setUser, setUser }}>
+        <Navbar />
+        <TransitionGroup>
+          <CSSTransition
+            key={location.key}
+            classNames="fade"
+            timeout={300}
+            unmountOnExit
+          >
+            <Routes location={location}>
+              <Route path='*' element={<NotFound />} />
+              <Route path="/" element={<App />} />
+              <Route path="/test" element={<Test />} />
+              <Route path="/login" element={<Login />} />
+              <Route path='/register' element={<Register />} />
+            </Routes>
+          </CSSTransition>
+        </TransitionGroup>
+      </UserContext.Provider>
+
     </>
-    
+
   )
-    
+
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -72,7 +87,7 @@ root.render(
       <Typography>
         <BrowserRouter>
           <SnackbarProvider maxSnack={3}>
-            <MainApp/>
+            <MainApp />
           </SnackbarProvider>
         </BrowserRouter>
       </Typography>

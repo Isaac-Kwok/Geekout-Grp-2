@@ -4,6 +4,7 @@ const { User, Sequelize } = require("../models")
 const router = express.Router()
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
+const { validateToken } = require('../middleware/validateToken');
 
 router.post("/", async (req, res) => {
     // Authenticate a user
@@ -27,11 +28,27 @@ router.post("/", async (req, res) => {
             return
         }
 
-        const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: "1d" })
+        let userInfo = {
+            email: user.email,
+            name: user.name,
+            account_type: user.account_type
+        }
+
+        const token = jwt.sign(userInfo, process.env.APP_SECRET, { expiresIn: "1d" })
         res.json({ token, user: { email: user.email, name: user.name, account_type: user.account_type } })
     } catch (error) {
         res.status(400).json({ message: error.message })
     }
 })
 
+router.get("/validate", validateToken, (req, res) => {
+    let userInfo = {
+        email: req.user.email,
+        name: req.user.name,
+        account_type: req.user.account_type
+    };
+    res.json({
+        user: userInfo
+    });
+});
 module.exports = router

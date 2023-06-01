@@ -1,16 +1,19 @@
-import { useState } from "react"
-import { AppBar, Box, Container, Toolbar, IconButton, Drawer, List, ListItem, ListItemIcon, ListItemText, ListItemButton } from "@mui/material"
+import { useState, useContext } from "react"
+import { AppBar, Box, Container, Toolbar, IconButton, List, ListItem, ListItemIcon, ListItemText, ListItemButton, Typography, SwipeableDrawer, Divider } from "@mui/material"
 import MenuIcon from "@mui/icons-material/Menu"
 import HomeIcon from "@mui/icons-material/Home"
 import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import StoreIcon from '@mui/icons-material/Store';
-import Typography from "@mui/material/Typography"
 import Button from "@mui/material/Button"
 import { Link } from "react-router-dom"
+import { UserContext } from ".."
+import { NavbarProfile } from "./NavbarProfile";
 
-function Navbar() {
+export function Navbar() {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+    const { user, setUser } = useContext(UserContext);
+
     return (
         <>
             <Container maxWidth="xl" sx={{ marginTop: ["1rem", "2rem"], marginBottom: ["1rem", "2rem"] }}>
@@ -26,16 +29,21 @@ function Navbar() {
                                 <Button LinkComponent={Link} variant="text" color="inherit" to="/login">Shop</Button>
                             </Box>
                         </Box>
-                        <Button LinkComponent={Link} variant="text" color="inherit" to="/login">Login</Button>
+                        {!user && <Button LinkComponent={Link} variant="text" color="inherit" to="/login">Login</Button>}
+                        {user && <NavbarProfile />}
                     </Toolbar>
                 </AppBar>
             </Container>
-            <Drawer
+            <SwipeableDrawer
                 anchor={"left"}
                 open={isDrawerOpen}
                 onClose={() => setIsDrawerOpen(false)}
             >
-                <List sx={{width: "250px"}}>
+                <List sx={{ width: "250px" }}>
+                    <ListItem key={"Home"}>
+                        <Typography fontWeight={700}>Navigation Menu</Typography>
+                    </ListItem>
+                    <Divider/>
                     <ListItem key={"Home"} disablePadding>
                         <ListItemButton component={Link} to="/" onClick={() => setIsDrawerOpen(false)}>
                             <ListItemIcon><HomeIcon /></ListItemIcon>
@@ -61,11 +69,9 @@ function Navbar() {
                         </ListItemButton>
                     </ListItem>
                 </List>
-            </Drawer>
+            </SwipeableDrawer>
         </>
 
 
     )
 }
-
-export default Navbar

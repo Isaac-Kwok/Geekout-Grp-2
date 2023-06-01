@@ -2,16 +2,18 @@ import { Box, Button, Container, Card, CardContent, CardActions, Stack, Typograp
 import LoadingButton from '@mui/lab/LoadingButton';
 import LoginIcon from '@mui/icons-material/Login';
 import AddIcon from '@mui/icons-material/Add';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useSnackbar } from "notistack";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useFormik } from "formik";
+import { UserContext } from "..";
 import * as Yup from "yup";
 import http from "../http";
 
 function Login() {
     const [loading, setLoading] = useState(false);
+    const { user, setUser } = useContext(UserContext);
     const { enqueueSnackbar } = useSnackbar();
     const navigate = useNavigate();
 
@@ -37,6 +39,8 @@ function Login() {
                     enqueueSnackbar("Login successful!", { variant: "success" });
                     // Store token in local storage
                     localStorage.setItem("token", res.data.token);
+                    // Set user context
+                    setUser(res.data.user);
                     navigate("/")
                 } else {
                     enqueueSnackbar("Login failed! Check your e-mail and password.", { variant: "error" });
@@ -73,17 +77,25 @@ function Login() {
                                 error={formik.touched.email && Boolean(formik.errors.email)}
                                 helperText={formik.touched.email && formik.errors.email}
                             />
-                            <TextField
-                                type="password"
-                                fullWidth
-                                label="Password"
-                                variant="outlined"
-                                name="password"
-                                value={formik.values.password}
-                                onChange={formik.handleChange}
-                                error={formik.touched.password && Boolean(formik.errors.password)}
-                                helperText={formik.touched.password && formik.errors.password}
-                            />
+                            <Box sx={{
+                                display: "flex",
+                                alignItems: "center",
+                            }}>
+                                <TextField
+                                    type="password"
+                                    fullWidth
+                                    label="Password"
+                                    variant="outlined"
+                                    name="password"
+                                    value={formik.values.password}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.password && Boolean(formik.errors.password)}
+                                    helperText={formik.touched.password && formik.errors.password}
+                                    sx={{ marginRight: "1rem" }}
+                                />
+                                <Button>Forget?</Button>
+                            </Box>
+
                         </Stack>
                     </CardContent>
                     <CardActions>
