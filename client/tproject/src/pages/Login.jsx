@@ -13,12 +13,13 @@ import http from "../http";
 
 function Login() {
     const [loading, setLoading] = useState(false);
-    const { user, setUser } = useContext(UserContext);
+    const { setUser, setIsAdminPage } = useContext(UserContext);
     const { enqueueSnackbar } = useSnackbar();
     const navigate = useNavigate();
 
     useEffect(() => {
         document.title = "Login - EnviroGo";
+        setIsAdminPage(false);
     }, []);
 
     const formik = useFormik({

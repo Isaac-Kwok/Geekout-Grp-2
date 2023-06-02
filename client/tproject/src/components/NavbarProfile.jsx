@@ -48,42 +48,40 @@ export function NavbarProfile(props) {
                     horizontal: 'right',
                 }}
             >
-                <Box sx={{ margin: "1rem" }}>
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <Avatar {...stringAvatar(user.name)} sx={{ marginRight: "1rem" }} />
-                        <Box>
-                            <Typography variant="subtitle1">{user.name}</Typography>
-                            <Typography variant="body2">{user.email}</Typography>
-                        </Box>
+                <Box sx={{ display: "flex", alignItems: "center", margin: "1rem" }}>
+                    <Avatar {...stringAvatar(user.name)} sx={{ marginRight: "1rem" }} />
+                    <Box>
+                        <Typography variant="subtitle1">{user.name}</Typography>
+                        <Typography variant="body2">{user.email}</Typography>
                     </Box>
-                    <Divider sx={{ marginY: "1rem" }} />
-                    <List>
-                        <ListItem key={"My Profile"} disablePadding>
-                            <ListItemButton component={Link} to="/" onClick={() => setIsPopoverOpen(false)}>
-                                <ListItemIcon><PersonIcon /></ListItemIcon>
-                                <ListItemText primary={"My Profile"} />
-                            </ListItemButton>
-                        </ListItem>
-                        <ListItem key={"Driver's Dashboard"} disablePadding>
-                            <ListItemButton component={Link} to="/" onClick={() => setIsPopoverOpen(false)}>
-                                <ListItemIcon><DirectionsCarIcon /></ListItemIcon>
-                                <ListItemText primary={"Driver's Dashboard"} />
-                            </ListItemButton>
-                        </ListItem>
-                        <ListItem key={"Admin Panel"} disablePadding>
-                            <ListItemButton component={Link} to="/" onClick={() => setIsPopoverOpen(false)}>
-                                <ListItemIcon><AdminPanelSettingsIcon /></ListItemIcon>
-                                <ListItemText primary={"Admin Panel"} />
-                            </ListItemButton>
-                        </ListItem>
-                        <ListItem key={"Logout"} disablePadding>
-                            <ListItemButton onClick={() => handleLogout()}>
-                                <ListItemIcon><LogoutIcon /></ListItemIcon>
-                                <ListItemText primary={"Logout"} />
-                            </ListItemButton>
-                        </ListItem>
-                    </List>
                 </Box>
+                <Divider sx={{ marginTop: "1rem" }} />
+                <List>
+                    <ListItem key={"My Profile"} disablePadding>
+                        <ListItemButton component={Link} to="/" onClick={() => setIsPopoverOpen(false)}>
+                            <ListItemIcon><PersonIcon /></ListItemIcon>
+                            <ListItemText primary={"My Profile"} />
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem key={"Driver's Dashboard"} disablePadding>
+                        <ListItemButton component={Link} to="/" onClick={() => setIsPopoverOpen(false)}>
+                            <ListItemIcon><DirectionsCarIcon /></ListItemIcon>
+                            <ListItemText primary={"Driver's Dashboard"} />
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem key={"Admin Panel"} disablePadding>
+                        <ListItemButton component={Link} to="/" onClick={() => setIsPopoverOpen(false)}>
+                            <ListItemIcon><AdminPanelSettingsIcon /></ListItemIcon>
+                            <ListItemText primary={"Admin Panel"} />
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem key={"Logout"} disablePadding>
+                        <ListItemButton onClick={() => handleLogout()}>
+                            <ListItemIcon><LogoutIcon /></ListItemIcon>
+                            <ListItemText primary={"Logout"} />
+                        </ListItemButton>
+                    </ListItem>
+                </List>
             </Popover>
         </>
     )
