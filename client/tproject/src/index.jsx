@@ -21,7 +21,7 @@ import {
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
 import { Navbar } from './components/Navbar';
-import { Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { SnackbarProvider } from 'notistack';
 import jwt_decode from "jwt-decode";
@@ -63,30 +63,36 @@ function MainApp() {
   // /admin/* is a wildcard for any path that starts with /admin/, so it will always return the admin routes. Admin routes is in pages/admin/AdminRoutes.jsx
   return (
     <>
-      <UserContext.Provider value={{ 
+      <UserContext.Provider value={{
         user: user,
         setUser, setUser,
         isAdminPage: isAdminPage,
         setIsAdminPage: setIsAdminPage
       }}>
-        <Navbar />
-        <TransitionGroup>
-          <CSSTransition
-            key={location.key}
-            classNames="fade"
-            timeout={300}
-            unmountOnExit
-          >
-            <Routes location={location}>
-              <Route path='*' element={<NotFound />}  />
-              <Route path="/" element={<App />} />
-              <Route path="/test" element={<Test />} />
-              <Route path="/login" element={<Login />} />
-              <Route path='/register' element={<Register />} />
-              <Route path='/admin/*' element={<AdminRoutes />} />
-            </Routes>
-          </CSSTransition>
-        </TransitionGroup>
+        <Box sx={{ display: "flex", flexDirection: "column" }}>
+          <Navbar />
+          <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+            <TransitionGroup style={{flexGrow: 1}}>
+              <CSSTransition
+                key={location.key}
+                classNames="fade"
+                timeout={300}
+                unmountOnExit
+              >
+                <Routes location={location}>
+                  <Route path='*' element={<NotFound />} />
+                  <Route path="/" element={<App />} />
+                  <Route path="/test" element={<Test />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path='/register' element={<Register />} />
+                  <Route path='/admin/*' element={<AdminRoutes />} />
+                </Routes>
+              </CSSTransition>
+            </TransitionGroup>
+          </Box>
+        </Box>
+
+
       </UserContext.Provider>
 
     </>
@@ -99,13 +105,11 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      <Typography>
-        <BrowserRouter>
-          <SnackbarProvider maxSnack={3}>
-            <MainApp />
-          </SnackbarProvider>
-        </BrowserRouter>
-      </Typography>
+      <BrowserRouter>
+        <SnackbarProvider maxSnack={3}>
+          <MainApp />
+        </SnackbarProvider>
+      </BrowserRouter>
     </ThemeProvider>
   </React.StrictMode>
 );

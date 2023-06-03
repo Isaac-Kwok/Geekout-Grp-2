@@ -9,6 +9,7 @@ import Button from "@mui/material/Button"
 import { Link } from "react-router-dom"
 import { UserContext } from ".."
 import { NavbarProfile } from "./NavbarProfile";
+import AdminNavList from "./AdminNavList";
 
 export function Navbar() {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -41,7 +42,7 @@ export function Navbar() {
                 <AppBar position="sticky">
                     <Toolbar>
                         <Box sx={{ flexGrow: 1, display: "flex", alignItems: "center" }}>
-                            <IconButton color="inherit" sx={{ marginRight: "1rem" }} onClick={() => setIsAdminDrawerOpen(true)}><MenuIcon /></IconButton>
+                            <IconButton color="inherit" sx={{ marginRight: "1rem", display: ["flex", "flex", "none"] }} onClick={() => setIsAdminDrawerOpen(true)}><MenuIcon /></IconButton>
                             <Typography variant="h6" component="div" sx={{ marginRight: "1rem" }}>EnviroGo</Typography>
                             <Divider orientation="vertical" flexItem sx={{ marginRight: "1rem" }} />
                             <Typography variant="h6" component="div" sx={{ marginRight: "1rem" }}>Admin Panel</Typography>
@@ -54,7 +55,7 @@ export function Navbar() {
             <SwipeableDrawer
                 anchor={"left"}
                 open={isDrawerOpen}
-                onClose={() => setIsAdminDrawerOpen(false)}
+                onClose={() => setIsDrawerOpen(false)}
             >
                 <List sx={{ width: "250px" }}>
                     <ListItem key={"Home"}>
@@ -93,12 +94,7 @@ export function Navbar() {
                         <Typography fontWeight={700}>Admin Navigation</Typography>
                     </ListItem>
                     <Divider sx={{marginBottom: 1}} />
-                    <ListItem key={"Users"} disablePadding>
-                        <ListItemButton component={Link} to="/">
-                            <ListItemIcon><HomeIcon /></ListItemIcon>
-                            <ListItemText primary={"Users"} />
-                        </ListItemButton>
-                    </ListItem>
+                    <AdminNavList />
                 </List>
             </Drawer>
         </>
