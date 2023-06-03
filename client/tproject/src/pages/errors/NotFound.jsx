@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 function NotFound() {
     return (
-        <Container maxWidth="xl">
+        <Container maxWidth="xl" sx={{marginTop: "1rem"}}>
             <Card variant="outlined" sx={{ maxWidth: 500, margin: "auto" }}>
                 <CardContent>
                     <Stack direction="row" alignItems={"center"} spacing={2}>

@@ -19,7 +19,7 @@ export function Navbar() {
     return (
         <>
             {!isAdminPage &&
-                <Container maxWidth="xl" sx={{ marginTop: ["1rem", "2rem"], marginBottom: ["1rem", "2rem"] }}>
+                <Container maxWidth="xl" sx={{ marginTop: ["1rem", "2rem"], position: "sticky", top: ["1rem", "2rem"] }}>
                     <AppBar position="sticky" sx={{ borderRadius: "0.5rem" }}>
                         <Toolbar>
                             <Box sx={{ flexGrow: 1, display: "flex", alignItems: "center" }}>

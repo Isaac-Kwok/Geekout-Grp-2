@@ -9,7 +9,7 @@ function App() {
     setIsAdminPage(false);
   }, []);
   return (
-    <Container maxWidth="xl">
+    <Container maxWidth="xl" sx={{marginTop: "1rem"}}>
       <h1>Home</h1>
       <p>Welcome to the home page. This website is currently under testing. There are some buttons below to navigate between pages</p>
       <Stack direction="row" spacing={2} divider={<Divider orientation="vertical" flexItem />}>
