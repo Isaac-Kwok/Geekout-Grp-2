@@ -72,7 +72,7 @@ function MainApp() {
         <Box sx={{ display: "flex", flexDirection: "column" }}>
           <Navbar />
           <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
-            <TransitionGroup style={{flexGrow: 1}}>
+            <TransitionGroup style={{flexGrow: 1, display: "flex", flexDirection: "column"}}>
               <CSSTransition
                 key={location.key}
                 classNames="fade"

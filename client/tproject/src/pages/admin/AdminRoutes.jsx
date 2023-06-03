@@ -18,7 +18,7 @@ function AdminRoutes() {
         setIsAdminPage(true)
     }, [])
     return (
-        <Box sx={{ display: "flex", height: "100%" }}>
+        <Box sx={{ display: "flex", flexGrow: 1 }}>
             <Box sx={{ display: ["none", "none", "flex"] }}>
                 <List sx={{ width: "250px" }}>
                     <AdminNavList />
