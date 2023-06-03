@@ -20,7 +20,7 @@ function AdminRoutes() {
     return (
         <Box sx={{ display: "flex", flexGrow: 1 }}>
             <Box sx={{ display: ["none", "none", "flex"] }}>
-                <List sx={{ width: "250px" }}>
+                <List sx={{ width: "250px", height: "fit-content", position: "sticky", top: 64 }}>
                     <AdminNavList />
                 </List>
                 <Divider orientation="vertical" flexItem />

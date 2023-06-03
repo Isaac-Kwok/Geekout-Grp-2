@@ -39,7 +39,7 @@ export function Navbar() {
                 </Container>
             }
             {isAdminPage &&
-                <AppBar position="sticky">
+                <AppBar position="sticky" sx={{zIndex:"3"}}>
                     <Toolbar>
                         <Box sx={{ flexGrow: 1, display: "flex", alignItems: "center" }}>
                             <IconButton color="inherit" sx={{ marginRight: "1rem", display: ["flex", "flex", "none"] }} onClick={() => setIsAdminDrawerOpen(true)}><MenuIcon /></IconButton>
