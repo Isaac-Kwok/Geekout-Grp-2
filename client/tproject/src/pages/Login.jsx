@@ -2,24 +2,22 @@ import { Box, Button, Container, Card, CardContent, CardActions, Stack, Typograp
 import LoadingButton from '@mui/lab/LoadingButton';
 import LoginIcon from '@mui/icons-material/Login';
 import AddIcon from '@mui/icons-material/Add';
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { useSnackbar } from "notistack";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useFormik } from "formik";
-import { UserContext } from "..";
 import * as Yup from "yup";
 import http from "../http";
 
 function Login() {
     const [loading, setLoading] = useState(false);
-    const { setUser, setIsAdminPage } = useContext(UserContext);
+    const { setUser } = useContext(UserContext);
     const { enqueueSnackbar } = useSnackbar();
     const navigate = useNavigate();
 
     useEffect(() => {
         document.title = "Login - EnviroGo";
-        setIsAdminPage(false);
     }, []);
 
     const formik = useFormik({

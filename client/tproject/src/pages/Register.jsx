@@ -2,23 +2,20 @@ import { Container, Card, CardContent, CardActions, Stack, Typography, TextField
 import LoadingButton from '@mui/lab/LoadingButton';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import AddIcon from '@mui/icons-material/Add';
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSnackbar } from "notistack";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import http from "../http";
-import { UserContext } from "..";
 
 function Register() {
-    const {setIsAdminPage} = useContext(UserContext);
     const [loading, setLoading] = useState(false);
     const { enqueueSnackbar } = useSnackbar();
     const navigate = useNavigate();
 
     useEffect(() => {
         document.title = "Register - EnviroGo";
-        setIsAdminPage(false);
     }, []);
 
     const formik = useFormik({

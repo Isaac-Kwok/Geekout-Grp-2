@@ -1,8 +1,6 @@
 import { useContext, useEffect } from 'react'
 import { Route, Routes } from 'react-router-dom'
-import { Box, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
-import { Link } from 'react-router-dom'
-import HomeIcon from '@mui/icons-material/Home'
+import { Box, Divider, List } from '@mui/material'
 
 import NotFound from '../errors/NotFound'
 import Test from '../Test'

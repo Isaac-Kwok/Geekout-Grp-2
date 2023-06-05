@@ -1,12 +1,10 @@
 import {Button, Container, Stack, Divider} from '@mui/material';
-import { useEffect, useContext } from 'react';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { UserContext } from '..';
+
 function App() {
-  const { setIsAdminPage } = useContext(UserContext);
   useEffect(() => {
     document.title = "Home - EnviroGo";
-    setIsAdminPage(false);
   }, []);
   return (
     <Container maxWidth="xl" sx={{marginTop: "1rem"}}>

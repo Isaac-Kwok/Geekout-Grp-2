@@ -3,12 +3,8 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 
 // Import pages
-import App from './pages/App';
-import Test from './pages/Test';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import NotFound from './pages/errors/NotFound';
 import AdminRoutes from './pages/admin/AdminRoutes';
+import UserRoutes from './pages/UserRoutes';
 
 
 import reportWebVitals from './reportWebVitals';
@@ -80,11 +76,7 @@ function MainApp() {
                 unmountOnExit
               >
                 <Routes location={location}>
-                  <Route path='*' element={<NotFound />} />
-                  <Route path="/" element={<App />} />
-                  <Route path="/test" element={<Test />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path='/register' element={<Register />} />
+                  <Route path='*' element={<UserRoutes />} />
                   <Route path='/admin/*' element={<AdminRoutes />} />
                 </Routes>
               </CSSTransition>
