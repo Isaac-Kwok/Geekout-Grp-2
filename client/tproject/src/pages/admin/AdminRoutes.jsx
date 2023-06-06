@@ -1,20 +1,29 @@
 import { useContext, useEffect } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useNavigate } from 'react-router-dom'
 import { Box, Divider, List } from '@mui/material'
+import { useSnackbar } from 'notistack'
 
 import NotFound from '../errors/NotFound'
 import Test from '../Test'
 
 import { UserContext } from '../..'
 import AdminNavList from '../../components/AdminNavList'
+import { validateAdmin } from '../../functions/user'
 
 function AdminRoutes() {
     // Routes for admin pages. To add authenication so that only admins can access these pages, add a check for the user's role in the UserContext
     const { setIsAdminPage } = useContext(UserContext);
+    const { enqueueSnackbar } = useSnackbar();
+    const navigate = useNavigate();
 
     useEffect(() => {
         setIsAdminPage(true)
+        if (!validateAdmin()) {
+            enqueueSnackbar("You must be an admin to view this page", { variant: "error" });
+            navigate("/")
+        }
     }, [])
+
     return (
         <Box sx={{ display: "flex", flexGrow: 1 }}>
             <Box sx={{ display: ["none", "none", "flex"] }}>

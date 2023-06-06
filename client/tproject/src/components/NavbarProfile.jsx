@@ -3,6 +3,7 @@ import { Box, IconButton, List, ListItem, ListItemIcon, ListItemText, ListItemBu
 import { Link, useNavigate } from "react-router-dom"
 import { stringAvatar } from "../functions/stringAvatar";
 import { UserContext } from "..";
+import md5 from "md5";
 
 
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -16,6 +17,7 @@ export function NavbarProfile(props) {
     const [isPopoverOpen, setIsPopoverOpen] = useState(false)
     const [anchorEl, setAnchorEl] = useState(null)
     const navigate = useNavigate()
+    const email_md5 = md5(user.email)
 
     function handlePopoverOpen(event) {
         setAnchorEl(event.currentTarget);
@@ -30,10 +32,13 @@ export function NavbarProfile(props) {
         navigate("/")
     }
 
+    console.log(user.profile_picture_type)
     return (
         <>
             <IconButton onClick={(e) => handlePopoverOpen(e)}>
-                <Avatar {...stringAvatar(user.name)} />
+                {user.profile_picture_type === "gravatar" && <Avatar src={"https://www.gravatar.com/avatar/" + email_md5} />}
+                {user.profile_picture_type === "url" && <Avatar src={user.profile_picture} />}
+                {!user.profile_picture_type && <Avatar {...stringAvatar(user.name)} />}
             </IconButton>
             <Popover
                 id={"userPopover"}
@@ -49,7 +54,10 @@ export function NavbarProfile(props) {
                 }}
             >
                 <Box sx={{ display: "flex", alignItems: "center", margin: "1rem" }}>
-                    <Avatar {...stringAvatar(user.name)} sx={{ marginRight: "1rem" }} />
+                    {!user.profile_picture_type && <Avatar {...stringAvatar(user.name)} sx={{ marginRight: "1rem" }} />}
+                    {user.profile_picture_type === "gravatar" && <Avatar src={"https://www.gravatar.com/avatar/" + email_md5} sx={{ marginRight: "1rem" }} />}
+                    {user.profile_picture_type === "url" && <Avatar src={user.profile_picture} sx={{ marginRight: "1rem" }} />}
+
                     <Box>
                         <Typography variant="subtitle1">{user.name}</Typography>
                         <Typography variant="body2">{user.email}</Typography>

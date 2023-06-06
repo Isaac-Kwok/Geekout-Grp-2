@@ -31,11 +31,13 @@ router.post("/", async (req, res) => {
         let userInfo = {
             email: user.email,
             name: user.name,
-            account_type: user.account_type
+            account_type: user.account_type,
+            profile_picture: user.profile_picture,
+            profile_picture_type: user.profile_picture_type,
         }
 
         const token = jwt.sign(userInfo, process.env.APP_SECRET, { expiresIn: "1d" })
-        res.json({ token, user: { email: user.email, name: user.name, account_type: user.account_type } })
+        res.json({ token, user: userInfo })
     } catch (error) {
         res.status(400).json({ message: error.message })
     }
@@ -45,7 +47,9 @@ router.get("/validate", validateToken, (req, res) => {
     let userInfo = {
         email: req.user.email,
         name: req.user.name,
-        account_type: req.user.account_type
+        account_type: req.user.account_type,
+        profile_picture: req.user.profile_picture,
+        profile_picture_type: req.user.profile_picture_type,
     };
     res.json({
         user: userInfo
