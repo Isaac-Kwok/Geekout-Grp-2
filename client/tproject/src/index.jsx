@@ -33,6 +33,9 @@ const theme = createTheme({
       main: grey[500],
     },
   },
+  typography: {
+    fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+  },
 });
 
 // Global context to store and change stuff on the fly
