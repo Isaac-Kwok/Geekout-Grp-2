@@ -6,6 +6,7 @@ import Test from './Test'
 import App from './App'
 import Login from './Login'
 import Register from './Register'
+import Verify from './Verify'
 
 import { UserContext } from '..'
 
@@ -23,6 +24,7 @@ function UserRoutes() {
             <Route path="/test" element={<Test />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/verify" element={<Verify />} />
         </Routes>
     )
 }

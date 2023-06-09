@@ -34,9 +34,9 @@ function Register() {
             data.email = data.email.trim();
             data.password = data.password.trim();
             data.name = data.name.trim();
-            http.post("/user", data).then((res) => {
+            http.post("/auth/register", data).then((res) => {
                 if (res.status === 200) {
-                    enqueueSnackbar("Registration successful!", { variant: "success" });
+                    enqueueSnackbar("Registration successful! Check your inbox for the activation email", { variant: "success" });
                     navigate("/login")
                 } else {
                     enqueueSnackbar("Registration failed! Check your e-mail and password.", { variant: "error" });
