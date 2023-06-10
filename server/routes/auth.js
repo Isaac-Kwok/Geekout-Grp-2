@@ -69,7 +69,7 @@ router.post("/register", async (req, res) => {
     try {
         const { email, name, password } = await schema.validate(req.body, { abortEarly: false })
         const newUser = await User.create({ email, name, password })
-        const token = jwt.sign({ email }, process.env.APP_SECRET, { expiresIn: "30m" })
+        const token = jwt.sign({ type: "activate", email }, process.env.APP_SECRET, { expiresIn: "30m" })
         const link = process.env.CLIENT_URL +`/verify?token=${token}`
         const html = await ejs.renderFile("templates/emailVerification.ejs", { url:link })
         await emailSender.sendMail({
@@ -132,7 +132,7 @@ router.post("/resend", async (req, res) => {
             return
         }
 
-        const token = jwt.sign({ email }, process.env.APP_SECRET, { expiresIn: "30m" })
+        const token = jwt.sign({ type: "activate", email }, process.env.APP_SECRET, { expiresIn: "30m" })
         const link = process.env.CLIENT_URL +`/verify?token=${token}`
         const html = await ejs.renderFile("templates/emailVerification.ejs", { url:link })
         await emailSender.sendMail({
@@ -161,7 +161,7 @@ router.post("/forgot", async (req, res) => {
             return
         }
 
-        const token = jwt.sign({ email }, process.env.APP_SECRET, { expiresIn: "15m" })
+        const token = jwt.sign({ type: "reset", email }, process.env.APP_SECRET, { expiresIn: "15m" })
         const link = process.env.CLIENT_URL +`/reset?token=${token}`
         const html = await ejs.renderFile("templates/resetPassword.ejs", { user: user, url:link })
         await emailSender.sendMail({
@@ -192,7 +192,7 @@ router.post("/reset", async (req, res) => {
             return
         }
 
-        user.password = password
+        user.password = bcrypt.hashSync(password, 10)
         await user.save()
         res.json({ message: "Password reset." })
     } catch (error) {

@@ -5,6 +5,7 @@ import HomeIcon from "@mui/icons-material/Home"
 import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import StoreIcon from '@mui/icons-material/Store';
+import LoginIcon from '@mui/icons-material/Login';
 import Button from "@mui/material/Button"
 import { Link } from "react-router-dom"
 import { UserContext } from ".."
@@ -32,7 +33,7 @@ export function Navbar() {
                                     <Button LinkComponent={Link} variant="text" color="inherit" to="/login">Shop</Button>
                                 </Box>
                             </Box>
-                            {!user && <Button LinkComponent={Link} variant="text" color="inherit" to="/login">Login</Button>}
+                            {!user && <Button LinkComponent={Link} variant="text" color="inherit" to="/login" startIcon={<LoginIcon/>}>Login</Button>}
                             {user && <NavbarProfile />}
                         </Toolbar>
                     </AppBar>

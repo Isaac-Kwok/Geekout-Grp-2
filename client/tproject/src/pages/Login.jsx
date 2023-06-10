@@ -5,6 +5,9 @@ import AddIcon from '@mui/icons-material/Add';
 import HelpIcon from '@mui/icons-material/Help';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import LockResetIcon from '@mui/icons-material/LockReset';
+import CloseIcon from '@mui/icons-material/Close';
+import GoogleIcon from '@mui/icons-material/Google';
+import FacebookIcon from '@mui/icons-material/Facebook';
 import { useEffect, useState, useContext } from "react";
 import { useSnackbar } from "notistack";
 import { useNavigate } from "react-router-dom";
@@ -140,7 +143,7 @@ function Login() {
                                     <Stack direction="row" alignItems={"center"} spacing={2}>
                                         <LoginIcon color="text.secondary" />
                                         <Typography sx={{ fontSize: 18, fontWeight: 700 }} color="text.secondary" gutterBottom>
-                                            Login
+                                            Login (not final/for test)
                                         </Typography>
                                     </Stack>
                                     <Stack spacing={2} sx={{ marginTop: 2 }}>
@@ -179,6 +182,13 @@ function Login() {
                                     <Button size="small" variant="text" color="primary" href="/" startIcon={<AddIcon />} LinkComponent={Link} to="/register">Register</Button>
                                 </CardActions>
                             </Box>
+                            <Divider />
+                            <CardContent>
+                                <Stack spacing={1}>
+                                    <Button variant="outlined" color="primary" startIcon={<GoogleIcon />} fullWidth>Login with Google</Button>
+                                    <Button variant="outlined" color="primary" startIcon={<FacebookIcon />} fullWidth>Login with Facebook</Button>
+                                </Stack>
+                            </CardContent>
                         </Card>
                     </Grid>
                     <Grid item xs={12} md={5} lg={4}>
@@ -199,6 +209,11 @@ function Login() {
                                     If you have not received your verification e-mail, you can resend it by clicking the button below.
                                 </Typography>
                                 <Button sx={{ marginTop: 2 }} variant="outlined" color="primary" onClick={handleResendDialog}>Resend Verification E-mail</Button>
+                                <Divider sx={{ marginTop: 2 }} />
+                                <Typography variant="body2" sx={{ marginTop: 2 }}>
+                                    For other issues such as 2FA, please contact us via the support page.
+                                </Typography>
+                                <Button sx={{ marginTop: 2 }} variant="outlined" color="primary" LinkComponent={<Link />}>Go to support</Button>
                             </CardContent>
                         </Card>
                     </Grid>
@@ -227,8 +242,8 @@ function Login() {
                         />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleResetPasswordDialogClose}>Cancel</Button>
-                        <LoadingButton type="submit" loadingPosition="start" loading={resetLoading} size="small" variant="text" color="primary" startIcon={<LockResetIcon/>}>Reset</LoadingButton>
+                        <Button onClick={handleResetPasswordDialogClose} startIcon={<CloseIcon />}>Cancel</Button>
+                        <LoadingButton type="submit" loadingPosition="start" loading={resetLoading} variant="text" color="primary" startIcon={<LockResetIcon />}>Reset</LoadingButton>
                     </DialogActions>
                 </Box>
             </Dialog>
@@ -237,7 +252,7 @@ function Login() {
                 <Box component="form" onSubmit={resendFormik.handleSubmit}>
                     <DialogContent sx={{ paddingTop: 0 }}>
                         <DialogContentText>
-                            To resend your verification e-mail, please enter your e-mail address below. We will send you a link to verify your e-mail.
+                            To resend your verification e-mail, please enter your e-mail address below. We will send you a link to verify your account.
                         </DialogContentText>
                         <TextField
                             autoFocus
@@ -255,8 +270,8 @@ function Login() {
                         />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleResendDialogClose}>Cancel</Button>
-                        <LoadingButton type="submit" loadingPosition="start" loading={resendLoading} size="small" variant="text" color="primary" startIcon={<RefreshIcon/>}>Resend E-mail</LoadingButton>
+                        <Button onClick={handleResendDialogClose} startIcon={<CloseIcon />}>Cancel</Button>
+                        <LoadingButton type="submit" loadingPosition="start" loading={resendLoading} variant="text" color="primary" startIcon={<RefreshIcon />}>Resend E-mail</LoadingButton>
                     </DialogActions>
                 </Box>
             </Dialog>
