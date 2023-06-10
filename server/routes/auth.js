@@ -69,7 +69,7 @@ router.post("/register", async (req, res) => {
     try {
         const { email, name, password } = await schema.validate(req.body, { abortEarly: false })
         const newUser = await User.create({ email, name, password })
-        const token = jwt.sign({ email }, process.env.APP_SECRET, { expiresIn: "1d" })
+        const token = jwt.sign({ email }, process.env.APP_SECRET, { expiresIn: "30m" })
         const link = process.env.CLIENT_URL +`/verify?token=${token}`
         const html = await ejs.renderFile("templates/emailVerification.ejs", { url:link })
         await emailSender.sendMail({
@@ -113,7 +113,94 @@ router.post("/verify", async (req, res) => {
     }
 })
 
-router.get("/validate", validateToken, (req, res) => {
+router.post("/resend", async (req, res) => {
+    // Resend email verification
+    const schema = yup.object().shape({
+        email: yup.string().email().required(),
+    })
+
+    try {
+        const { email } = await schema.validate(req.body, { abortEarly: false })
+        const user = await User.findByPk(email)
+        if (!user) {
+            res.status(404).json({ message: "User not found." })
+            return
+        }
+
+        if (user.is_email_verified) {
+            res.status(400).json({ message: "Email is already verified." })
+            return
+        }
+
+        const token = jwt.sign({ email }, process.env.APP_SECRET, { expiresIn: "30m" })
+        const link = process.env.CLIENT_URL +`/verify?token=${token}`
+        const html = await ejs.renderFile("templates/emailVerification.ejs", { url:link })
+        await emailSender.sendMail({
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: "EnviroGo - Email Verification",
+            html: html,
+        })
+        res.json({ message: "Email sent." })
+    } catch (error) {
+        res.status(400).json({ message: error.message })
+    }
+})
+
+router.post("/forgot", async (req, res) => {
+    // Send an email to reset password
+    const schema = yup.object().shape({
+        email: yup.string().email().required(),
+    })
+
+    try {
+        const { email } = await schema.validate(req.body, { abortEarly: false })
+        const user = await User.findByPk(email)
+        if (!user) {
+            res.status(404).json({ message: "User not found." })
+            return
+        }
+
+        const token = jwt.sign({ email }, process.env.APP_SECRET, { expiresIn: "15m" })
+        const link = process.env.CLIENT_URL +`/reset?token=${token}`
+        const html = await ejs.renderFile("templates/resetPassword.ejs", { user: user, url:link })
+        await emailSender.sendMail({
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: "EnviroGo - Reset Password",
+            html: html,
+        })
+        res.json({ message: "Email sent." })
+    } catch (error) {
+        res.status(400).json({ message: error.message })
+    }
+})
+
+router.post("/reset", async (req, res) => {
+    // Reset a user's password
+    const schema = yup.object().shape({
+        token: yup.string().required(),
+        password: yup.string().required().min(12).max(64),
+    })
+
+    try {
+        const { token, password } = await schema.validate(req.body, { abortEarly: false })
+        const { email } = jwt.verify(token, process.env.APP_SECRET)
+        const user = await User.findByPk(email)
+        if (!user) {
+            res.status(404).json({ message: "User not found." })
+            return
+        }
+
+        user.password = password
+        await user.save()
+        res.json({ message: "Password reset." })
+    } catch (error) {
+        res.status(400).json({ message: error.message })
+    }
+})
+
+router.get("/validate", validateToken, async (req, res) => {
     let userInfo = {
         email: req.user.email,
         name: req.user.name,
