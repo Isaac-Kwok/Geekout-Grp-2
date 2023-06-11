@@ -134,7 +134,7 @@ function Login() {
 
     return (
         <>
-            <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
+            <Container maxWidth="xl" sx={{ marginY: "1rem" }}>
                 <Grid container spacing={2} justifyContent="center">
                     <Grid item xs={12} md={5} lg={4}>
                         <Card variant="outlined" sx={{ margin: "auto" }}>

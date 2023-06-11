@@ -21,6 +21,7 @@ import { Box } from '@mui/material';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { SnackbarProvider } from 'notistack';
 import jwt_decode from "jwt-decode";
+import Footer from './components/Footer';
 
 
 // Theme for the website, configure it here
@@ -51,7 +52,7 @@ function MainApp() {
   // Try to decode the JWT token in local storage and set the user context to the decoded token
   useEffect(() => {
     try {
-      setUser(jwt_decode(localStorage.getItem("token")))
+      setUser(jwt_decode(localStorage.getItem("token")).user)
     } catch {
       setUser(null)
     }
@@ -85,6 +86,7 @@ function MainApp() {
               </CSSTransition>
             </TransitionGroup>
           </Box>
+          <Footer />
         </Box>
 
 

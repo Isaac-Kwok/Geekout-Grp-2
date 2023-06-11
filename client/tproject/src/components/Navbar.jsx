@@ -20,7 +20,7 @@ export function Navbar() {
     return (
         <>
             {!isAdminPage &&
-                <Container maxWidth="xl" sx={{ marginTop: ["1rem", "2rem"], position: "sticky", top: ["1rem", "2rem"] }}>
+                <Container maxWidth="xl" sx={{ marginTop: ["1rem", "2rem"], position: "sticky", top: ["1rem", "2rem"], zIndex:999 }}>
                     <AppBar position="sticky" sx={{ borderRadius: "0.5rem" }}>
                         <Toolbar>
                             <Box sx={{ flexGrow: 1, display: "flex", alignItems: "center" }}>
@@ -40,7 +40,7 @@ export function Navbar() {
                 </Container>
             }
             {isAdminPage &&
-                <AppBar position="sticky" sx={{zIndex:"3"}}>
+                <AppBar position="sticky" sx={{zIndex:999}}>
                     <Toolbar>
                         <Box sx={{ flexGrow: 1, display: "flex", alignItems: "center" }}>
                             <IconButton color="inherit" sx={{ marginRight: "1rem", display: ["flex", "flex", "none"] }} onClick={() => setIsAdminDrawerOpen(true)}><MenuIcon /></IconButton>

@@ -6,7 +6,7 @@ export function validateAdmin() {
         const token = localStorage.getItem('token');
         const decoded = jwt_decode(token);
         console.log(decoded.account_type);
-        if (decoded.account_type == 0) {
+        if (decoded.user.account_type == 0) {
             return true;
         }
         return false;

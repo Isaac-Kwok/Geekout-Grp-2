@@ -51,7 +51,7 @@ router.post("/", async (req, res) => {
             profile_picture_type: user.profile_picture_type,
         }
 
-        const token = jwt.sign(userInfo, process.env.APP_SECRET, { expiresIn: "7d" })
+        const token = jwt.sign({type: "session",user:userInfo}, process.env.APP_SECRET, { expiresIn: "7d" })
         res.json({ token, user: userInfo })
     } catch (error) {
         res.status(400).json({ message: error.message })

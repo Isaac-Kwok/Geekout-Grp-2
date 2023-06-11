@@ -16,8 +16,10 @@ app.get("/", (request, response) => {
 
 // Routes
 const userRoutes = require("./routes/user")
+const adminUsersRoutes = require("./routes/admin/users")
 const authRoutes = require("./routes/auth")
 app.use("/user", userRoutes)
+app.use("/admin/users", adminUsersRoutes)
 app.use("/auth", authRoutes)
 
 
