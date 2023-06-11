@@ -26,7 +26,6 @@ function UserRoutes() {
             {!user && <Route path="/login" element={<Login />} />}
             {!user && <Route path="/register" element={<Register />} />}
             <Route path="/test" element={<Test />} />
-            <Route path="/register" element={<Register />} />
             <Route path="/verify" element={<Verify />} />
             <Route path="/reset" element={<Reset />} />
         </Routes>
