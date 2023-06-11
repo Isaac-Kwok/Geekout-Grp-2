@@ -51,7 +51,7 @@ function MainApp() {
   // Try to decode the JWT token in local storage and set the user context to the decoded token
   useEffect(() => {
     try {
-      setUser(jwt_decode(localStorage.getItem("token")))
+      setUser(jwt_decode(localStorage.getItem("token")).user)
     } catch {
       setUser(null)
     }
