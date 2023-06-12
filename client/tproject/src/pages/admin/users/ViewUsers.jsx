@@ -10,10 +10,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
 function getChipProps(params) {
-    const roles = ["Admin", "Customer", "Driver"]
-
     return {
-        label: roles[params.value],
+        label: params.value,
     };
 }
 
@@ -26,7 +24,13 @@ const columns = [
     {
         field: 'account_type', headerName: 'Role', minWidth: 200, renderCell: (params) => {
             return <Chip variant="filled" size="small" icon={<LabelIcon/>} {...getChipProps(params)} />;
-        }
+        },
+        valueGetter: (params) => {
+            const roles = ["Admin", "Customer", "Driver"]
+            return roles[params.value]
+        },
+        type: 'singleSelect',
+        valueOptions: ["Admin", "Customer", "Driver"],
     },
     { field: 'is_active', headerName: 'Active?', type: 'boolean', minWidth: 100 },
     {
