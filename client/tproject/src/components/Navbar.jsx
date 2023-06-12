@@ -1,5 +1,5 @@
 import { useState, useContext } from "react"
-import { AppBar, Box, Container, Toolbar, IconButton, List, ListItem, ListItemIcon, ListItemText, ListItemButton, Typography, SwipeableDrawer, Divider, Drawer } from "@mui/material"
+import { AppBar, Box, Container, Toolbar, IconButton, List, ListItem, ListItemIcon, ListItemText, ListItemButton, Typography, Divider, Drawer } from "@mui/material"
 import MenuIcon from "@mui/icons-material/Menu"
 import HomeIcon from "@mui/icons-material/Home"
 import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike';
@@ -53,7 +53,7 @@ export function Navbar() {
                 </AppBar>
             }
 
-            <SwipeableDrawer
+            <Drawer
                 anchor={"left"}
                 open={isDrawerOpen}
                 onClose={() => setIsDrawerOpen(false)}
@@ -88,7 +88,7 @@ export function Navbar() {
                         </ListItemButton>
                     </ListItem>
                 </List>
-            </SwipeableDrawer>
+            </Drawer>
             <Drawer anchor={"left"} open={isAdminDrawerOpen} onClose={() => setIsAdminDrawerOpen(false)} variant="temporary">
                 <List sx={{ width: "250px" }}>
                     <ListItem key={"Home"}>
