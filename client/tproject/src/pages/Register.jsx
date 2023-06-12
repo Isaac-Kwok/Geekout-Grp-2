@@ -50,7 +50,7 @@ function Register() {
     })
 
     return (
-        <Container maxWidth="xl" sx={{marginTop: "1rem"}}>
+        <Container maxWidth="xl" sx={{marginY: "1rem"}}>
             <Card variant="outlined" sx={{ maxWidth: 500, margin: "auto" }}>
                 <Box component="form" onSubmit={formik.handleSubmit}>
                     <CardContent>

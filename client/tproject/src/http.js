@@ -33,10 +33,13 @@ instance.interceptors.response.use(function (response) {
     // 403 - Forbidden - User role does not have access to this resource
     // Do something with response error
     if (error.response.status === 401) {
-        if (localStorage.getItem("token")) {
-            localStorage.clear();
-            window.location("/login");
-        }
+        try {
+            if (localStorage.getItem("token")) {
+                localStorage.clear();
+                alert("Your session has expired. Please login again.");
+                window.location("/login");
+            }
+        } catch (e) {}
     }
     return Promise.reject(error);
 });

@@ -5,6 +5,7 @@ import { useSnackbar } from 'notistack'
 
 import NotFound from '../errors/NotFound'
 import Test from '../Test'
+import ViewUsers from './users/ViewUsers'
 
 import { UserContext } from '../..'
 import AdminNavList from '../../components/AdminNavList'
@@ -25,7 +26,7 @@ function AdminRoutes() {
     }, [])
 
     return (
-        <Box sx={{ display: "flex", flexGrow: 1 }}>
+        <Box sx={{ display: "flex", flexGrow: 1, flexWrap: 1 }}>
             <Box sx={{ display: ["none", "none", "flex"] }}>
                 <List sx={{ width: "250px", height: "fit-content", position: "sticky", top: 64 }}>
                     <AdminNavList />
@@ -35,7 +36,9 @@ function AdminRoutes() {
             <Routes>
                 <Route path='*' element={<NotFound />} />
                 <Route path="/" element={<Test />} />
+                <Route path="/users" element={<ViewUsers />} />
             </Routes>
+
         </Box>
 
     )

@@ -1,10 +1,11 @@
 import { useState, useContext } from "react"
-import { AppBar, Box, Container, Toolbar, IconButton, List, ListItem, ListItemIcon, ListItemText, ListItemButton, Typography, SwipeableDrawer, Divider, Drawer } from "@mui/material"
+import { AppBar, Box, Container, Toolbar, IconButton, List, ListItem, ListItemIcon, ListItemText, ListItemButton, Typography, Divider, Drawer } from "@mui/material"
 import MenuIcon from "@mui/icons-material/Menu"
 import HomeIcon from "@mui/icons-material/Home"
 import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import StoreIcon from '@mui/icons-material/Store';
+import LoginIcon from '@mui/icons-material/Login';
 import Button from "@mui/material/Button"
 import { Link } from "react-router-dom"
 import { UserContext } from ".."
@@ -19,7 +20,7 @@ export function Navbar() {
     return (
         <>
             {!isAdminPage &&
-                <Container maxWidth="xl" sx={{ marginTop: ["1rem", "2rem"], position: "sticky", top: ["1rem", "2rem"] }}>
+                <Container maxWidth="xl" sx={{ marginTop: ["1rem", "2rem"], position: "sticky", top: ["1rem", "2rem"], zIndex:999 }}>
                     <AppBar position="sticky" sx={{ borderRadius: "0.5rem" }}>
                         <Toolbar>
                             <Box sx={{ flexGrow: 1, display: "flex", alignItems: "center" }}>
@@ -32,14 +33,14 @@ export function Navbar() {
                                     <Button LinkComponent={Link} variant="text" color="inherit" to="/login">Shop</Button>
                                 </Box>
                             </Box>
-                            {!user && <Button LinkComponent={Link} variant="text" color="inherit" to="/login">Login</Button>}
+                            {!user && <Button LinkComponent={Link} variant="text" color="inherit" to="/login" startIcon={<LoginIcon/>}>Login</Button>}
                             {user && <NavbarProfile />}
                         </Toolbar>
                     </AppBar>
                 </Container>
             }
             {isAdminPage &&
-                <AppBar position="sticky" sx={{zIndex:"3"}}>
+                <AppBar position="sticky" sx={{zIndex:999}}>
                     <Toolbar>
                         <Box sx={{ flexGrow: 1, display: "flex", alignItems: "center" }}>
                             <IconButton color="inherit" sx={{ marginRight: "1rem", display: ["flex", "flex", "none"] }} onClick={() => setIsAdminDrawerOpen(true)}><MenuIcon /></IconButton>
@@ -52,7 +53,7 @@ export function Navbar() {
                 </AppBar>
             }
 
-            <SwipeableDrawer
+            <Drawer
                 anchor={"left"}
                 open={isDrawerOpen}
                 onClose={() => setIsDrawerOpen(false)}
@@ -87,7 +88,7 @@ export function Navbar() {
                         </ListItemButton>
                     </ListItem>
                 </List>
-            </SwipeableDrawer>
+            </Drawer>
             <Drawer anchor={"left"} open={isAdminDrawerOpen} onClose={() => setIsAdminDrawerOpen(false)} variant="temporary">
                 <List sx={{ width: "250px" }}>
                     <ListItem key={"Home"}>

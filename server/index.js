@@ -11,13 +11,15 @@ app.use(express.json())
 
 // Main Route (Status check)
 app.get("/", (request, response) => {
-    response.json({ message: "Welcome to TProject. API Server is operational. Now with automatic deployments" })
+    response.json({ message: "Welcome to EnviroGo API. API Server is operational. Now with automatic deployments" })
 })
 
 // Routes
 const userRoutes = require("./routes/user")
+const adminUsersRoutes = require("./routes/admin/users")
 const authRoutes = require("./routes/auth")
 app.use("/user", userRoutes)
+app.use("/admin/users", adminUsersRoutes)
 app.use("/auth", authRoutes)
 
 
