@@ -14,7 +14,7 @@ function AdminNavList() {
     return (
         <>
             <ListItem key={"Users"} disablePadding>
-                <ListItemButton component={Link} to="/">
+                <ListItemButton component={Link} to="/admin/users">
                     <ListItemIcon><PeopleIcon /></ListItemIcon>
                     <ListItemText primary={"Users"} />
                 </ListItemButton>

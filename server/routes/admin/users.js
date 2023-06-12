@@ -8,7 +8,7 @@ router.get("/", validateAdmin, async (req, res) => {
     // Get all users
     const users = await User.findAll({
         attributes: {
-            exclude: ["password", "is_email_verified", "is_active", "createdAt", "updatedAt"]
+            exclude: ["password", "is_email_verified", "createdAt", "updatedAt"]
         }
     })
     res.json(users)

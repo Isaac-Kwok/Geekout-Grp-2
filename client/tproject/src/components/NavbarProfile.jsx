@@ -12,7 +12,7 @@ import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import PersonIcon from '@mui/icons-material/Person';
 import { enqueueSnackbar } from "notistack";
 
-export function NavbarProfile(props) {
+export function NavbarProfile() {
     const { user, setUser } = useContext(UserContext);
     const [isPopoverOpen, setIsPopoverOpen] = useState(false)
     const [anchorEl, setAnchorEl] = useState(null)
@@ -26,7 +26,7 @@ export function NavbarProfile(props) {
 
     function handleLogout() {
         setIsPopoverOpen(false)
-        localStorage.setItem("token", null)
+        localStorage.removeItem("token")
         setUser(null)
         enqueueSnackbar("Successfully logged out", { variant: "success" })
         navigate("/")

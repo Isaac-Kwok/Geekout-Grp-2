@@ -1,5 +1,5 @@
 import { useContext, useEffect } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, Navigate } from 'react-router-dom'
 
 import NotFound from './errors/NotFound'
 import Test from './Test'
@@ -23,8 +23,8 @@ function UserRoutes() {
         <Routes>
             <Route path='*' element={<NotFound />} />
             <Route path="/" element={<App />} />
-            {!user && <Route path="/login" element={<Login />} />}
-            {!user && <Route path="/register" element={<Register />} />}
+            <Route path="/login" element={!user ? <Login /> : <Navigate to={"/"} />} />
+            <Route path="/register" element={!user ? <Register /> : <Navigate to={"/"} />} />
             <Route path="/test" element={<Test />} />
             <Route path="/verify" element={<Verify />} />
             <Route path="/reset" element={<Reset />} />
