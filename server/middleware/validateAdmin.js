@@ -25,7 +25,6 @@ const validateAdmin = async (req, res, next) => {
         return next();
     }
     catch (err) {
-        console.log(err)
         return res.status(401).json({message: "JWT token is missing or invalid"});
         
     }

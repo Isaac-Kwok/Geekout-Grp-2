@@ -1,4 +1,5 @@
 import { Container, Card, CardContent, CardActions, Stack, Typography, TextField, Box } from "@mui/material"
+import CardTitle from "../components/CardTitle";
 import LoadingButton from '@mui/lab/LoadingButton';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import AddIcon from '@mui/icons-material/Add';
@@ -54,12 +55,7 @@ function Register() {
             <Card variant="outlined" sx={{ maxWidth: 500, margin: "auto" }}>
                 <Box component="form" onSubmit={formik.handleSubmit}>
                     <CardContent>
-                        <Stack direction="row" alignItems={"center"} spacing={2}>
-                            <PersonAddIcon color="text.secondary" />
-                            <Typography sx={{ fontSize: 18, fontWeight: 700 }} color="text.secondary" gutterBottom>
-                                Register
-                            </Typography>
-                        </Stack>
+                        <CardTitle title="Register" icon={<PersonAddIcon color="text.secondary" />} />
                         <Stack spacing={2} sx={{ marginTop: 2 }}>
                             <TextField 
                                 type="email"
