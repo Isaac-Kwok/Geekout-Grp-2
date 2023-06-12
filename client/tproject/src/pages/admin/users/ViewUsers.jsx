@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Container, Typography, Chip, Button } from '@mui/material'
+import { Container, Typography, Chip, Button } from '@mui/material'
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
+import { Link } from 'react-router-dom';
 import http from "../../../http";
 import LoadingSkeleton from '../../../components/LoadingSkeleton';
 import EditIcon from '@mui/icons-material/Edit';
@@ -59,7 +60,7 @@ function ViewUsers() {
         <>
             <Container maxWidth="xl" sx={{ marginY: "1rem", minWidth: 0 }}>
                 <Typography variant="h3" fontWeight={700} sx={{ marginY: ["1rem", "1rem", "2rem"], fontSize: ["2rem", "2rem", "3rem"] }}>View Users</Typography>
-                <Button variant="contained" color="primary" sx={{ marginBottom: "1rem" }} startIcon={<PersonAddIcon />}>Create User</Button>
+                <Button LinkComponent={Link} variant="contained" color="primary" sx={{ marginBottom: "1rem" }} startIcon={<PersonAddIcon />} to="/admin/users/create">Create User</Button>
                 <DataGrid
                     rows={users}
                     columns={columns}
