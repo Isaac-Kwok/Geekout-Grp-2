@@ -7,7 +7,10 @@ const app = express();
 app.use(cors({
     origin: "*"
 }))
-app.use(express.json())
+app.use(express.json());
+
+// parse requests of content-type - application/x-www-form-urlencoded
+app.use(express.urlencoded({ extended: true }));
 
 // Main Route (Status check)
 app.get("/", (request, response) => {
@@ -18,9 +21,11 @@ app.get("/", (request, response) => {
 const userRoutes = require("./routes/user")
 const adminUsersRoutes = require("./routes/admin/users")
 const authRoutes = require("./routes/auth")
+const uploadRoutes = require("./routes/upload")
 app.use("/user", userRoutes)
 app.use("/admin/users", adminUsersRoutes)
 app.use("/auth", authRoutes)
+app.use("/upload", uploadRoutes)
 
 
 db.sequelize.sync({alter: true}).then(() => {
