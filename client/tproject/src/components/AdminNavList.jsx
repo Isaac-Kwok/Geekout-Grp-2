@@ -8,6 +8,7 @@ import PedalBikeIcon from '@mui/icons-material/PedalBike';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import StoreIcon from '@mui/icons-material/Store';
 import SupportIcon from '@mui/icons-material/Support';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 
 function AdminNavList() {
@@ -47,6 +48,12 @@ function AdminNavList() {
                 <ListItemButton component={Link} to="/">
                     <ListItemIcon><SupportIcon /></ListItemIcon>
                     <ListItemText primary={"Support"} />
+                </ListItemButton>
+            </ListItem>
+            <ListItem key={"Locations"} disablePadding>
+                <ListItemButton component={Link} to="/admin/locations/create">
+                    <ListItemIcon><LocationOnIcon /></ListItemIcon>
+                    <ListItemText primary={"Location"} />
                 </ListItemButton>
             </ListItem>
         </>

@@ -7,6 +7,7 @@ import NotFound from '../errors/NotFound'
 import Test from '../Test'
 import ViewUsers from './users/ViewUsers'
 import CreateUser from './users/CreateUser'
+import CreateLocation from './locations/CreateLocation'
 
 import { UserContext } from '../..'
 import AdminNavList from '../../components/AdminNavList'
@@ -39,6 +40,7 @@ function AdminRoutes() {
                 <Route path="/" element={<Test />} />
                 <Route path="/users" element={<ViewUsers />} />
                 <Route path="/users/create" element={<CreateUser />} />
+                <Route path="/locations/create" element={<CreateLocation />} />
             </Routes>
 
         </Box>
