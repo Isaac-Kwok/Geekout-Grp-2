@@ -41,7 +41,7 @@ function CreateUser() {
             if (data.phone_number == "") {
                 delete data.phone_number;
             }
-            
+
             delete data.is_admin;
 
             http.post("/admin/users", data).then((res) => {
@@ -63,18 +63,30 @@ function CreateUser() {
         <>
             <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <IconButton size="large" onClick={() => navigate(-1)} sx={{marginRight: "1rem"}}><ArrowBackIcon /></IconButton>
+                    <IconButton size="large" onClick={() => navigate(-1)} sx={{ marginRight: "1rem" }}><ArrowBackIcon /></IconButton>
                     <Typography variant="h3" fontWeight={700} sx={{ marginY: ["1rem", "1rem", "2rem"], fontSize: ["2rem", "2rem", "3rem"] }}>Create User</Typography>
                 </Box>
+                <LoadingButton
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    loading={loading}
+                    loadingPosition="start"
+                    startIcon={<AddIcon />}
+                    onClick={formik.handleSubmit}
+                    sx={{ marginBottom: "1rem" }}
+                >
+                    Create User
+                </LoadingButton>
                 <Card variant="outlined" sx={{ margin: "auto" }}>
-                    <Box component="form" onSubmit={formik.handleSubmit}>
+                    <Box component="form">
                         <CardContent>
                             <CardTitle title="Basic User Information" icon={<ManageAccountsIcon color="text.secondary" />} />
                             <TextField
                                 fullWidth
                                 id="email"
                                 name="email"
-                                label="Email"
+                                label="E-mail Address"
                                 variant="outlined"
                                 value={formik.values.email}
                                 onChange={formik.handleChange}
@@ -124,18 +136,6 @@ function CreateUser() {
                             } />
 
                         </CardContent>
-                        <CardActions>
-                            <LoadingButton
-                                variant="contained"
-                                color="primary"
-                                type="submit"
-                                loading={loading}
-                                loadingPosition="start"
-                                startIcon={<AddIcon />}
-                            >
-                                Create User
-                            </LoadingButton>
-                        </CardActions>
                     </Box>
                 </Card>
             </Container>
