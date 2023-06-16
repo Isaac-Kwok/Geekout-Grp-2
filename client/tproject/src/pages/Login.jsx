@@ -1,4 +1,5 @@
 import { Box, Button, Container, Card, CardContent, CardActions, Stack, Typography, TextField, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, Grid, Divider } from "@mui/material"
+import CardTitle from "../components/CardTitle";
 import LoadingButton from '@mui/lab/LoadingButton';
 import LoginIcon from '@mui/icons-material/Login';
 import AddIcon from '@mui/icons-material/Add';
@@ -140,12 +141,7 @@ function Login() {
                         <Card variant="outlined" sx={{ margin: "auto" }}>
                             <Box component="form" onSubmit={formik.handleSubmit}>
                                 <CardContent>
-                                    <Stack direction="row" alignItems={"center"} spacing={2}>
-                                        <LoginIcon color="text.secondary" />
-                                        <Typography sx={{ fontSize: 18, fontWeight: 700 }} color="text.secondary" gutterBottom>
-                                            Login (not final/for test)
-                                        </Typography>
-                                    </Stack>
+                                    <CardTitle title="Login (layout NOT final)" icon={<LoginIcon color="text.secondary" />} />
                                     <Stack spacing={2} sx={{ marginTop: 2 }}>
                                         <TextField
                                             type="email"
@@ -194,12 +190,7 @@ function Login() {
                     <Grid item xs={12} md={5} lg={4}>
                         <Card variant="outlined" sx={{ margin: "auto" }}>
                             <CardContent>
-                                <Stack direction="row" alignItems={"center"} spacing={2}>
-                                    <HelpIcon color="text.secondary" />
-                                    <Typography sx={{ fontSize: 18, fontWeight: 700 }} color="text.secondary" gutterBottom>
-                                        Trouble Logging In?
-                                    </Typography>
-                                </Stack>
+                                <CardTitle title="Trouble Logging In?" icon={<HelpIcon color="text.secondary" />} />
                                 <Typography variant="body2" sx={{ marginTop: 2 }}>
                                     If you have forgotten your password, you can reset it by clicking the button below.
                                 </Typography>

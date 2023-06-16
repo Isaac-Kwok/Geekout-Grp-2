@@ -6,6 +6,7 @@ import { useSnackbar } from 'notistack'
 import NotFound from '../errors/NotFound'
 import Test from '../Test'
 import ViewUsers from './users/ViewUsers'
+import CreateUser from './users/CreateUser'
 
 import { UserContext } from '../..'
 import AdminNavList from '../../components/AdminNavList'
@@ -37,6 +38,7 @@ function AdminRoutes() {
                 <Route path='*' element={<NotFound />} />
                 <Route path="/" element={<Test />} />
                 <Route path="/users" element={<ViewUsers />} />
+                <Route path="/users/create" element={<CreateUser />} />
             </Routes>
 
         </Box>

@@ -20,6 +20,8 @@ router.post("/", async (req, res) => {
         await schema.validate(req.body, { abortEarly: false })
         const { email, password } = req.body
         const user = await User.findByPk(email)
+
+        // Check if user exists
         if (!user) {
             res.status(401).json({ message: "Invalid email or password." })
             return
@@ -37,6 +39,13 @@ router.post("/", async (req, res) => {
             return
         }
 
+        // Check if user has set password
+        if (user.password === null) {
+            res.status(401).json({ message: "Account password is not set." })
+            return
+        }
+
+        // Check if password is valid by comparing hash
         const isPasswordValid = await bcrypt.compare(password, user.password)
         if (!isPasswordValid) {
             res.status(401).json({ message: "Invalid email or password." })
@@ -192,7 +201,7 @@ router.post("/reset", async (req, res) => {
             return
         }
 
-        user.password = bcrypt.hashSync(password, 10)
+        user.password = password
         await user.save()
         res.json({ message: "Password reset." })
     } catch (error) {

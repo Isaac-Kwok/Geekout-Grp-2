@@ -18,7 +18,11 @@ module.exports = (sequelize, DataTypes) => {
         },
         password: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true,
+            set(value) {
+                // Hash the password before saving it to the database
+                this.setDataValue("password", bcrypt.hashSync(value, 10));
+            }
         },
         profile_picture: {
             type: DataTypes.STRING,
@@ -62,13 +66,6 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: false
         },
-    }, {
-        hooks: {
-            beforeCreate: (user) => {
-                // Hash the password before saving it to the database
-                user.password = bcrypt.hashSync(user.password, 10);
-            }
-        }
     });
     return User;
 }
