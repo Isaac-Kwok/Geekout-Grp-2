@@ -16,7 +16,7 @@ router.post("/", [validateToken, uploadFile], async (req, res) => {
 
         res.status(200).send({
             message: "Uploaded the file successfully: " + req.file.originalname,
-            url: req.headers.host + `/files/${req.file.originalname}`,
+            url: "//" +req.headers.host + `/uploads/${req.file.originalname}`,
         });
     } catch (err) {
         res.status(500).send({
@@ -43,7 +43,7 @@ router.get("/", async (req, res) => {
             files.forEach((file) => {
                 fileInfos.push({
                     name: file,
-                    url: req.headers.host + `/files/${file}`,
+                    url: "//" + req.headers.host + `/uploads/${file}`,
                 });
             });
             res.status(200).send(fileInfos);
@@ -57,6 +57,20 @@ router.get("/", async (req, res) => {
 router.get("/:name", (req, res) => {
     const fileName = req.params.name;
     const directoryPath = path.join(__dirname, "../uploads/");
+
+    res.download(directoryPath + fileName, fileName, (err) => {
+        if (err) {
+            res.status(500).send({
+                message: "Could not download the file. " + err,
+            });
+
+        }
+    });
+})
+
+router.get("/profile/:name", (req, res) => {
+    const fileName = req.params.name;
+    const directoryPath = path.join(__dirname, "../uploads/profile/");
 
     res.download(directoryPath + fileName, fileName, (err) => {
         if (err) {

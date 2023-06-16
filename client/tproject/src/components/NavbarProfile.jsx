@@ -37,7 +37,7 @@ export function NavbarProfile() {
         <>
             <IconButton onClick={(e) => handlePopoverOpen(e)}>
                 {user.profile_picture_type === "gravatar" && <Avatar src={"https://www.gravatar.com/avatar/" + email_md5} />}
-                {user.profile_picture_type === "url" && <Avatar src={user.profile_picture} />}
+                {user.profile_picture_type === "local" && <Avatar src={user.profile_picture} />}
                 {!user.profile_picture_type && <Avatar {...stringAvatar(user.name)} />}
             </IconButton>
             <Popover
@@ -56,8 +56,7 @@ export function NavbarProfile() {
                 <Box sx={{ display: "flex", alignItems: "center", margin: "1rem" }}>
                     {!user.profile_picture_type && <Avatar {...stringAvatar(user.name)} sx={{ marginRight: "1rem" }} />}
                     {user.profile_picture_type === "gravatar" && <Avatar src={"https://www.gravatar.com/avatar/" + email_md5} sx={{ marginRight: "1rem" }} />}
-                    {user.profile_picture_type === "url" && <Avatar src={user.profile_picture} sx={{ marginRight: "1rem" }} />}
-
+                    {user.profile_picture_type === "local" && <Avatar src={user.profile_picture} sx={{ marginRight: "1rem" }} />}
                     <Box>
                         <Typography variant="subtitle1">{user.name}</Typography>
                         <Typography variant="body2">{user.email}</Typography>

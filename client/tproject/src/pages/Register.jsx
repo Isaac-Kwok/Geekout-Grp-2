@@ -60,7 +60,7 @@ function Register() {
                             <TextField 
                                 type="email"
                                 fullWidth
-                                label="E-mail"
+                                label="E-mail Address"
                                 variant="outlined"
                                 name="email"
                                 value={formik.values.email}
