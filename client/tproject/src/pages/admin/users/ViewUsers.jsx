@@ -3,6 +3,7 @@ import { Container, Typography, Chip, Button, Dialog, DialogContent, DialogConte
 import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import http from "../../../http";
 import LoadingSkeleton from '../../../components/LoadingSkeleton';
 import EditIcon from '@mui/icons-material/Edit';
@@ -23,6 +24,7 @@ function ViewUsers() {
     const [deactivateLoading, setDeactivateLoading] = useState(null)
     const [deactivateUserDialog, setDeactivateUserDialog] = useState(false)
     const [deactivateUser, setDeactivateUser] = useState(null)
+    const navigate = useNavigate()
     const columns = [
         { field: 'name', headerName: 'Name', width: 200 },
         { field: 'email', headerName: 'E-mail Address', flex: 1, minWidth: 250 },
@@ -48,6 +50,9 @@ function ViewUsers() {
                 <GridActionsCellItem
                     icon={<EditIcon />}
                     label="Edit User"
+                    onClick={() => {
+                        navigate("/admin/users/" + params.row.email)
+                    }}
                 />,
                 <GridActionsCellItem
                     icon={<DeleteIcon />}

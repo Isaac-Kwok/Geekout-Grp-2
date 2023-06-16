@@ -11,6 +11,10 @@ app.use(express.json());
 
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
+app.use(function (err, req, res, next) {
+    console.error(err.stack);
+    res.status(500).send("Something broke! Check console for details");
+})
 
 // Main Route (Status check)
 app.get("/", (request, response) => {
@@ -25,7 +29,7 @@ const uploadRoutes = require("./routes/upload")
 app.use("/user", userRoutes)
 app.use("/admin/users", adminUsersRoutes)
 app.use("/auth", authRoutes)
-app.use("/upload", uploadRoutes)
+app.use("/uploads", uploadRoutes)
 
 
 db.sequelize.sync({alter: true}).then(() => {

@@ -19,10 +19,16 @@ function stringToColor(string) {
 }
 
 export function stringAvatar(name) {
+    var shortName;
+    if (name.split(' ').length > 1) {
+        shortName = `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`;
+    } else {
+        shortName = `${name.split(' ')[0][0]}`;
+    }
     return {
         sx: {
             bgcolor: stringToColor(name),
         },
-        children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
+        children: shortName,
     };
 }
