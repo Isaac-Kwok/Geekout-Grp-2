@@ -11,6 +11,8 @@ import LabelIcon from '@mui/icons-material/Label';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import CloseIcon from '@mui/icons-material/Close';
+import EmailIcon from '@mui/icons-material/Email';
+import PhoneIcon from '@mui/icons-material/Phone';
 
 function getChipProps(params) {
     return {
@@ -46,13 +48,14 @@ function ViewUsers() {
         },
         { field: 'is_active', headerName: 'Active?', type: 'boolean', minWidth: 100 },
         {
-            field: 'actions', type: 'actions', width: 80, getActions: (params) => [
+            field: 'actions', type: 'actions', width: 120, getActions: (params) => [
                 <GridActionsCellItem
                     icon={<EditIcon />}
                     label="Edit User"
                     onClick={() => {
                         navigate("/admin/users/" + params.row.email)
                     }}
+                    showInMenu
                 />,
                 <GridActionsCellItem
                     icon={<DeleteIcon />}
@@ -61,7 +64,18 @@ function ViewUsers() {
                         setDeactivateUser(params.row)
                         handleDeactivateUserDialogOpen()
                     }}
+                    showInMenu
                 />,
+                <GridActionsCellItem
+                    icon={<EmailIcon />}
+                    label="Send E-mail"
+                    href={"mailto:" + params.row.email}
+                />,
+                <GridActionsCellItem
+                    icon={<PhoneIcon />}
+                    label="Call"
+                    href={"tel:" + params.row.phone_number}
+                />
             ]
         },
     ];
