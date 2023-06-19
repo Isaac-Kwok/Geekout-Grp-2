@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, createContext, useState } from 'react'
 import { Route, Routes, useNavigate, Link } from 'react-router-dom'
 import { Container, Box, Card, CardContent, Typography, Grid, List, ListItem, ListItemText, ListItemButton, ListItemIcon } from '@mui/material'
 import ProfilePicture from '../../components/ProfilePicture'
@@ -13,9 +13,24 @@ import { UserContext } from '../..'
 import { validateUser } from '../../functions/user'
 import NotFound from '../errors/NotFound'
 import ViewProfile from './ViewProfile'
+import http from '../../http'
 
+export const ProfileContext = createContext(null)
 function ProfileRoutes() {
     const { user } = useContext(UserContext);
+    const [profile, setProfile] = useState({
+        name: "",
+        email: "",
+        phone_number: "",
+        profile_picture: "",
+        profile_picture_type: "",
+        is_active: false,
+        is_email_verified: false,
+        is_phone_verified: false,
+        is_2fa_enabled: false,
+        cash: 0,
+        points: 0,
+    },)
     const navigate = useNavigate()
     const { enqueueSnackbar } = useSnackbar()
 
@@ -24,6 +39,10 @@ function ProfileRoutes() {
             enqueueSnackbar("You must be logged in to view this page", { variant: "error" })
             return navigate("/login")
         }
+
+        http.get("/user").then(res => {
+            setProfile(res.data)
+        })
     }, [])
 
     return (
@@ -31,7 +50,7 @@ function ProfileRoutes() {
             <Container maxWidth="xl" sx={{ marginBottom: "1rem" }}>
                 <Box display={"flex"} alignItems={"center"} flexDirection={["column", "column", "row"]} justifyContent={["center", "center", "initial"]} marginY={"2rem"}>
                     {user && <ProfilePicture user={user} sx={{ width: ["72px", "96px", "128px"], height: ["72px", "96px", "128px"] }} />}
-                    <Box sx={{ marginLeft: {md: "2rem"}, marginTop: {xs: "1rem", md: 0}, textAlign: ["center", "center", "initial"] }}>
+                    <Box sx={{ marginLeft: { md: "2rem" }, marginTop: { xs: "1rem", md: 0 }, textAlign: ["center", "center", "initial"] }}>
                         <Typography fontWeight={700} variant="h4">{user && user.name}</Typography>
                         <Typography variant="h6">{user && user.email}</Typography>
                     </Box>
@@ -68,10 +87,13 @@ function ProfileRoutes() {
                         </Card>
                     </Grid>
                     <Grid item xs={12} md={9}>
-                        <Routes>
-                            <Route path="*" element={<NotFound />} />
-                            <Route path="/" element={<ViewProfile />} />
-                        </Routes>
+                        <ProfileContext.Provider value={{ profile: profile }}>
+                            <Routes>
+                                <Route path="*" element={<NotFound />} />
+                                <Route path="/" element={<ViewProfile />} />
+                            </Routes>
+                        </ProfileContext.Provider>
+
                     </Grid>
                 </Grid>
             </Container>

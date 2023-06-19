@@ -5,8 +5,6 @@ import './index.css';
 // Import pages
 import AdminRoutes from './pages/admin/AdminRoutes';
 import UserRoutes from './pages/UserRoutes';
-import NotFound from './pages/errors/NotFound';
-
 
 import reportWebVitals from './reportWebVitals';
 import {
