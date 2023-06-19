@@ -13,6 +13,7 @@ import { UserContext } from '../..'
 import { validateUser } from '../../functions/user'
 import NotFound from '../errors/NotFound'
 import ViewProfile from './ViewProfile'
+import ViewWallet from './ViewWallet'
 import http from '../../http'
 
 export const ProfileContext = createContext(null)
@@ -91,6 +92,7 @@ function ProfileRoutes() {
                             <Routes>
                                 <Route path="*" element={<NotFound />} />
                                 <Route path="/" element={<ViewProfile />} />
+                                <Route path="/wallet" element={<ViewWallet />} />
                             </Routes>
                         </ProfileContext.Provider>
 

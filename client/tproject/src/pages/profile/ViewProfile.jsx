@@ -2,18 +2,17 @@ import React, { useState, useEffect, useContext } from 'react'
 import { Container, Box, Card, CardContent, CardActions, Typography, Button, Stack, Grid, Divider } from '@mui/material'
 import InfoBox from '../../components/InfoBox'
 import CardTitle from '../../components/CardTitle'
-import http from '../../http'
-import { useSnackbar } from 'notistack'
 
 import BadgeIcon from '@mui/icons-material/Badge';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { ProfileContext } from './ProfileRoutes'
 
 function ViewProfile() {
-
-    const { enqueueSnackbar } = useSnackbar()
     const { profile } = useContext(ProfileContext)
 
+    useEffect(() => {
+        document.title = "EnviroGo - Account Overview"
+    }, [])
 
     return (
         <>
@@ -56,7 +55,7 @@ function ViewProfile() {
                             <Divider orientation="vertical" sx={{marginX: "1rem"}} flexItem />
                             <Grid item xs={12} sm>
                                 <Box display="flex" alignItems={"center"}>
-                                    <InfoBox flexGrow={1} title="GreenMiles Points" value={<Typography variant='h5' fontWeight={700}>{profile.points} Points</Typography>} />
+                                    <InfoBox flexGrow={1} title="GreenMiles Points" value={<Typography variant='h5' fontWeight={700}>{profile.points} GM</Typography>} />
                                     <Button variant="text" color="primary">Redeem</Button>
                                 </Box>
                             </Grid>
@@ -64,7 +63,6 @@ function ViewProfile() {
                     </CardContent>
                 </Card>
             </Stack>
-
         </>
     )
 }
