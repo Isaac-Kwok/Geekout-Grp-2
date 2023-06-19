@@ -1,4 +1,5 @@
 import { Button, Container, Card, CardContent, CardActions, Stack, Typography, TextField } from "@mui/material"
+import CardTitle from "../../components/CardTitle";
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import { Link } from "react-router-dom";
 import HomeIcon from '@mui/icons-material/Home';
@@ -6,14 +7,9 @@ import HomeIcon from '@mui/icons-material/Home';
 function NotFound() {
     return (
         <Container maxWidth="xl" sx={{marginTop: "1rem"}}>
-            <Card variant="outlined" sx={{ maxWidth: 500, margin: "auto" }}>
+            <Card sx={{ maxWidth: 500, margin: "auto" }}>
                 <CardContent>
-                    <Stack direction="row" alignItems={"center"} spacing={2}>
-                        <QuestionMarkIcon color="text.secondary" />
-                        <Typography sx={{ fontSize: 18, fontWeight: 700 }} color="text.secondary" gutterBottom>
-                            Page Not Found
-                        </Typography>
-                    </Stack>
+                    <CardTitle icon={<QuestionMarkIcon />} title="Page Not Found" />
                     <p>The page you are trying to look for is missing or has been moved.</p>
                 </CardContent>
                 <CardActions>
