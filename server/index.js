@@ -26,15 +26,18 @@ const userRoutes = require("./routes/user")
 const adminUsersRoutes = require("./routes/admin/users")
 const authRoutes = require("./routes/auth")
 const uploadRoutes = require("./routes/upload")
+const paymentRoutes = require("./routes/payment")
 app.use("/user", userRoutes)
 app.use("/admin/users", adminUsersRoutes)
 app.use("/auth", authRoutes)
 app.use("/uploads", uploadRoutes)
+app.use("/payment", paymentRoutes)
 
 
 db.sequelize.sync({alter: true}).then(() => {
     let port = process.env.APP_PORT
     app.listen(port, () => {
+        console.clear()
         console.log(`The server has been started on port ${port}`)
     })
 })

@@ -88,7 +88,7 @@ function ProfileRoutes() {
                         </Card>
                     </Grid>
                     <Grid item xs={12} md={9}>
-                        <ProfileContext.Provider value={{ profile: profile }}>
+                        <ProfileContext.Provider value={{ profile: profile, setProfile: setProfile }}>
                             <Routes>
                                 <Route path="*" element={<NotFound />} />
                                 <Route path="/" element={<ViewProfile />} />

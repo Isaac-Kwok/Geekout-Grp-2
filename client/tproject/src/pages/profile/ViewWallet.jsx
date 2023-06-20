@@ -1,4 +1,4 @@
-import { useEffect, useContext } from 'react'
+import { useEffect, useContext, useState } from 'react'
 import { Container, Box, Card, CardContent, CardActions, Typography, Button, Stack, Grid, Divider, TextField } from '@mui/material'
 import InfoBox from '../../components/InfoBox'
 import CardTitle from '../../components/CardTitle'
@@ -6,11 +6,21 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import EnergySavingsLeafIcon from '@mui/icons-material/EnergySavingsLeaf';
 import PaymentsIcon from '@mui/icons-material/Payments';
 import { ProfileContext } from './ProfileRoutes'
+import TopUpDialog from '../../components/TopUpDialog'
 
 
 function ViewWallet() {
 
     const { profile } = useContext(ProfileContext)
+    const [topupOpen, setTopupOpen] = useState(false)
+
+    const handleTopupOpen = () => {
+        setTopupOpen(true)
+    }
+
+    const handleTopupClose = () => {
+        setTopupOpen(false)
+    }
 
     useEffect(() => {
         document.title = "EnviroGo - Wallet"
@@ -26,7 +36,7 @@ function ViewWallet() {
                             <Grid item xs={12} sm marginBottom={["1rem", 0]}>
                                 <Box display="flex" alignItems={"center"}>
                                     <InfoBox flexGrow={1} title="Cash Balance" value={<Typography variant='h5' fontWeight={700}>${profile.cash}</Typography>} />
-                                    <Button variant="text" color="primary">Recharge</Button>
+                                    <Button variant="text" color="primary"onClick={handleTopupOpen}>Top-up</Button>
                                 </Box>
                             </Grid>
                             <Divider orientation="vertical" sx={{ marginX: "1rem" }} flexItem />
@@ -67,6 +77,7 @@ function ViewWallet() {
                     </CardContent>
                 </Card>
             </Stack>
+            <TopUpDialog open={topupOpen} onClose={handleTopupClose} />
         </>
     )
 }

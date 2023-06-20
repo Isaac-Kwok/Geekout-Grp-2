@@ -249,7 +249,7 @@ function EditUser() {
                                             inputProps={{
                                                 step: 0.01,
                                                 min: 0,
-                                                startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                                                startAdornment: <InputAdornment position="start">S$</InputAdornment>,
                                             }}
                                             value={formik.values.cash || ""}
                                             onChange={formik.handleChange}
