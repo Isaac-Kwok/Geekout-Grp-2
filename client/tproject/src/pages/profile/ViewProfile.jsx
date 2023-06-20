@@ -2,13 +2,23 @@ import React, { useState, useEffect, useContext } from 'react'
 import { Container, Box, Card, CardContent, CardActions, Typography, Button, Stack, Grid, Divider } from '@mui/material'
 import InfoBox from '../../components/InfoBox'
 import CardTitle from '../../components/CardTitle'
+import TopUpDialog from '../../components/TopUpDialog'
 
 import BadgeIcon from '@mui/icons-material/Badge';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { ProfileContext } from './ProfileRoutes'
 
 function ViewProfile() {
-    const { profile } = useContext(ProfileContext)
+    const { profile, setProfile } = useContext(ProfileContext)
+    const [topupOpen, setTopupOpen] = useState(false)
+
+    const handleTopupOpen = () => {
+        setTopupOpen(true)
+    }
+
+    const handleTopupClose = () => {
+        setTopupOpen(false)
+    }
 
     useEffect(() => {
         document.title = "EnviroGo - Account Overview"
@@ -49,7 +59,7 @@ function ViewProfile() {
                             <Grid item xs={12} sm marginBottom={["1rem", 0]}>
                                 <Box display="flex" alignItems={"center"}>
                                     <InfoBox flexGrow={1} title="Cash Balance" value={<Typography variant='h5' fontWeight={700}>${profile.cash}</Typography>} />
-                                    <Button variant="text" color="primary">Recharge</Button>
+                                    <Button variant="text" color="primary" onClick={handleTopupOpen}>Top-up</Button>
                                 </Box>
                             </Grid>
                             <Divider orientation="vertical" sx={{marginX: "1rem"}} flexItem />
@@ -63,6 +73,7 @@ function ViewProfile() {
                     </CardContent>
                 </Card>
             </Stack>
+            <TopUpDialog open={topupOpen} onClose={handleTopupClose} />
         </>
     )
 }
