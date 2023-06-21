@@ -66,11 +66,18 @@ export function NavbarProfile() {
                             <ListItemText primary={"My Profile"} />
                         </ListItemButton>
                     </ListItem>
-                    {user.account_type == 1 &&
+                    {user.account_type == 1 && user.driver_registerd &&
                     <ListItem key={"Driver's Dashboard"} disablePadding>
                         <ListItemButton component={Link} to="/" onClick={() => setIsPopoverOpen(false)}>
                             <ListItemIcon><DirectionsCarIcon /></ListItemIcon>
                             <ListItemText primary={"Driver's Dashboard"} />
+                        </ListItemButton>
+                    </ListItem> }
+                    {user.account_type == 1 && !user.driver_registerd &&
+                    <ListItem key={"Driver's Dashboard"} disablePadding>
+                        <ListItemButton component={Link} to="/driver/driverregister" onClick={() => setIsPopoverOpen(false)}>
+                            <ListItemIcon><DirectionsCarIcon /></ListItemIcon>
+                            <ListItemText primary={"Register Driver"} />
                         </ListItemButton>
                     </ListItem> }
                     { user.account_type == 0 && 
