@@ -78,7 +78,7 @@ function CreateUser() {
                 >
                     Create User
                 </LoadingButton>
-                <Card variant="outlined" sx={{ margin: "auto" }}>
+                <Card sx={{ margin: "auto" }}>
                     <Box component="form">
                         <CardContent>
                             <CardTitle title="Basic User Information" icon={<ManageAccountsIcon color="text.secondary" />} />

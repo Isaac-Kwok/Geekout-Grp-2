@@ -138,7 +138,7 @@ function Login() {
             <Container maxWidth="xl" sx={{ marginY: "1rem" }}>
                 <Grid container spacing={2} justifyContent="center">
                     <Grid item xs={12} md={5} lg={4}>
-                        <Card variant="outlined" sx={{ margin: "auto" }}>
+                        <Card sx={{ margin: "auto" }}>
                             <Box component="form" onSubmit={formik.handleSubmit}>
                                 <CardContent>
                                     <CardTitle title="Login (layout NOT final)" icon={<LoginIcon color="text.secondary" />} />
@@ -188,7 +188,7 @@ function Login() {
                         </Card>
                     </Grid>
                     <Grid item xs={12} md={5} lg={4}>
-                        <Card variant="outlined" sx={{ margin: "auto" }}>
+                        <Card sx={{ margin: "auto" }}>
                             <CardContent>
                                 <CardTitle title="Trouble Logging In?" icon={<HelpIcon color="text.secondary" />} />
                                 <Typography variant="body2" sx={{ marginTop: 2 }}>

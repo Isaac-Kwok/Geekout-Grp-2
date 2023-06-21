@@ -14,3 +14,14 @@ export function validateAdmin() {
         return false;
     }
 }
+
+export function validateUser() {
+    try {
+        const token = localStorage.getItem('token');
+        const decoded = jwt_decode(token);
+        console.log(decoded.account_type);
+        return true;
+    } catch {
+        return false;
+    }
+}

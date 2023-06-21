@@ -27,7 +27,11 @@ let uploadProfilePicture = multer({
             cb(null, "./uploads/profile/");
         },
         filename: (req, file, cb) => {
-            cb(null, req.params.id + path.extname(file.originalname));
+            if (req.params.id) {
+                cb(null, req.params.id + path.extname(file.originalname));
+            } else {
+                cb(null, req.user.email + path.extname(file.originalname));
+            }
         }
     }),
     fileFilter: (req, file, cb) => {

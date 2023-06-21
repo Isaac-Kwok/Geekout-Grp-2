@@ -67,7 +67,7 @@ function Reset() {
     return (
         <>
             <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
-                <Card variant="outlined" sx={{ maxWidth: 500, margin: "auto" }}>
+                <Card sx={{ maxWidth: 500, margin: "auto" }}>
                     <Box component="form" onSubmit={formik.handleSubmit}>
                         <CardContent>
                             <Stack direction="row" alignItems={"center"} spacing={2}>

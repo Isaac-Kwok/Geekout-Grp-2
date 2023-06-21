@@ -6,7 +6,6 @@ import './index.css';
 import AdminRoutes from './pages/admin/AdminRoutes';
 import UserRoutes from './pages/UserRoutes';
 
-
 import reportWebVitals from './reportWebVitals';
 import {
   BrowserRouter,

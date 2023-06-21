@@ -14,12 +14,12 @@ import http from '../../../http'
 import { useSnackbar } from 'notistack'
 import * as Yup from "yup";
 import { useFormik } from 'formik';
-import { stringAvatar } from '../../../functions/stringAvatar';
+import ProfilePicture from '../../../components/ProfilePicture';
 import md5 from "md5";
 
 function EditUser() {
     const navigate = useNavigate();
-    const [user, setUser] = useState({});
+    const [user, setUser] = useState(null);
     const { id } = useParams();
     const [loading, setLoading] = useState(false);
     const [loadingPicture, setLoadingPicture] = useState(false);
@@ -82,12 +82,12 @@ function EditUser() {
 
     const formik = useFormik({
         initialValues: {
-            email: user.email,
-            name: user.name,
-            phone_number: user.phone_number,
-            is_admin: user.account_type == 0 ? true : false,
-            cash: user.cash,
-            points: user.points
+            email: user ? user.email : "",
+            name: user ? user.name : "",
+            phone_number: user ? user.phone_number : "",
+            is_admin: user ? user.account_type == 0 ? true : false : false,
+            cash: user ? user.cash : 0,
+            points: user ? user.points : 0
         },
         validationSchema: Yup.object({
             email: Yup.string().email("Invalid email address").required("Email is required"),
@@ -164,16 +164,14 @@ function EditUser() {
                 <Box component="form" onSubmit={formik.handleSubmit}>
                     <LoadingButton variant="contained" onClick={formik.handleSubmit} loading={loading} loadingPosition="start" startIcon={<SaveIcon />} sx={{ marginBottom: "1rem" }}>Save</LoadingButton>
                     <Stack spacing={2} direction="column" sx={{ marginBottom: "1rem" }}>
-                        <Card variant='outlined'>
+                        <Card>
                             <CardContent>
                                 <CardTitle title="User Information" icon={<ManageAccountsIcon color="text.secondary" />} />
                                 <Stack spacing={"2rem"} direction={["column", "column", "row"]}>
                                     <Box sx={{display: ["flex", "flex", "initial"], justifyContent: 'center'}}>
                                         <Tooltip title="Change Profile Picture">
                                             <IconButton onClick={handleChangePictureDialogOpen}>
-                                                {user.profile_picture_type === "gravatar" && <Avatar src={"https://www.gravatar.com/avatar/" + md5(user.email)} sx={{ height: "96px", width: "96px" }} />}
-                                                {user.profile_picture_type === "local" && <Avatar src={user.profile_picture} sx={{ height: "96px", width: "96px" }} />}
-                                                {(!user.profile_picture_type && user.name) && <Avatar {...stringAvatar(user.name)} sx={{ height: "96px", width: "96px" }} />}
+                                                {user && <ProfilePicture user={user} sx={{width: "96px", height: "96px"}} />}
                                             </IconButton>
                                         </Tooltip>
                                     </Box>
@@ -236,7 +234,7 @@ function EditUser() {
 
                             </CardContent>
                         </Card>
-                        <Card variant='outlined' sx={{ margin: "auto" }}>
+                        <Card sx={{ margin: "auto" }}>
                             <CardContent>
                                 <CardTitle title="Wallet Information" icon={<AccountBalanceWalletIcon color="text.secondary" />} />
                                 <Grid container spacing={2} marginTop={1}>
@@ -251,7 +249,7 @@ function EditUser() {
                                             inputProps={{
                                                 step: 0.01,
                                                 min: 0,
-                                                startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                                                startAdornment: <InputAdornment position="start">S$</InputAdornment>,
                                             }}
                                             value={formik.values.cash || ""}
                                             onChange={formik.handleChange}
@@ -290,7 +288,7 @@ function EditUser() {
                 <Box component="form">
                     <DialogContent sx={{ paddingTop: 0 }}>
                         <DialogContentText>
-                            You are currently using a {user.profile_picture_type === "gravatar" ? "Gravatar" : "local"} profile picture.
+                            You are currently using a {user ? user.profile_picture_type === "gravatar" ? "Gravatar" : "local" : "unknown"} profile picture.
                             <br /><br />
                             You can select a new profile picture from your computer or from Gravatar. To set a new profile picture from your computer, click on the "Choose File" button below. To set a new profile picture from Gravatar, click on the "Use Gravatar" button below.
                             <br /><br />
