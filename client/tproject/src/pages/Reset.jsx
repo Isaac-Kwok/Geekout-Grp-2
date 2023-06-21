@@ -26,7 +26,7 @@ function Reset() {
 
         try {
             const decoded = jwt_decode(token);
-            if (decoded.type !== "reset" || decoded.exp < Date.now() / 1000 || decoded.email === undefined) {
+            if (decoded.type !== "reset" || decoded.exp < Date.now() / 1000 || decoded.id === undefined) {
                 enqueueSnackbar("Reset failed! Invalid token.2", { variant: "error" });
                 return navigate("/login")
             }

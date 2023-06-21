@@ -59,7 +59,7 @@ router.post("/topup", validateToken, async (req, res) => {
             status: "Pending",
             paymentIntent_id: paymentIntent.id,
             paymentIntent_client_secret: paymentIntent.client_secret,
-            user_id: req.user.email,
+            user_id: req.user.id,
             operator: "+"
         })
 
