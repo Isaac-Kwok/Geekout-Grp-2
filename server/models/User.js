@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
         email: {
             type: DataTypes.STRING,
             allowNull: false,
-            primaryKey: true
+            unique: true
         },
         name: {
             type: DataTypes.STRING,

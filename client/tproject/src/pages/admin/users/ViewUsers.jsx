@@ -53,7 +53,7 @@ function ViewUsers() {
                     icon={<EditIcon />}
                     label="Edit User"
                     onClick={() => {
-                        navigate("/admin/users/" + params.row.email)
+                        navigate("/admin/users/" + params.row.id)
                     }}
                     showInMenu
                 />,
@@ -90,7 +90,7 @@ function ViewUsers() {
 
     const handleDeactivateUser = () => {
         setDeactivateLoading(true)
-        http.put("/admin/users/" + deactivateUser.email, {is_active: false} ).then((res) => {
+        http.put("/admin/users/" + deactivateUser.id, {is_active: false} ).then((res) => {
             if (res.status === 200) {
                 setDeactivateLoading(false)
                 setDeactivateUserDialog(false)
