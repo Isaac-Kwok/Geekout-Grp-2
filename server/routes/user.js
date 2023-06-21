@@ -9,7 +9,7 @@ const path = require("path")
 // Get the user based on the token
 router.get("/",validateToken, async (req, res) => {
     try {
-        const user = await User.findByPk(req.user.email, {
+        const user = await User.findByPk(req.user.id, {
             attributes: {
                 exclude: ["password"]
             }
@@ -22,13 +22,13 @@ router.get("/",validateToken, async (req, res) => {
 
 router.post("/upload", validateToken, async (req, res) => {
     // Upload profile picture
-    const user = await User.findByPk(req.user.email)
+    const user = await User.findByPk(req.user.id)
     if (!user) {
         return res.status(404).json({message: "User not found"})
     } else {
         await uploadProfilePicture(req, res)
     }
-    user.profile_picture = "//" + req.headers.host + `/uploads/profile/${user.email + path.extname(req.file.originalname)}`
+    user.profile_picture = "//" + req.headers.host + `/uploads/profile/${user.id + path.extname(req.file.originalname)}`
     user.profile_picture_type = "local"
     await user.save()
     res.json(user)
@@ -58,7 +58,7 @@ router.put("/", validateToken, async (req, res) => {
 
     try {
         const body = await schema.validate(req.body, { abortEarly: false })
-        const user = await User.findByPk(req.user.email)
+        const user = await User.findByPk(req.user.id)
         if (!user) {
             return res.status(404).json({message: "User not found"})
         }

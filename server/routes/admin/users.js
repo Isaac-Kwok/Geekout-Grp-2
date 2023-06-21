@@ -59,7 +59,7 @@ router.post("/", validateAdmin, async (req, res) => {
         })
 
         // Send email to user to set password
-        const token = jwt.sign({ type: "reset", email }, process.env.APP_SECRET, { expiresIn: "15m" })
+        const token = jwt.sign({ type: "reset", id: newUser.id }, process.env.APP_SECRET, { expiresIn: "15m" })
         const link = `${process.env.CLIENT_URL}/reset?token=${token}`
         const html = await ejs.renderFile("templates/setPassword.ejs", { user: newUser, url:link })
         await emailSender.sendMail({
@@ -137,7 +137,7 @@ router.post("/:id/upload", validateAdmin, async (req, res) => {
     } else {
         await uploadProfilePicture(req, res)
     }
-    user.profile_picture = "//" + req.headers.host + `/uploads/profile/${user.email + path.extname(req.file.originalname)}`
+    user.profile_picture = "//" + req.headers.host + `/uploads/profile/${user.id + path.extname(req.file.originalname)}`
     user.profile_picture_type = "local"
     await user.save()
     res.json(user)
