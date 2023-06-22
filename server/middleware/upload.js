@@ -6,9 +6,9 @@ const util = require("util");
 const maxSize = 4 * 1024 * 1024;
 
 // Driver file upload
-const driver_face_image = multer.diskStorage({
+const driver_upload = multer.diskStorage({
     destination: (req, file, callback) => {
-        callback(null, './public/uploads/driver/face_image');
+        callback(null, './public/uploads/driver');
     },
     filename: (req, file, callback) => {
         callback(null, nanoid(10) + path.extname(file.originalname));
@@ -16,7 +16,7 @@ const driver_face_image = multer.diskStorage({
 });
 
 const upload = multer({
-    storage: driver_face_image,
+    storage: driver_upload,
     limits: { fileSize: 1024 * 1024 }
     }).single('file'); // file input name
 

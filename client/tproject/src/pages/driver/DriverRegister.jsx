@@ -5,8 +5,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import http from '../../http'
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'
-import AspectRatio from '@mui/joy/AspectRatio';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const steps = ["Step 1", "Step 2"];
@@ -14,32 +13,73 @@ const steps = ["Step 1", "Step 2"];
 
 
 function DriverRegister() {
+
+    const [faceFile, setFaceFile] = useState();
+    const [carFile, setCarFile] = useState();
+    const [licenseFile, setLicenseFile] = useState();
+    const [icFile, setIcFile] = useState();
+
+    const [faceFileUpload, setFaceFileUpload] = useState();
+    const [carFileUpload, setCarFileUpload] = useState();
+    const [licenseFileUpload, setLicenseFileUpload] = useState();
+    const [icFileUpload, setIcFileUpload] = useState();
+
+
     const navigate = useNavigate();
-    const [imageFile, setImageFile] = useState(null);
     const [activeStep, setActiveStep] = useState(0);
     const [formData, setFormData] = useState({});
 
-    const uploadFileChange = (e) => {
-        let file = e.target.files[0];
-        if (file) {
-            if (file.size > 1024 * 1024) {
-                toast.error('Maximum file size is 1MB');
-                return;
-            }
-            let formData = new FormData();
-            formData.append('file', file);
-            http.post('/driver/uploadDriverFaceImage', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
+    function handleChangeFace(e) {
+        console.log(e.target.files);
+        setFaceFile(URL.createObjectURL(e.target.files[0]));
+        setFaceFileUpload(e.target.files[0]);
+    }
+    function handleChangeCar(e) {
+        console.log(e.target.files);
+        setCarFile(URL.createObjectURL(e.target.files[0]));
+        setCarFileUpload(e.target.files[0]);
+    }
+    function handleChangeLicense(e) {
+        console.log(e.target.files);
+        setLicenseFile(URL.createObjectURL(e.target.files[0]));
+        setLicenseFileUpload(e.target.files[0]);
+    }
+    function handleChangeIc(e) {
+        console.log(e.target.files);
+        setIcFile(URL.createObjectURL(e.target.files[0]));
+        setIcFileUpload(e.target.files[0])
+
+    }
+    const uploadAll = () => {
+        let file_array = [];
+        file_array.push(faceFileUpload);
+        file_array.push(carFileUpload);
+        file_array.push(licenseFileUpload);
+        file_array.push(icFileUpload);
+        for (let index = 0; index < file_array.length; index++) {
+            let file = file_array[index];
+            if (file) {
+                if (file.size > 1024 * 1024) {
+                    toast.error('Maximum file size is 1MB');
+                    return;
                 }
-            })
-                .then((res) => {
-                    setImageFile(res.data.filename);
+                let formData = new FormData();
+                formData.append('file', file);
+                http.post('/driver/upload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
                 })
-                .catch(function (error) {
-                    console.log(error.response);
-                });
+                    .then((res) => {
+                        console.log(res.data);
+                    })
+                    .catch(function (error) {
+                        console.log(error.response);
+                    });
+            }
+
         }
+
     };
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -48,16 +88,13 @@ function DriverRegister() {
     const handleBack = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
-    const handleChange = (event) => {
-        setFormData({
-            ...formData,
-            [event.target.name]: event.target.value,
-        });
-    };
     const formik = useFormik({
         initialValues: {
             driver_nric_name: "",
             driver_nric_number: "",
+            driver_postalcode: "",
+            driver_age: "",
+            driver_question: ""
         },
         validationSchema: yup.object().shape({
             driver_nric_name: yup.string().trim()
@@ -83,6 +120,45 @@ function DriverRegister() {
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
         }
     });
+    const formik2 = useFormik({
+        initialValues: {
+            driver_car_model: "",
+            driver_car_license_plate: ""
+
+        },
+        validationSchema: yup.object().shape({
+            driver_car_model: yup.string().trim().required("Car model is a required field"),
+            driver_car_license_plate: yup.string().trim().required("Car License plate is a required field"),
+        }),
+        onSubmit: (data) => {
+            data.driver_nric_name = formData.driver_nric_name;
+            data.driver_nric_number = formData.driver_nric_number;
+            data.driver_postalcode = parseInt(formData.driver_postalcode);
+            data.driver_age = parseInt(formData.driver_age);
+            data.driver_question = formData.driver_question;
+            data.driver_car_license_plate = data.driver_car_license_plate.trim();
+            data.driver_car_model = data.driver_car_model.trim();
+
+            data.driver_face_image = faceFile
+            data.driver_car_image = carFile
+            data.driver_license = licenseFile
+            data.driver_ic = icFile
+
+            if (icFile && licenseFile && carFile && faceFile) {
+                console.log(data)
+                uploadAll()
+                http.post("/driver/driverregister", data)
+                    .then((res) => {
+                        console.log(res.data);
+                        navigate('/')
+                    });
+            }
+            else {
+                toast.error('Please upload all the neccessary files');
+            }
+
+        }
+    });
     return (
         <Box sx={{
             border: 'solid, black',
@@ -91,11 +167,11 @@ function DriverRegister() {
             flexDirection: 'column',
             alignItems: 'center'
         }}>
-            <Typography variant="h5" sx={{ my: 2 }}>
-                Register
+            <Typography variant="h5" sx={{ my: 0, mt: 0 }}>
+                Register To be a driver
             </Typography>
             <ToastContainer />
-            <Container maxWidth="sm" sx={{ mt: 4 }}>
+            <Container maxWidth="sm" sx={{ mt: 3, mb: 10 }}>
                 <Stepper activeStep={activeStep}>
                     {steps.map((label) => (
                         <Step key={label}>
@@ -119,6 +195,7 @@ function DriverRegister() {
                                         helperText={formik.touched.driver_nric_name && formik.errors.driver_nric_name}
                                     />
                                     <TextField
+                                        inputProps={{ maxLength: 9 }}
                                         fullWidth margin="normal" autoComplete="off"
                                         label="NRIC Number"
                                         name="driver_nric_number"
@@ -178,37 +255,88 @@ function DriverRegister() {
                         {activeStep === 1 && (
                             <>
                                 <Typography variant="h6">Driver details</Typography>
+                                <Box component="form" sx={{ maxWidth: '500px' }} onSubmit={formik2.handleSubmit}>
+                                    <TextField
+                                        fullWidth margin="normal" autoComplete="off"
+                                        label="Car model"
+                                        name="driver_car_model"
+                                        value={formik2.values.driver_car_model}
+                                        onChange={formik2.handleChange}
+                                        error={formik2.touched.driver_car_model && Boolean(formik2.errors.driver_car_model)}
+                                        helperText={formik2.touched.driver_car_model && formik2.errors.driver_car_model}
+                                    />
+                                    <TextField
+                                        fullWidth margin="normal" autoComplete="off"
+                                        label="Car License Plate"
+                                        name="driver_car_license_plate"
+                                        value={formik2.values.driver_car_license_plate}
+                                        onChange={formik2.handleChange}
+                                        error={formik2.touched.driver_car_license_plate && Boolean(formik2.errors.driver_car_license_plate)}
+                                        helperText={formik2.touched.driver_car_license_plate && formik2.errors.driver_car_license_plate}
+                                    />
+                                    <Grid container spacing={2} sx={{ mb: 1, mt: 1 }}>
+                                        <Grid item xs={6}>
+                                            <Button variant="contained" component="label" fullWidth>
+                                                Upload Face Image
+                                                <input hidden accept="image/*" onChange={handleChangeFace} multiple type="file" />
 
-                                <TextField
-                                    label="Email"
-                                    name="email"
-                                    onChange={handleChange}
-                                    fullWidth
-                                    margin="normal"
-                                />
-                                <Box sx={{ textAlign: 'center', mt: 2 }} >
-                                    <Button variant="contained" component="label">
-                                        Upload Image
-                                        <input hidden accept="image/*" onChange={uploadFileChange} multiple type="file" />
-                                    </Button>
+                                            </Button>
+                                            <img src={faceFile} alt="" />
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Button variant="contained" component="label" fullWidth>
+                                                Upload Car Image
+                                                <input hidden accept="image/*" onChange={handleChangeCar} multiple type="file" />
+                                            </Button>
+                                            <img src={carFile} alt="" width="100%" />
+                                        </Grid>
+                                    </Grid>
+                                    <Grid container spacing={2} sx={{ mb: 3 }}>
+                                        <Grid item xs={6}>
+                                            <Button variant="contained" component="label" fullWidth>
+                                                Upload Driver license
+                                                <input hidden accept="image/*" onChange={handleChangeLicense} multiple type="file" />
+                                            </Button>
+                                            <img src={licenseFile} alt="" />
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Button variant="contained" component="label" fullWidth>
+                                                Upload Car Image
+                                                <input hidden accept="image/*" onChange={handleChangeIc} multiple type="file" />
+                                            </Button>
+                                            <img src={icFile} alt="" />
+                                        </Grid>
+                                    </Grid>
+                                    <hr />
+                                    <Grid container spacing={2} sx={{ mb: 1 }}>
+                                        <Grid item xs={6}>
+                                            <Button
+                                                sx={{ width: 1/2 }}
+                                                variant="contained"
+                                                color="secondary"
+                                                onClick={handleBack}
+
+                                            >
+                                                Back
+                                            </Button>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Button
+                                                sx={{ width: 1/2 }}
+                                                type='submit'
+                                                variant="contained"
+                                                color="primary"
+                                            >
+                                                Register
+                                            </Button>
+                                            {/* <Button fullWidth variant="contained" sx={{ mt: 2 }}
+                                                type="submit"
+                                            >
+                                                Register
+                                            </Button> */}
+                                        </Grid>
+                                    </Grid>
                                 </Box>
-                                {
-                                    imageFile && (
-                                        <AspectRatio sx={{ mt: 2 }}>
-                                            <Box component="img" alt="tutorial"
-                                                src={`${import.meta.env.VITE_FILE_BASE_URL}${imageFile}`}>
-                                            </Box>
-                                        </AspectRatio>
-                                    )
-                                }
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={handleNext}
-                                    disabled={activeStep === steps.length - 1}
-                                >
-                                    {activeStep === steps.length - 1 ? "Submit" : "Next"}
-                                </Button>
                             </>
                         )}
                     </Grid>
