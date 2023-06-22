@@ -2,7 +2,7 @@ const express = require("express")
 const yup = require("yup")
 const { User, Sequelize } = require("../models")
 const router = express.Router()
-const bcrypt = require("bcryptjs")
+const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const ejs = require("ejs")
 const { emailSender } = require("../middleware/emailSender")
@@ -19,7 +19,7 @@ router.post("/", async (req, res) => {
     try {
         await schema.validate(req.body, { abortEarly: false })
         const { email, password } = req.body
-        const user = await User.findByPk(email)
+        const user = await User.findOne({ where: { email: email } })
 
         // Check if user exists
         if (!user) {
@@ -53,6 +53,7 @@ router.post("/", async (req, res) => {
         }
 
         let userInfo = {
+            id: user.id,
             email: user.email,
             name: user.name,
             account_type: user.account_type,
@@ -78,7 +79,7 @@ router.post("/register", async (req, res) => {
     try {
         const { email, name, password } = await schema.validate(req.body, { abortEarly: false })
         const newUser = await User.create({ email, name, password })
-        const token = jwt.sign({ type: "activate", email }, process.env.APP_SECRET, { expiresIn: "30m" })
+        const token = jwt.sign({ type: "activate", id: newUser.id  }, process.env.APP_SECRET, { expiresIn: "30m" })
         const link = process.env.CLIENT_URL +`/verify?token=${token}`
         const html = await ejs.renderFile("templates/emailVerification.ejs", { url:link })
         await emailSender.sendMail({
@@ -107,8 +108,8 @@ router.post("/verify", async (req, res) => {
 
     try {
         const { token } = await schema.validate(req.body, { abortEarly: false })
-        const { email } = jwt.verify(token, process.env.APP_SECRET)
-        const user = await User.findByPk(email)
+        const { id } = jwt.verify(token, process.env.APP_SECRET)
+        const user = await User.findByPk(id)
         if (!user) {
             res.status(404).json({ message: "User not found." })
             return
@@ -130,7 +131,7 @@ router.post("/resend", async (req, res) => {
 
     try {
         const { email } = await schema.validate(req.body, { abortEarly: false })
-        const user = await User.findByPk(email)
+        const user = await User.findOne({ where: { email:email } })
         if (!user) {
             res.status(404).json({ message: "User not found." })
             return
@@ -141,7 +142,7 @@ router.post("/resend", async (req, res) => {
             return
         }
 
-        const token = jwt.sign({ type: "activate", email }, process.env.APP_SECRET, { expiresIn: "30m" })
+        const token = jwt.sign({ type: "activate", id: user.id }, process.env.APP_SECRET, { expiresIn: "30m" })
         const link = process.env.CLIENT_URL +`/verify?token=${token}`
         const html = await ejs.renderFile("templates/emailVerification.ejs", { url:link })
         await emailSender.sendMail({
@@ -164,13 +165,13 @@ router.post("/forgot", async (req, res) => {
 
     try {
         const { email } = await schema.validate(req.body, { abortEarly: false })
-        const user = await User.findByPk(email)
+        const user = await User.findOne({ where: { email:email } })
         if (!user) {
             res.status(404).json({ message: "User not found." })
             return
         }
 
-        const token = jwt.sign({ type: "reset", email }, process.env.APP_SECRET, { expiresIn: "15m" })
+        const token = jwt.sign({ type: "reset", id: user.id }, process.env.APP_SECRET, { expiresIn: "15m" })
         const link = process.env.CLIENT_URL +`/reset?token=${token}`
         const html = await ejs.renderFile("templates/resetPassword.ejs", { user: user, url:link })
         await emailSender.sendMail({
@@ -194,8 +195,8 @@ router.post("/reset", async (req, res) => {
 
     try {
         const { token, password } = await schema.validate(req.body, { abortEarly: false })
-        const { email } = jwt.verify(token, process.env.APP_SECRET)
-        const user = await User.findByPk(email)
+        const { id } = jwt.verify(token, process.env.APP_SECRET)
+        const user = await User.findByPk(id)
         if (!user) {
             res.status(404).json({ message: "User not found." })
             return
@@ -211,6 +212,7 @@ router.post("/reset", async (req, res) => {
 
 router.get("/validate", validateToken, async (req, res) => {
     let userInfo = {
+        id: req.user.id,
         email: req.user.email,
         name: req.user.name,
         account_type: req.user.account_type,

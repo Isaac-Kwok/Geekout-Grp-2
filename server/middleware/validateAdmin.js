@@ -13,7 +13,7 @@ const validateAdmin = async (req, res, next) => {
             return res.status(401).json({message: "JWT token is not the correct type"});
         }
         // Get user from database
-        const user = await User.findByPk(payload.user.email)
+        const user = await User.findByPk(payload.user.id)
         if (!user) {
             return res.sendStatus(401);
         }

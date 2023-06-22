@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
 
     const Transaction = sequelize.define("Transaction", {
         user_id: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
             allowNull: false,
         },
         status: {

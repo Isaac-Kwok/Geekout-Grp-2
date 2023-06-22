@@ -1,9 +1,26 @@
 const multer = require("multer");
 const path = require("path");
+const { nanoid } = require('nanoid');
 const fs = require("fs");
 const util = require("util");
 const maxSize = 4 * 1024 * 1024;
 
+// Driver file upload
+const driver_upload = multer.diskStorage({
+    destination: (req, file, callback) => {
+        callback(null, './public/uploads/driver');
+    },
+    filename: (req, file, callback) => {
+        callback(null, nanoid(10) + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({
+    storage: driver_upload,
+    limits: { fileSize: 1024 * 1024 }
+    }).single('file'); // file input name
+
+// Joseph upload file
 let uploadFile = multer({
     limits: { fileSize: maxSize },
     storage: multer.diskStorage({
@@ -23,8 +40,8 @@ let uploadProfilePicture = multer({
     limits: { fileSize: maxSize },
     storage: multer.diskStorage({
         destination: (req, file, cb) => {
-            fs.mkdirSync("./uploads/profile/", { recursive: true });
-            cb(null, "./uploads/profile/");
+            fs.mkdirSync("./public/uploads/profile_picture", { recursive: true });
+            cb(null, "./public/uploads/profile_picture");
         },
         filename: (req, file, cb) => {
             if (req.params.id) {
@@ -57,4 +74,4 @@ function checkFileType(file, cb) {
 
 uploadProfilePicture = util.promisify(uploadProfilePicture);
 
-module.exports = { uploadFile, uploadProfilePicture };
+module.exports = { uploadFile, uploadProfilePicture, upload };

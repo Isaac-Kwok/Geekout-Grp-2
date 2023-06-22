@@ -1,16 +1,17 @@
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 
 module.exports = (sequelize, DataTypes) => {
     // Account Types:
     // 0 - Admin
     // 1 - General User
-    // 2 - Driver User
+    // 2 - Approved Driver User
+    // 3 - Unapproved Driver User
 
     const User = sequelize.define("User", {
         email: {
             type: DataTypes.STRING,
             allowNull: false,
-            primaryKey: true
+            unique: true
         },
         name: {
             type: DataTypes.STRING,
