@@ -40,8 +40,8 @@ let uploadProfilePicture = multer({
     limits: { fileSize: maxSize },
     storage: multer.diskStorage({
         destination: (req, file, cb) => {
-            fs.mkdirSync("./uploads/profile/", { recursive: true });
-            cb(null, "./uploads/profile/");
+            fs.mkdirSync("./public/uploads/profile_picture", { recursive: true });
+            cb(null, "./public/uploads/profile_picture");
         },
         filename: (req, file, cb) => {
             if (req.params.id) {
