@@ -81,10 +81,6 @@ function DriverRegister() {
         }
 
     };
-    const handleNext = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    };
-
     const handleBack = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
@@ -329,11 +325,6 @@ function DriverRegister() {
                                             >
                                                 Register
                                             </Button>
-                                            {/* <Button fullWidth variant="contained" sx={{ mt: 2 }}
-                                                type="submit"
-                                            >
-                                                Register
-                                            </Button> */}
                                         </Grid>
                                     </Grid>
                                 </Box>
