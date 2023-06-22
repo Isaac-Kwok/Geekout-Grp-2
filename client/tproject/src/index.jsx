@@ -6,6 +6,9 @@ import './index.css';
 import AdminRoutes from './pages/admin/AdminRoutes';
 import UserRoutes from './pages/UserRoutes';
 
+// Import Driver pages
+import DriverRegister from './pages/driver/DriverRegister';
+
 import reportWebVitals from './reportWebVitals';
 import {
   BrowserRouter,
@@ -81,6 +84,7 @@ function MainApp() {
                 <Routes location={location}>
                   <Route path='*' element={<UserRoutes />} />
                   <Route path='/admin/*' element={<AdminRoutes />} />
+                  <Route path='/driver/DriverRegister*' element={<DriverRegister />} />
                 </Routes>
               </CSSTransition>
             </TransitionGroup>

@@ -25,7 +25,7 @@ function TopUpDialog(props) {
                 amount: "",
             },
             validationSchema: yup.object({
-                amount: yup.number().required("Amount is required").min(1, "Amount must be greater than 0"),
+                amount: yup.number().required("Amount is required").min(1, "Amount must be greater than 0").typeError("Amount must be a number"),
             }),
             onSubmit: (data) => {
                 setLoading(true);
