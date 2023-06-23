@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useElements, PaymentElement, useStripe } from '@stripe/react-stripe-js'
 import { DialogContent, DialogActions, Button } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
@@ -30,16 +30,15 @@ function PaymentForm(props) {
                 enqueueSnackbar(result.error.message, { variant: "error" });
             } else {
                 // The payment has been processed!
-                if (result.paymentIntent.status === "succeeded") {
+                if (result.paymentIntent.status === "succeeded" || result.paymentIntent.status === "processing") {
                     // I set up the webhook on the backend to handle the topup, no action needed here
                     enqueueSnackbar("Top-up successful!", { variant: "success" });
+                    props.onClose();
                 } else {
                     enqueueSnackbar("Top-up is not successful!", { variant: "error" });
                 }
             }
-
             setLoading(false);
-            props.onClose();
         });
     }
 
