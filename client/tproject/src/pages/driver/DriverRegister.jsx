@@ -1,16 +1,11 @@
 import React, { useState } from 'react'
-import { Box, Typography, TextField, Button, Container, Grid, Stepper, Step, StepLabel } from '@mui/material';
+import { Box, Typography, TextField, Button, Container, Grid, Stepper, Step, StepLabel, Card, CardContent } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import http from '../../http'
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
-
-const steps = ["Step 1", "Step 2"];
-
-
+import { useSnackbar } from 'notistack';
+import PageTitle from '../../components/PageTitle';
 
 function DriverRegister() {
 
@@ -24,8 +19,9 @@ function DriverRegister() {
     const [licenseFileUpload, setLicenseFileUpload] = useState();
     const [icFileUpload, setIcFileUpload] = useState();
 
-
+    const steps = ["Personal Details", "Car & Documents"];
     const navigate = useNavigate();
+    const { enqueueSnackbar } = useSnackbar();
     const [activeStep, setActiveStep] = useState(0);
     const [formData, setFormData] = useState({});
 
@@ -60,7 +56,7 @@ function DriverRegister() {
             let file = file_array[index];
             if (file) {
                 if (file.size > 1024 * 1024) {
-                    toast.error('Maximum file size is 1MB');
+                    enqueueSnackbar("File size cannot exceed more than 1MB", { variant: "error" })
                     return;
                 }
                 let formData = new FormData();
@@ -143,14 +139,14 @@ function DriverRegister() {
             if (icFile && licenseFile && carFile && faceFile) {
                 console.log(data)
                 uploadAll()
-                http.post("/driver/driverregister", data)
+                http.post("/driver/register", data)
                     .then((res) => {
                         console.log(res.data);
                         navigate('/')
                     });
             }
             else {
-                toast.error('Please upload all the neccessary files');
+                enqueueSnackbar('Please upload all the required files', { variant: 'error' });
             }
 
         }
@@ -158,185 +154,183 @@ function DriverRegister() {
     return (
         <Box sx={{
             border: 'solid, black',
-            marginTop: 8,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center'
         }}>
-            <Typography variant="h5" sx={{ my: 0, mt: 0 }}>
-                Register To be a driver
-            </Typography>
-            <ToastContainer />
-            <Container maxWidth="sm" sx={{ mt: 3, mb: 10 }}>
-                <Stepper activeStep={activeStep}>
-                    {steps.map((label) => (
-                        <Step key={label}>
-                            <StepLabel>{label}</StepLabel>
-                        </Step>
-                    ))}
-                </Stepper>
-                <Grid container direction="column" alignItems="center" spacing={2}>
-                    <Grid item xs={12}>
-                        {activeStep === 0 && (
-                            <>
-                                <Typography variant="h6">Tell us about yourself</Typography>
-                                <Box component="form" sx={{ maxWidth: '500px' }} onSubmit={formik.handleSubmit}>
-                                    <TextField
-                                        fullWidth margin="normal" autoComplete="off"
-                                        label="NRIC Name"
-                                        name="driver_nric_name"
-                                        value={formik.values.driver_nric_name}
-                                        onChange={formik.handleChange}
-                                        error={formik.touched.driver_nric_name && Boolean(formik.errors.driver_nric_name)}
-                                        helperText={formik.touched.driver_nric_name && formik.errors.driver_nric_name}
-                                    />
-                                    <TextField
-                                        inputProps={{ maxLength: 9 }}
-                                        fullWidth margin="normal" autoComplete="off"
-                                        label="NRIC Number"
-                                        name="driver_nric_number"
-                                        value={formik.values.driver_nric_number}
-                                        onChange={formik.handleChange}
-                                        error={formik.touched.driver_nric_number && Boolean(formik.errors.driver_nric_number)}
-                                        helperText={formik.touched.driver_nric_number && formik.errors.driver_nric_number}
-                                    />
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={8}>
+            <PageTitle title="Driver Registration" subtitle="Be a driver with us today!" />
+            <Container maxWidth="sm" sx={{ mt: 3, mb: 5 }}>
+                <Card>
+                    <CardContent>
+                        <Stepper activeStep={activeStep} sx={{ margin: "1rem" }} alternativeLabel>
+                            {steps.map((label) => (
+                                <Step key={label}>
+                                    <StepLabel>{label}</StepLabel>
+                                </Step>
+                            ))}
+                        </Stepper>
+                        <Grid container direction="column" alignItems="center" spacing={2}>
+                            <Grid item xs={12}>
+                                {activeStep === 0 && (
+                                    <>
+                                        <Typography variant="h6">Tell us about yourself</Typography>
+                                        <Box component="form" sx={{ maxWidth: '500px' }} onSubmit={formik.handleSubmit}>
                                             <TextField
-                                                inputProps={{ maxLength: 6 }}
                                                 fullWidth margin="normal" autoComplete="off"
-                                                label="Postal Code"
-                                                name="driver_postalcode"
-                                                value={formik.values.driver_postalcode}
+                                                label="NRIC Name"
+                                                name="driver_nric_name"
+                                                value={formik.values.driver_nric_name}
                                                 onChange={formik.handleChange}
-                                                error={formik.touched.driver_postalcode && Boolean(formik.errors.driver_postalcode)}
-                                                helperText={formik.touched.driver_postalcode && formik.errors.driver_postalcode}
+                                                error={formik.touched.driver_nric_name && Boolean(formik.errors.driver_nric_name)}
+                                                helperText={formik.touched.driver_nric_name && formik.errors.driver_nric_name}
                                             />
-                                        </Grid>
-                                        <Grid item xs={4}>
                                             <TextField
-                                                inputProps={{ maxLength: 4 }}
+                                                inputProps={{ maxLength: 9 }}
                                                 fullWidth margin="normal" autoComplete="off"
-                                                label="Age"
-                                                name="driver_age"
-                                                value={formik.values.driver_age}
+                                                label="NRIC Number"
+                                                name="driver_nric_number"
+                                                value={formik.values.driver_nric_number}
                                                 onChange={formik.handleChange}
-                                                error={formik.touched.driver_age && Boolean(formik.errors.driver_age)}
-                                                helperText={formik.touched.driver_age && formik.errors.driver_age}
+                                                error={formik.touched.driver_nric_number && Boolean(formik.errors.driver_nric_number)}
+                                                helperText={formik.touched.driver_nric_number && formik.errors.driver_nric_number}
                                             />
-                                        </Grid>
-                                    </Grid>
-                                    <TextField
-                                        multiline
-                                        maxRows={Infinity}
-                                        minRows={8}
-                                        fullWidth margin="normal" autoComplete="off"
-                                        label="Why do you want to be a driver?"
-                                        name="driver_question"
-                                        value={formik.values.driver_question}
-                                        onChange={formik.handleChange}
-                                        error={formik.touched.driver_question && Boolean(formik.errors.driver_question)}
-                                        helperText={formik.touched.driver_question && formik.errors.driver_question}
-                                    />
+                                            <Grid container spacing={2}>
+                                                <Grid item xs={8}>
+                                                    <TextField
+                                                        inputProps={{ maxLength: 6 }}
+                                                        fullWidth margin="normal" autoComplete="off"
+                                                        label="Postal Code"
+                                                        name="driver_postalcode"
+                                                        value={formik.values.driver_postalcode}
+                                                        onChange={formik.handleChange}
+                                                        error={formik.touched.driver_postalcode && Boolean(formik.errors.driver_postalcode)}
+                                                        helperText={formik.touched.driver_postalcode && formik.errors.driver_postalcode}
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={4}>
+                                                    <TextField
+                                                        inputProps={{ maxLength: 4 }}
+                                                        fullWidth margin="normal" autoComplete="off"
+                                                        label="Age"
+                                                        name="driver_age"
+                                                        value={formik.values.driver_age}
+                                                        onChange={formik.handleChange}
+                                                        error={formik.touched.driver_age && Boolean(formik.errors.driver_age)}
+                                                        helperText={formik.touched.driver_age && formik.errors.driver_age}
+                                                    />
+                                                </Grid>
+                                            </Grid>
+                                            <TextField
+                                                multiline
+                                                maxRows={Infinity}
+                                                minRows={8}
+                                                fullWidth margin="normal" autoComplete="off"
+                                                label="Why do you want to be a driver?"
+                                                name="driver_question"
+                                                value={formik.values.driver_question}
+                                                onChange={formik.handleChange}
+                                                error={formik.touched.driver_question && Boolean(formik.errors.driver_question)}
+                                                helperText={formik.touched.driver_question && formik.errors.driver_question}
+                                            />
 
 
-                                    <Button fullWidth variant="contained" sx={{ mt: 2 }}
-                                        type="submit">
-                                        Next
-                                    </Button>
-                                </Box>
+                                            <Button fullWidth variant="contained" sx={{ mt: 2 }}
+                                                type="submit">
+                                                Next
+                                            </Button>
+                                        </Box>
 
-                            </>
-                        )}
-                        {activeStep === 1 && (
-                            <>
-                                <Typography variant="h6">Driver details</Typography>
-                                <Box component="form" sx={{ maxWidth: '500px' }} onSubmit={formik2.handleSubmit}>
-                                    <TextField
-                                        fullWidth margin="normal" autoComplete="off"
-                                        label="Car model"
-                                        name="driver_car_model"
-                                        value={formik2.values.driver_car_model}
-                                        onChange={formik2.handleChange}
-                                        error={formik2.touched.driver_car_model && Boolean(formik2.errors.driver_car_model)}
-                                        helperText={formik2.touched.driver_car_model && formik2.errors.driver_car_model}
-                                    />
-                                    <TextField
-                                        fullWidth margin="normal" autoComplete="off"
-                                        label="Car License Plate"
-                                        name="driver_car_license_plate"
-                                        value={formik2.values.driver_car_license_plate}
-                                        onChange={formik2.handleChange}
-                                        error={formik2.touched.driver_car_license_plate && Boolean(formik2.errors.driver_car_license_plate)}
-                                        helperText={formik2.touched.driver_car_license_plate && formik2.errors.driver_car_license_plate}
-                                    />
-                                    <Grid container spacing={2} sx={{ mb: 1, mt: 1 }}>
-                                        <Grid item xs={6}>
-                                            <Button variant="contained" component="label" fullWidth>
-                                                Upload Face Image
-                                                <input hidden accept="image/*" onChange={handleChangeFace} multiple type="file" />
+                                    </>
+                                )}
+                                {activeStep === 1 && (
+                                    <>
+                                        <Typography variant="h6">Driver details</Typography>
+                                        <Box component="form" sx={{ maxWidth: '500px' }} onSubmit={formik2.handleSubmit}>
+                                            <TextField
+                                                fullWidth margin="normal" autoComplete="off"
+                                                label="Car model"
+                                                name="driver_car_model"
+                                                value={formik2.values.driver_car_model}
+                                                onChange={formik2.handleChange}
+                                                error={formik2.touched.driver_car_model && Boolean(formik2.errors.driver_car_model)}
+                                                helperText={formik2.touched.driver_car_model && formik2.errors.driver_car_model}
+                                            />
+                                            <TextField
+                                                fullWidth margin="normal" autoComplete="off"
+                                                label="Car License Plate"
+                                                name="driver_car_license_plate"
+                                                value={formik2.values.driver_car_license_plate}
+                                                onChange={formik2.handleChange}
+                                                error={formik2.touched.driver_car_license_plate && Boolean(formik2.errors.driver_car_license_plate)}
+                                                helperText={formik2.touched.driver_car_license_plate && formik2.errors.driver_car_license_plate}
+                                            />
+                                            <Grid container spacing={2} sx={{ mb: 1, mt: 1 }}>
+                                                <Grid item xs={6}>
+                                                    <Button variant="contained" component="label" fullWidth>
+                                                        Upload Face Image
+                                                        <input hidden accept="image/*" onChange={handleChangeFace} multiple type="file" />
 
-                                            </Button>
-                                            <img src={faceFile} alt="" />
-                                        </Grid>
-                                        <Grid item xs={6}>
-                                            <Button variant="contained" component="label" fullWidth>
-                                                Upload Car Image
-                                                <input hidden accept="image/*" onChange={handleChangeCar} multiple type="file" />
-                                            </Button>
-                                            <img src={carFile} alt="" width="100%" />
-                                        </Grid>
-                                    </Grid>
-                                    <Grid container spacing={2} sx={{ mb: 3 }}>
-                                        <Grid item xs={6}>
-                                            <Button variant="contained" component="label" fullWidth>
-                                                Upload Driver license
-                                                <input hidden accept="image/*" onChange={handleChangeLicense} multiple type="file" />
-                                            </Button>
-                                            <img src={licenseFile} alt="" />
-                                        </Grid>
-                                        <Grid item xs={6}>
-                                            <Button variant="contained" component="label" fullWidth>
-                                                Upload Car Image
-                                                <input hidden accept="image/*" onChange={handleChangeIc} multiple type="file" />
-                                            </Button>
-                                            <img src={icFile} alt="" />
-                                        </Grid>
-                                    </Grid>
-                                    <hr />
-                                    <Grid container spacing={2} sx={{ mb: 1 }}>
-                                        <Grid item xs={6}>
-                                            <Button
-                                                sx={{ width: 1/2 }}
-                                                variant="contained"
-                                                color="secondary"
-                                                onClick={handleBack}
+                                                    </Button>
+                                                    <img src={faceFile} alt="" width="100%" />
+                                                </Grid>
+                                                <Grid item xs={6}>
+                                                    <Button variant="contained" component="label" fullWidth>
+                                                        Upload Car Image
+                                                        <input hidden accept="image/*" onChange={handleChangeCar} multiple type="file" />
+                                                    </Button>
+                                                    <img src={carFile} alt="" width="100%" />
+                                                </Grid>
+                                            </Grid>
+                                            <Grid container spacing={2} sx={{ mb: 3 }}>
+                                                <Grid item xs={6}>
+                                                    <Button variant="contained" component="label" fullWidth>
+                                                        Upload Driver license
+                                                        <input hidden accept="image/*" onChange={handleChangeLicense} multiple type="file" />
+                                                    </Button>
+                                                    <img src={licenseFile} alt="" width="100%" />
+                                                </Grid>
+                                                <Grid item xs={6}>
+                                                    <Button variant="contained" component="label" fullWidth>
+                                                        Upload Car Image
+                                                        <input hidden accept="image/*" onChange={handleChangeIc} multiple type="file" />
+                                                    </Button>
+                                                    <img src={icFile} alt="" width="100%" />
+                                                </Grid>
+                                            </Grid>
+                                            <hr />
+                                            <Grid container spacing={2} sx={{ mb: 1 }}>
+                                                <Grid item xs={6}>
+                                                    <Button
+                                                        sx={{ width: 1 / 2 }}
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        onClick={handleBack}
 
-                                            >
-                                                Back
-                                            </Button>
-                                        </Grid>
-                                        <Grid item xs={6}>
-                                            <Button
-                                                sx={{ width: 1/2 }}
-                                                type='submit'
-                                                variant="contained"
-                                                color="primary"
-                                            >
-                                                Register
-                                            </Button>
-                                        </Grid>
-                                    </Grid>
-                                </Box>
-                            </>
-                        )}
-                    </Grid>
-                </Grid>
+                                                    >
+                                                        Back
+                                                    </Button>
+                                                </Grid>
+                                                <Grid item xs={6}>
+                                                    <Button
+                                                        sx={{ width: 1 / 2 }}
+                                                        type='submit'
+                                                        variant="contained"
+                                                        color="primary"
+                                                    >
+                                                        Register
+                                                    </Button>
+                                                </Grid>
+                                            </Grid>
+                                        </Box>
+                                    </>
+                                )}
+                            </Grid>
+                        </Grid>
+                    </CardContent>
+                </Card>
+
             </Container>
-            <ToastContainer />
         </Box>
-
-
     )
 };
 

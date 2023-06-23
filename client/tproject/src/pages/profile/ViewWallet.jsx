@@ -2,16 +2,16 @@ import { useEffect, useContext, useState } from 'react'
 import { Container, Box, Card, CardContent, CardActions, Typography, Button, Stack, Grid, Divider, TextField } from '@mui/material'
 import InfoBox from '../../components/InfoBox'
 import CardTitle from '../../components/CardTitle'
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import EnergySavingsLeafIcon from '@mui/icons-material/EnergySavingsLeaf';
 import PaymentsIcon from '@mui/icons-material/Payments';
 import { ProfileContext } from './ProfileRoutes'
 import TopUpDialog from '../../components/TopUpDialog'
+import http from '../../http'
 
 
 function ViewWallet() {
 
-    const { profile } = useContext(ProfileContext)
+    const { profile, setProfile } = useContext(ProfileContext)
     const [topupOpen, setTopupOpen] = useState(false)
 
     const handleTopupOpen = () => {
@@ -20,6 +20,13 @@ function ViewWallet() {
 
     const handleTopupClose = () => {
         setTopupOpen(false)
+    }
+
+    const handleOnPaymentSuccess = () => {
+        // Update user profile
+        http.get("/profile").then(res => {
+            setProfile(res.data)
+        })
     }
 
     useEffect(() => {
