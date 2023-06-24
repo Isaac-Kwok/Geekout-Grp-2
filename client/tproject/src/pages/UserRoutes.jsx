@@ -10,6 +10,7 @@ import Verify from './Verify'
 import Reset from './Reset'
 import ProfileRoutes from './profile/ProfileRoutes'
 import DriverRoutes from './driver/DriverRoutes'
+import Bicycle from './Bicycle'
 
 import { UserContext } from '..'
 
@@ -32,6 +33,7 @@ function UserRoutes() {
             <Route path="/reset" element={<Reset />} />
             <Route path="/profile/*" element={<ProfileRoutes />} />
             <Route path="/driver/*" element={<DriverRoutes />} />
+            <Route path="/bicycle" element={<Bicycle />} />
         </Routes>
     )
 }

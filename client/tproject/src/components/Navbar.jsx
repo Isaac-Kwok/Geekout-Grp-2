@@ -29,7 +29,7 @@ export function Navbar() {
                                 <Box sx={{ display: ["none", "none", "initial"] }}>
                                     <Button LinkComponent={Link} variant="text" color="inherit" to="/">Home</Button>
                                     <Button LinkComponent={Link} variant="text" color="inherit" to="/login">Car</Button>
-                                    <Button LinkComponent={Link} variant="text" color="inherit" to="/login">Bicycles</Button>
+                                    <Button LinkComponent={Link} variant="text" color="inherit" to="/bicycle">Bicycles</Button>
                                     <Button LinkComponent={Link} variant="text" color="inherit" to="/login">Shop</Button>
                                 </Box>
                             </Box>
