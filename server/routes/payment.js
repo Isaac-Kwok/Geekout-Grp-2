@@ -69,4 +69,28 @@ router.post("/topup", validateToken, async (req, res) => {
     }
 })
 
+router.get("/history", validateToken, async (req, res) => {
+    // Get history
+    try {
+        const { type } = req.query
+        const condition = type ? {
+            user_id: req.user.id,
+            type
+        } : {
+            user_id: req.user.id
+        }
+
+        const transactions = await Transaction.findAll({
+            where: {
+                ...condition
+            },
+            order: [["createdAt", "DESC"]]
+        })
+
+        res.status(200).json(transactions)
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
+})
+
 module.exports = router;

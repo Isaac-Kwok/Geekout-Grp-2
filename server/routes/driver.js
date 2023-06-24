@@ -13,7 +13,7 @@ router.post('/upload', validateToken, upload, (req, res) => {
     });
 
 
-router.post("/DriverRegister", validateToken, async (req, res) => {
+router.post("/register", validateToken, async (req, res) => {
     let data = req.body;
     // Validate request body
     let validationSchema = yup.object().shape({

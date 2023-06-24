@@ -35,6 +35,12 @@ const theme = createTheme({
     secondary: {
       main: grey[500],
     },
+    blue: {
+      main: "#0083CA",
+    },
+    yellow: {
+      main: "#BC9D4B",
+    },
   },
   typography: {
     fontFamily: "Roboto, Helvetica, Arial, sans-serif",
@@ -84,7 +90,6 @@ function MainApp() {
                 <Routes location={location}>
                   <Route path='*' element={<UserRoutes />} />
                   <Route path='/admin/*' element={<AdminRoutes />} />
-                  <Route path='/driver/DriverRegister*' element={<DriverRegister />} />
                 </Routes>
               </CSSTransition>
             </TransitionGroup>
