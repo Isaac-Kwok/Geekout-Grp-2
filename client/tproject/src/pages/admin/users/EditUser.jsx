@@ -15,6 +15,7 @@ import { useSnackbar } from 'notistack'
 import * as Yup from "yup";
 import { useFormik } from 'formik';
 import ProfilePicture from '../../../components/ProfilePicture';
+import AdminPageTitle from '../../../components/AdminPageTitle';
 import md5 from "md5";
 
 function EditUser() {
@@ -153,14 +154,7 @@ function EditUser() {
     return (
         <>
             <Container maxWidth="xl" sx={{ marginY: "1rem" }}>
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <IconButton size="large" onClick={() => navigate(-1)} sx={{ marginRight: "1rem" }}><ArrowBackIcon /></IconButton>
-                    <Box sx={{ marginY: ["1rem", "1rem", "2rem"] }}>
-                        <Typography variant="h3" fontWeight={700} sx={{ fontSize: ["2rem", "2rem", "3rem"] }}>Edit User</Typography>
-                        <Typography variant="body" fontWeight={700}>User: {user ? user.email : <Skeleton animation="wave" sx={{ display: "inline-block" }} variant="text" width={200} />}</Typography>
-                    </Box>
-
-                </Box>
+                <AdminPageTitle backbutton title="Edit User" subtitle={"User: " + (user ? user.email : <Skeleton animation="wave" sx={{ display: "inline-block" }} variant="text" width={200} />)} />
                 <Box component="form" onSubmit={formik.handleSubmit}>
                     <LoadingButton variant="contained" onClick={formik.handleSubmit} loading={loading} loadingPosition="start" startIcon={<SaveIcon />} sx={{ marginBottom: "1rem" }}>Save</LoadingButton>
                     <Stack spacing={2} direction="column" sx={{ marginBottom: "1rem" }}>
