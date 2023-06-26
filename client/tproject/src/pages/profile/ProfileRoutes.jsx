@@ -15,6 +15,7 @@ import NotFound from '../errors/NotFound'
 import ViewProfile from './ViewProfile'
 import ViewWallet from './ViewWallet'
 import ViewLogins from './ViewLogins';
+import ViewTransactionHistory from './ViewTransactionHistory';
 import http from '../../http'
 
 export const ProfileContext = createContext(null)
@@ -95,6 +96,7 @@ function ProfileRoutes() {
                                 <Route path="/" element={<ViewProfile />} />
                                 <Route path="/wallet" element={<ViewWallet />} />
                                 <Route path="/logins" element={<ViewLogins />} />
+                                <Route path="/history" element={<ViewTransactionHistory />} />
                             </Routes>
                         </ProfileContext.Provider>
 
