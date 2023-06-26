@@ -16,7 +16,7 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider, responsiveFontSizes } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
 import { Navbar } from './components/Navbar';
 import { Box } from '@mui/material';
@@ -27,7 +27,7 @@ import Footer from './components/Footer';
 
 
 // Theme for the website, configure it here
-const theme = createTheme({
+let theme = createTheme({
   palette: {
     primary: {
       main: "#5D8A5C",
@@ -46,6 +46,8 @@ const theme = createTheme({
     fontFamily: "Roboto, Helvetica, Arial, sans-serif",
   },
 });
+
+theme = responsiveFontSizes(theme);
 
 // Global context to store and change stuff on the fly
 export const UserContext = React.createContext(null);
