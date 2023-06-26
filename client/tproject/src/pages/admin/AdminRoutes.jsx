@@ -8,6 +8,7 @@ import Test from '../Test'
 import ViewUsers from './users/ViewUsers'
 import CreateUser from './users/CreateUser'
 import EditUser from './users/EditUser'
+import BicycleAdmin from './BicycleAdmin'
 
 import { UserContext } from '../..'
 import AdminNavList from '../../components/AdminNavList'
@@ -41,6 +42,7 @@ function AdminRoutes() {
                 <Route path="/users" element={<ViewUsers />} />
                 <Route path="/users/create" element={<CreateUser />} />
                 <Route path="/users/:id" element={<EditUser />} />
+                <Route path="/bicycle" element={<BicycleAdmin />} />
             </Routes>
 
         </Box>
