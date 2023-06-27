@@ -1,5 +1,5 @@
 import { useContext, useEffect, createContext, useState } from 'react'
-import { Route, Routes, useNavigate, Link } from 'react-router-dom'
+import { Route, Routes, useNavigate, Link, useLocation } from 'react-router-dom'
 import { Container, Box, Card, CardContent, Typography, Grid, List, ListItem, ListItemText, ListItemButton, ListItemIcon } from '@mui/material'
 import ProfilePicture from '../../components/ProfilePicture'
 import PersonIcon from '@mui/icons-material/Person';
@@ -21,6 +21,7 @@ import http from '../../http'
 export const ProfileContext = createContext(null)
 function ProfileRoutes() {
     const { user } = useContext(UserContext);
+    const location = useLocation()
     const [profile, setProfile] = useState({
         name: "",
         email: "",
@@ -63,25 +64,25 @@ function ProfileRoutes() {
                         <Card>
                             <List>
                                 <ListItem key={"Account Overview"} disablePadding>
-                                    <ListItemButton component={Link} to="/profile">
+                                    <ListItemButton component={Link} to="/profile" selected={(location.pathname == "/profile")}>
                                         <ListItemIcon><PersonIcon /></ListItemIcon>
                                         <ListItemText primary={"Account Overview"} />
                                     </ListItemButton>
                                 </ListItem>
                                 <ListItem key={"Wallet"} disablePadding>
-                                    <ListItemButton component={Link} to="/profile/wallet">
+                                    <ListItemButton component={Link} to="/profile/wallet" selected={(location.pathname == "/profile/wallet")}>
                                         <ListItemIcon><AccountBalanceWalletIcon /></ListItemIcon>
                                         <ListItemText primary={"Wallet"} />
                                     </ListItemButton>
                                 </ListItem>
                                 <ListItem key={"Logins & 2FA"} disablePadding>
-                                    <ListItemButton component={Link} to="/profile/logins">
+                                    <ListItemButton component={Link} to="/profile/logins" selected={(location.pathname == "/profile/logins")}>
                                         <ListItemIcon><KeyIcon /></ListItemIcon>
                                         <ListItemText primary={"Logins & 2FA"} />
                                     </ListItemButton>
                                 </ListItem>
                                 <ListItem key={"Transaction History"} disablePadding>
-                                    <ListItemButton component={Link} to="/profile/history">
+                                    <ListItemButton component={Link} to="/profile/history" selected={(location.pathname == "/profile/history")}>
                                         <ListItemIcon><HistoryIcon /></ListItemIcon>
                                         <ListItemText primary={"Transaction History"} />
                                     </ListItemButton>
