@@ -80,7 +80,7 @@ function EditDriverApplication() {
                     <Card>
                         <CardHeader
                             avatar={
-                                <Avatar sx={{ width: 100, height: 100 }} src={`${driverPath}${driverApplication.driver_face_image}`} />
+                                <Avatar sx={{ width: 100, height: 100 }} src={driverPath + driverApplication.driver_face_image} />
                             }
 
                             title={driverApplication.driver_nric_name}
@@ -136,7 +136,7 @@ function EditDriverApplication() {
                                         component="img"
                                         alt="driver IC"
                                         height="auto"
-                                        image={`${driverPath}${driverApplication.driver_ic}`}
+                                        image={driverPath + driverApplication.driver_ic}
 
                                     />
                                     <Divider variant="middle" sx={{ marginTop: 2, marginBottom: 2 }} ></Divider>
@@ -146,7 +146,7 @@ function EditDriverApplication() {
                                         component="img"
                                         alt="driver license"
                                         height="auto"
-                                        image={`${driverPath}${driverApplication.driver_license}`}
+                                        image={driverPath + driverApplication.driver_license}
                                     />
                                 </Box>
 
