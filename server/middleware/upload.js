@@ -8,6 +8,7 @@ const maxSize = 4 * 1024 * 1024;
 // Driver file upload
 const driver_upload = multer.diskStorage({
     destination: (req, file, callback) => {
+        fs.mkdirSync("./public/uploads/driver", { recursive: true });
         callback(null, './public/uploads/driver');
     },
     filename: (req, file, callback) => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Container, Typography, Button, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, Input, IconButton } from '@mui/material'
-import {Search, Clear } from '@mui/icons-material';
+import { Box, Container, Typography, Button, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, Input, IconButton } from '@mui/material'
+import { Search, Clear } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
@@ -9,6 +9,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PreviewIcon from '@mui/icons-material/Preview';
 import { useSnackbar } from 'notistack'
+import AdminPageTitle from '../../../components/AdminPageTitle';
 
 
 
@@ -112,6 +113,7 @@ function ViewDriverApplications() {
             field: 'driver_nric_name',
             headerName: 'Full name',
             width: 160,
+            flex: 1,
         },
         { field: 'driver_nric_number', headerName: 'NRIC number', width: 100 },
         {
@@ -164,30 +166,29 @@ function ViewDriverApplications() {
 
     return (
         <Container maxWidth="xl" sx={{ marginBottom: "100px", marginY: "1rem", minWidth: 0 }}>
+            <AdminPageTitle title="Driver Applications" />
+            <Box display={"flex"} marginBottom={"1rem"}>
+                <Box flexGrow={1}>
+                    <Input value={search} placeholder="Search"
+                        onChange={onSearchChange}
+                        onKeyDown={onSearchKeyDown} />
+                    <IconButton color="primary"
+                        onClick={onClickSearch}>
+                        <Search />
+                    </IconButton>
+                    <IconButton color="primary"
+                        onClick={onClickClear}>
+                        <Clear />
+                    </IconButton>
+                </Box>
 
-            <Typography variant="h3" fontWeight={700} sx={{ marginY: ["1rem", "1rem", "2rem"], fontSize: ["2rem", "2rem", "3rem"] }}>View Driver Applications</Typography>
-            <Input value={search} placeholder="Search"
-                onChange={onSearchChange}
-                onKeyDown={onSearchKeyDown} />
-            <IconButton color="primary"
-                onClick={onClickSearch}>
-                <Search />
-            </IconButton>
-            <IconButton color="primary"
-                onClick={onClickClear}>
-                <Clear />
-            </IconButton>
-            <Button sx={{
-                marginBottom: "1em", color: "white", border: 1, backgroundColor: "#d32f2f", ":hover": {
-                    bgcolor: "darkred",
-                    color: "white"
-                }
-            }} onClick={() => {
-                handledeleteAllApplicationDialogOpen()
-            }}>
-                Delete All
+                <Button variant='contained' color='error' onClick={() => {
+                    handledeleteAllApplicationDialogOpen()
+                }}>
+                    Delete All
+                </Button>
+            </Box>
 
-            </Button>
 
             <DataGrid
                 rows={rows}
