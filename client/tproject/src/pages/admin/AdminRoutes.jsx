@@ -9,6 +9,11 @@ import ViewUsers from './users/ViewUsers'
 import CreateUser from './users/CreateUser'
 import EditUser from './users/EditUser'
 
+// Driver 
+
+import ViewDriverApplications from './driver/ViewDriverApplications'
+import EditDriverApplication from './driver/EditDriverApplication'
+
 import { UserContext } from '../..'
 import AdminNavList from '../../components/AdminNavList'
 import { validateAdmin } from '../../functions/user'
@@ -41,6 +46,9 @@ function AdminRoutes() {
                 <Route path="/users" element={<ViewUsers />} />
                 <Route path="/users/create" element={<CreateUser />} />
                 <Route path="/users/:id" element={<EditUser />} />
+                {/* Driver Paths */}
+                <Route path="/driver/viewDriverApplications" element={<ViewDriverApplications />} />
+                <Route path="/driver/EditDriverApplication/:id" element={<EditDriverApplication />} />
             </Routes>
 
         </Box>
