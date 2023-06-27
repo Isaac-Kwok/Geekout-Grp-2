@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
-import { Container, Typography, Card, CardContent, CardActions, Box, Stack, Checkbox, TextField, Grid, FormControlLabel, IconButton } from '@mui/material'
+import { Container, Card, CardContent, Box, Checkbox, TextField, Grid, FormControlLabel, IconButton } from '@mui/material'
 import LoadingButton from '@mui/lab/LoadingButton';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddIcon from '@mui/icons-material/Add';
 import CardTitle from "../../../components/CardTitle";
+import AdminPageTitle from '../../../components/AdminPageTitle';
 import http from '../../../http'
 import { useSnackbar } from 'notistack'
 import { Form, useNavigate } from 'react-router-dom'
@@ -62,10 +62,7 @@ function CreateUser() {
     return (
         <>
             <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <IconButton size="large" onClick={() => navigate(-1)} sx={{ marginRight: "1rem" }}><ArrowBackIcon /></IconButton>
-                    <Typography variant="h3" fontWeight={700} sx={{ marginY: ["1rem", "1rem", "2rem"], fontSize: ["2rem", "2rem", "3rem"] }}>Create User</Typography>
-                </Box>
+                <AdminPageTitle title="Create User" backbutton />
                 <LoadingButton
                     variant="contained"
                     color="primary"

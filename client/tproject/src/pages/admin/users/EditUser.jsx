@@ -15,6 +15,7 @@ import { useSnackbar } from 'notistack'
 import * as Yup from "yup";
 import { useFormik } from 'formik';
 import ProfilePicture from '../../../components/ProfilePicture';
+import AdminPageTitle from '../../../components/AdminPageTitle';
 import md5 from "md5";
 
 function EditUser() {
@@ -39,7 +40,7 @@ function EditUser() {
         console.log(e);
         const formData = new FormData();
         formData.append("profile_picture", e.target.files[0]);
-        http.post("/admin/users/" + id + "/upload", formData, {headers: {"Content-Type": "multipart/form-data"}}).then((res) => {
+        http.post("/admin/users/" + id + "/upload", formData, { headers: { "Content-Type": "multipart/form-data" } }).then((res) => {
             if (res.status === 200) {
                 enqueueSnackbar("Profile picture updated successfully!", { variant: "success" });
                 setUser(res.data);
@@ -153,14 +154,7 @@ function EditUser() {
     return (
         <>
             <Container maxWidth="xl" sx={{ marginY: "1rem" }}>
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <IconButton size="large" onClick={() => navigate(-1)} sx={{ marginRight: "1rem" }}><ArrowBackIcon /></IconButton>
-                    <Box sx={{ marginY: ["1rem", "1rem", "2rem"] }}>
-                        <Typography variant="h3" fontWeight={700} sx={{ fontSize: ["2rem", "2rem", "3rem"] }}>Edit User</Typography>
-                        <Typography variant="body" fontWeight={700}>User: {user ? user.email : <Skeleton animation="wave" sx={{ display: "inline-block" }} variant="text" width={200} />}</Typography>
-                    </Box>
-
-                </Box>
+                <AdminPageTitle backbutton title="Edit User" subtitle={"User: " + (user ? user.email : <Skeleton animation="wave" sx={{ display: "inline-block" }} variant="text" width={200} />)} />
                 <Box component="form" onSubmit={formik.handleSubmit}>
                     <LoadingButton variant="contained" onClick={formik.handleSubmit} loading={loading} loadingPosition="start" startIcon={<SaveIcon />} sx={{ marginBottom: "1rem" }}>Save</LoadingButton>
                     <Stack spacing={2} direction="column" sx={{ marginBottom: "1rem" }}>
@@ -168,10 +162,10 @@ function EditUser() {
                             <CardContent>
                                 <CardTitle title="User Information" icon={<ManageAccountsIcon color="text.secondary" />} />
                                 <Stack spacing={"2rem"} direction={["column", "column", "row"]}>
-                                    <Box sx={{display: ["flex", "flex", "initial"], justifyContent: 'center'}}>
+                                    <Box sx={{ display: ["flex", "flex", "initial"], justifyContent: 'center' }}>
                                         <Tooltip title="Change Profile Picture">
                                             <IconButton onClick={handleChangePictureDialogOpen}>
-                                                {user && <ProfilePicture user={user} sx={{width: "96px", height: "96px"}} />}
+                                                {user && <ProfilePicture user={user} sx={{ width: "96px", height: "96px" }} />}
                                             </IconButton>
                                         </Tooltip>
                                     </Box>
@@ -296,9 +290,11 @@ function EditUser() {
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleChangePictureDialogClose} startIcon={<CloseIcon />}>Cancel</Button>
-                        <LoadingButton loadingPosition="start" loading={loadingPicture} variant="text" color="primary" startIcon={<PublicIcon />} onClick={handleGravatarChange}>Use Gravatar</LoadingButton>
-                        <LoadingButton loadingPosition="start" loading={loadingPicture} variant="text" color="primary" startIcon={<FileUploadIcon />} component="label">Upload Image<input type='file' onChange={handlePictureChange} hidden/></LoadingButton>
+                        <Stack direction={["column", "row"]} spacing={1}>
+                            <Button style={{justifyContent: "flex-end"}} onClick={handleChangePictureDialogClose} startIcon={<CloseIcon />}>Cancel</Button>
+                            <LoadingButton style={{justifyContent: "flex-end"}} loadingPosition="start" loading={loadingPicture} variant="text" color="primary" startIcon={<PublicIcon />} onClick={handleGravatarChange}>Use Gravatar</LoadingButton>
+                            <LoadingButton style={{justifyContent: "flex-end"}} loadingPosition="start" loading={loadingPicture} variant="text" color="primary" startIcon={<FileUploadIcon />} component="label">Upload Image<input type='file' onChange={handlePictureChange} hidden /></LoadingButton>
+                        </Stack>
                     </DialogActions>
                 </Box>
             </Dialog>
