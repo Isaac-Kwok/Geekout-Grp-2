@@ -1,10 +1,8 @@
 import { useState, useContext } from "react";
-import { Box, IconButton, List, ListItem, ListItemIcon, ListItemText, ListItemButton, Avatar, Popover, Divider, Typography } from "@mui/material"
+import { Box, IconButton, List, ListItem, ListItemIcon, ListItemText, ListItemButton, Popover, Divider, Typography } from "@mui/material"
 import { Link, useNavigate } from "react-router-dom"
 import ProfilePicture from "./ProfilePicture";
 import { UserContext } from "..";
-import md5 from "md5";
-
 
 import LogoutIcon from '@mui/icons-material/Logout';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
@@ -17,7 +15,6 @@ export function NavbarProfile() {
     const [isPopoverOpen, setIsPopoverOpen] = useState(false)
     const [anchorEl, setAnchorEl] = useState(null)
     const navigate = useNavigate()
-    const email_md5 = md5(user.email)
 
     function handlePopoverOpen(event) {
         setAnchorEl(event.currentTarget);
@@ -32,7 +29,6 @@ export function NavbarProfile() {
         navigate("/")
     }
 
-    console.log(user.profile_picture_type)
     return (
         <>
             <IconButton onClick={(e) => handlePopoverOpen(e)}>
