@@ -11,6 +11,7 @@ function ViewLogins() {
 
     const [transactions, setTransactions] = useState([])
     const [loading, setLoading] = useState(true)
+    const date = new Date()
     const columns = [
         { field: 'id', headerName: 'ID', width: 100 },
         {
@@ -22,8 +23,8 @@ function ViewLogins() {
             valueOptions: ["Pending", "Succeeded"],
         },
         { field: 'type', headerName: 'Type', type: '', minWidth: 100 },
-        { field: 'amount', headerName: 'Amount Paid ($)', type: 'string', minWidth: 150 },
-        { field: 'createdAt', headerName: 'Created On', type: 'string', minWidth: 200 },
+        { field: 'amount', headerName: 'Amount Paid ($)', type: 'string', minWidth: 150, valueFormatter: (params) => `$${params.value.toLocaleString()}` },
+        { field: 'createdAt', headerName: 'Created On', type: 'string', minWidth: 200, valueFormatter: (params) => new Date(params.value).toLocaleString() },
         {
             field: 'actions', type: 'actions', width: 40, getActions: (params) => [
                 <GridActionsCellItem
