@@ -15,6 +15,7 @@ function ProfileRoutes() {
             enqueueSnackbar("You must be logged in to view this page", { variant: "error" })
             return navigate("/login")
         }
+        
     }, [])
 
     return (

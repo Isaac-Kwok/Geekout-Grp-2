@@ -5,7 +5,6 @@ import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import http from "../../../http";
-import LoadingSkeleton from '../../../components/LoadingSkeleton';
 import AdminPageTitle from '../../../components/AdminPageTitle';
 import EditIcon from '@mui/icons-material/Edit';
 import LabelIcon from '@mui/icons-material/Label';
@@ -122,9 +121,6 @@ function ViewUsers() {
                     rows={users}
                     columns={columns}
                     pageSize={10}
-                    slots={{
-                        LoadingOverlay: LoadingSkeleton
-                    }}
                     loading={loading}
                     autoHeight
                     getRowId={(row) => row.email}
