@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Box, Card, CardContent, CardActions, Typography, Button, Stack, Grid, Divider, Chip } from '@mui/material'
+import { Box, Card, CardContent, Chip } from '@mui/material'
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import CardTitle from '../../components/CardTitle'
 import HistoryIcon from '@mui/icons-material/History';
@@ -13,7 +13,7 @@ function ViewLogins() {
     const [loading, setLoading] = useState(true)
     const date = new Date()
     const columns = [
-        { field: 'id', headerName: 'ID', width: 100 },
+        { field: 'id', headerName: 'ID', width: 100, type: 'number' },
         {
             field: 'status', headerName: 'Payment Status',flex: 1, minWidth: 150, renderCell: (params) => {
                 return <Chip variant="filled" size="small" icon={<LabelIcon />} label={params.value} color={params.value == "Pending" ? "warning" : "success"}  />;
@@ -23,8 +23,8 @@ function ViewLogins() {
             valueOptions: ["Pending", "Succeeded"],
         },
         { field: 'type', headerName: 'Type', type: '', minWidth: 100 },
-        { field: 'amount', headerName: 'Amount Paid ($)', type: 'string', minWidth: 150, valueFormatter: (params) => `$${params.value.toLocaleString()}` },
-        { field: 'createdAt', headerName: 'Created On', type: 'string', minWidth: 200, valueFormatter: (params) => new Date(params.value).toLocaleString() },
+        { field: 'amount', headerName: 'Amount Paid ($)', type: 'number', minWidth: 150, valueFormatter: (params) => `$${params.value.toLocaleString()}` },
+        { field: 'createdAt', headerName: 'Created On', type: 'dateTime', minWidth: 200, valueFormatter: (params) => new Date(params.value).toLocaleString() },
         {
             field: 'actions', type: 'actions', width: 40, getActions: (params) => [
                 <GridActionsCellItem

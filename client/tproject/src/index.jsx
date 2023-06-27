@@ -6,9 +6,6 @@ import './index.css';
 import AdminRoutes from './pages/admin/AdminRoutes';
 import UserRoutes from './pages/UserRoutes';
 
-// Import Driver pages
-import DriverRegister from './pages/driver/DriverRegister';
-
 import reportWebVitals from './reportWebVitals';
 import {
   BrowserRouter,
@@ -20,7 +17,6 @@ import { createTheme, ThemeProvider, responsiveFontSizes } from '@mui/material/s
 import { grey } from '@mui/material/colors';
 import { Navbar } from './components/Navbar';
 import { Box } from '@mui/material';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { SnackbarProvider } from 'notistack';
 import jwt_decode from "jwt-decode";
 import Footer from './components/Footer';
@@ -82,19 +78,10 @@ function MainApp() {
         <Box sx={{ display: "flex", flexDirection: "column" }}>
           <Navbar />
           <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
-            <TransitionGroup style={{flexGrow: 1, display: "flex", flexDirection: "column"}}>
-              <CSSTransition
-                key={location.key}
-                classNames="fade"
-                timeout={300}
-                unmountOnExit
-              >
-                <Routes location={location}>
-                  <Route path='*' element={<UserRoutes />} />
-                  <Route path='/admin/*' element={<AdminRoutes />} />
-                </Routes>
-              </CSSTransition>
-            </TransitionGroup>
+            <Routes location={location}>
+              <Route path='*' element={<UserRoutes />} />
+              <Route path='/admin/*' element={<AdminRoutes />} />
+            </Routes>
           </Box>
           <Footer />
         </Box>
