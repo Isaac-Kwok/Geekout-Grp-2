@@ -1,11 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
 
     const Product = sequelize.define("Product", {
-        product_id: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            primaryKey: true
-        },
         product_name: {
             type: DataTypes.STRING,
             allowNull: false
@@ -51,12 +46,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: 1
         },
-        // Bicycle pass
-        duration_of_pass_status: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: false
-        },
+        
         //Duration of pass
         duration_of_pass: {
             type: DataTypes.TINYINT,
