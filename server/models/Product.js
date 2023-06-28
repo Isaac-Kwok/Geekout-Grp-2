@@ -9,6 +9,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
+        product_stock:{
+            type: DataTypes.TINYINT,
+            allowNull: false,
+            defaultValue:0
+        },
         product_picture: {
             type: DataTypes.STRING,
             allowNull: true
@@ -33,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         product_sale: {
             type: DataTypes.BOOLEAN,
-            allowNull: false,
+            allowNull: true,
             defaultValue: false
         },
         product_price_greenmiles: {
@@ -56,11 +61,10 @@ module.exports = (sequelize, DataTypes) => {
         // Product status
         product_status: {
             type: DataTypes.BOOLEAN,
-            allowNull: false,
+            allowNull: true,
             defaultValue: true
         },
     });
-
 
     return Product;
 }
