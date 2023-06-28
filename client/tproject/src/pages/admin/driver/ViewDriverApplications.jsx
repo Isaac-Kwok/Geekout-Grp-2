@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Container, Typography, Button, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, Input, IconButton } from '@mui/material'
+import { Avatar, Stack, Card, CardContent, Box, Container, Typography, Button, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, Input, IconButton, Grid } from '@mui/material'
 import { Search, Clear } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
@@ -10,11 +10,17 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import PreviewIcon from '@mui/icons-material/Preview';
 import { useSnackbar } from 'notistack'
 import AdminPageTitle from '../../../components/AdminPageTitle';
+import ArticleIcon from '@mui/icons-material/Article';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 
 
 function ViewDriverApplications() {
     const [driverApplications, setDriverApplications] = useState([])
+    const [approvedApplications, setApprovedApplications] = useState([])
+    const [rejectedApplications, setRejectedApplications] = useState([])
+    const [pendingApplications, setPendingApplications] = useState([])
     const [deleteApplicationDialog, setDeleteApplicationDialog] = useState(false)
     const [deleteAllApplicationDialog, setDeleteAllApplicationDialog] = useState(false)
     const [deleteApplication, setDeleteApplication] = useState(null)
@@ -159,14 +165,169 @@ function ViewDriverApplications() {
         },
     ];
     const rows = [];
+    const approved = [];
+    const rejected = [];
+    const pending = [];
     for (let index = 0; index < driverApplications.length; index++) {
         let driverApplication = driverApplications[index];
         rows.push(driverApplication)
+        if (driverApplication.driver_status == "Approved") {
+            approved.push(driverApplication)
+        }
+        else if (driverApplication.driver_status == "Rejected") {
+            rejected.push(driverApplication)
+        }
+        else if (driverApplication.driver_status == "Pending") {
+            pending.push(driverApplication)
+        }
     }
+
 
     return (
         <Container maxWidth="xl" sx={{ marginBottom: "100px", marginY: "1rem", minWidth: 0 }}>
             <AdminPageTitle title="Driver Applications" />
+            <Grid container spacing={2} sx={{ marginBottom: "1.5em" }}>
+                <Grid item xs={6} xl={3}>
+                    <Card>
+                        <CardContent>
+                            <Stack
+                                alignItems="flex-start"
+                                direction="row"
+                                justifyContent="space-between"
+                                spacing={3}
+                            >
+                                <Stack spacing={1}>
+                                    <Typography
+                                        color="text.secondary"
+                                        variant="overline"
+                                    >
+                                        Total Applications
+                                    </Typography>
+                                    <Typography variant="h4">
+                                        {driverApplications.length}
+                                    </Typography>
+                                </Stack>
+                                <Avatar
+                                    sx={{
+                                        backgroundColor: 'secondary.main',
+                                        height: 56,
+                                        width: 56
+                                    }}
+                                >
+
+                                    <ArticleIcon />
+
+                                </Avatar>
+                            </Stack>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={6} xl={3}>
+                    <Card>
+                        <CardContent>
+                            <Stack
+                                alignItems="flex-start"
+                                direction="row"
+                                justifyContent="space-between"
+                                spacing={3}
+                            >
+                                <Stack spacing={1}>
+                                    <Typography
+                                        color="text.secondary"
+                                        variant="overline"
+                                    >
+                                        Approved Applicaitons
+                                    </Typography>
+                                    <Typography variant="h4">
+                                        {approved.length}
+                                    </Typography>
+                                </Stack>
+                                <Avatar
+                                    sx={{
+                                        backgroundColor: 'success.main',
+                                        height: 56,
+                                        width: 56
+                                    }}
+                                >
+
+                                    <CheckCircleIcon />
+
+                                </Avatar>
+                            </Stack>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={6} xl={3}>
+                    <Card>
+                        <CardContent>
+                            <Stack
+                                alignItems="flex-start"
+                                direction="row"
+                                justifyContent="space-between"
+                                spacing={3}
+                            >
+                                <Stack spacing={1}>
+                                    <Typography
+                                        color="text.secondary"
+                                        variant="overline"
+                                    >
+                                        Rejected appliations
+                                    </Typography>
+                                    <Typography variant="h4">
+                                        {rejected.length}
+                                    </Typography>
+                                </Stack>
+                                <Avatar
+                                    sx={{
+                                        backgroundColor: 'error.main',
+                                        height: 56,
+                                        width: 56
+                                    }}
+                                >
+                                    <CancelIcon />
+
+                                </Avatar>
+                            </Stack>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={6} xl={3}>
+                    <Card>
+                        <CardContent>
+                            <Stack
+                                alignItems="flex-start"
+                                direction="row"
+                                justifyContent="space-between"
+                                spacing={3}
+                            >
+                                <Stack spacing={1}>
+                                    <Typography
+                                        color="text.secondary"
+                                        variant="overline"
+                                    >
+                                        Pending Applications
+                                    </Typography>
+                                    <Typography variant="h4">
+                                        {pending.length}
+                                    </Typography>
+                                </Stack>
+                                <Avatar
+                                    sx={{
+                                        backgroundColor: '#ffc107',
+                                        height: 56,
+                                        width: 56
+                                    }}
+                                >
+
+                                    <ArticleIcon />
+
+                                </Avatar>
+                            </Stack>
+                        </CardContent>
+                    </Card>
+                </Grid>
+            </Grid>
+
             <Box display={"flex"} marginBottom={"1rem"}>
                 <Box flexGrow={1}>
                     <Input value={search} placeholder="Search"
