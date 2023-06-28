@@ -1,12 +1,15 @@
-# TProject
+# EnviroGo - Sustainable Transportation
 Under construction. Full-Stack Project 2023
 
 ### Theme
-Sustainable Transportation
+Sustainable Transportation (Carpooling and bicycles)
 
 ### Status
-Testing some stuff out. Nothing really started yet. Code is just for testing purposes. ENV file required for server
+Under Development... (Stress incoming!!)
 
 ### Servers
 Frontend: https://envirogo.cat2.link  
 API: https://envirogo-api.cat2.link
+
+### Note
+You cannot run the server and client without the required env files.

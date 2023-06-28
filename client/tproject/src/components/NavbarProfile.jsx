@@ -1,10 +1,8 @@
 import { useState, useContext } from "react";
-import { Box, IconButton, List, ListItem, ListItemIcon, ListItemText, ListItemButton, Avatar, Popover, Divider, Typography } from "@mui/material"
+import { Box, IconButton, List, ListItem, ListItemIcon, ListItemText, ListItemButton, Popover, Divider, Typography } from "@mui/material"
 import { Link, useNavigate } from "react-router-dom"
-import { stringAvatar } from "../functions/stringAvatar";
+import ProfilePicture from "./ProfilePicture";
 import { UserContext } from "..";
-import md5 from "md5";
-
 
 import LogoutIcon from '@mui/icons-material/Logout';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
@@ -17,7 +15,6 @@ export function NavbarProfile() {
     const [isPopoverOpen, setIsPopoverOpen] = useState(false)
     const [anchorEl, setAnchorEl] = useState(null)
     const navigate = useNavigate()
-    const email_md5 = md5(user.email)
 
     function handlePopoverOpen(event) {
         setAnchorEl(event.currentTarget);
@@ -32,13 +29,10 @@ export function NavbarProfile() {
         navigate("/")
     }
 
-    console.log(user.profile_picture_type)
     return (
         <>
             <IconButton onClick={(e) => handlePopoverOpen(e)}>
-                {user.profile_picture_type === "gravatar" && <Avatar src={"https://www.gravatar.com/avatar/" + email_md5} />}
-                {user.profile_picture_type === "url" && <Avatar src={user.profile_picture} />}
-                {!user.profile_picture_type && <Avatar {...stringAvatar(user.name)} />}
+                <ProfilePicture user={user} />
             </IconButton>
             <Popover
                 id={"userPopover"}
@@ -54,11 +48,8 @@ export function NavbarProfile() {
                 }}
             >
                 <Box sx={{ display: "flex", alignItems: "center", margin: "1rem" }}>
-                    {!user.profile_picture_type && <Avatar {...stringAvatar(user.name)} sx={{ marginRight: "1rem" }} />}
-                    {user.profile_picture_type === "gravatar" && <Avatar src={"https://www.gravatar.com/avatar/" + email_md5} sx={{ marginRight: "1rem" }} />}
-                    {user.profile_picture_type === "url" && <Avatar src={user.profile_picture} sx={{ marginRight: "1rem" }} />}
-
-                    <Box>
+                    <ProfilePicture user={user} />
+                    <Box marginLeft={"1rem"}>
                         <Typography variant="subtitle1">{user.name}</Typography>
                         <Typography variant="body2">{user.email}</Typography>
                     </Box>
@@ -66,23 +57,32 @@ export function NavbarProfile() {
                 <Divider sx={{ marginTop: "1rem" }} />
                 <List>
                     <ListItem key={"My Profile"} disablePadding>
-                        <ListItemButton component={Link} to="/" onClick={() => setIsPopoverOpen(false)}>
+                        <ListItemButton component={Link} to="/profile" onClick={() => setIsPopoverOpen(false)}>
                             <ListItemIcon><PersonIcon /></ListItemIcon>
                             <ListItemText primary={"My Profile"} />
                         </ListItemButton>
                     </ListItem>
+                    {user.account_type == 1 && user.driver_registerd &&
                     <ListItem key={"Driver's Dashboard"} disablePadding>
                         <ListItemButton component={Link} to="/" onClick={() => setIsPopoverOpen(false)}>
                             <ListItemIcon><DirectionsCarIcon /></ListItemIcon>
                             <ListItemText primary={"Driver's Dashboard"} />
                         </ListItemButton>
-                    </ListItem>
+                    </ListItem> }
+                    {user.account_type == 1 && !user.driver_registered &&
+                    <ListItem key={"Driver's Dashboard"} disablePadding>
+                        <ListItemButton component={Link} to="/driver/register" onClick={() => setIsPopoverOpen(false)}>
+                            <ListItemIcon><DirectionsCarIcon /></ListItemIcon>
+                            <ListItemText primary={"Register Driver"} />
+                        </ListItemButton>
+                    </ListItem> }
+                    { user.account_type == 0 && 
                     <ListItem key={"Admin Panel"} disablePadding>
-                        <ListItemButton component={Link} to="/" onClick={() => setIsPopoverOpen(false)}>
+                        <ListItemButton component={Link} to="/admin/users" onClick={() => setIsPopoverOpen(false)}>
                             <ListItemIcon><AdminPanelSettingsIcon /></ListItemIcon>
                             <ListItemText primary={"Admin Panel"} />
                         </ListItemButton>
-                    </ListItem>
+                    </ListItem> }
                     <ListItem key={"Logout"} disablePadding>
                         <ListItemButton onClick={() => handleLogout()}>
                             <ListItemIcon><LogoutIcon /></ListItemIcon>

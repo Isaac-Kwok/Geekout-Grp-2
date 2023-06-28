@@ -8,6 +8,8 @@ import Login from './Login'
 import Register from './Register'
 import Verify from './Verify'
 import Reset from './Reset'
+import ProfileRoutes from './profile/ProfileRoutes'
+import DriverRoutes from './driver/DriverRoutes'
 
 import { UserContext } from '..'
 
@@ -28,6 +30,8 @@ function UserRoutes() {
             <Route path="/test" element={<Test />} />
             <Route path="/verify" element={<Verify />} />
             <Route path="/reset" element={<Reset />} />
+            <Route path="/profile/*" element={<ProfileRoutes />} />
+            <Route path="/driver/*" element={<DriverRoutes />} />
         </Routes>
     )
 }

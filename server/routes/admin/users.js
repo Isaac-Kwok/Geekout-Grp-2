@@ -4,8 +4,10 @@ const { User, Sequelize } = require("../../models")
 const router = express.Router()
 const jwt = require("jsonwebtoken")
 const ejs = require("ejs")
+const path = require("path")
 const { emailSender } = require("../../middleware/emailSender")
 const { validateAdmin } = require("../../middleware/validateAdmin")
+const { uploadProfilePicture } = require("../../middleware/upload")
 
 router.get("/", validateAdmin, async (req, res) => {
     // Get all users
@@ -57,7 +59,7 @@ router.post("/", validateAdmin, async (req, res) => {
         })
 
         // Send email to user to set password
-        const token = jwt.sign({ type: "reset", email }, process.env.APP_SECRET, { expiresIn: "15m" })
+        const token = jwt.sign({ type: "reset", id: newUser.id }, process.env.APP_SECRET, { expiresIn: "15m" })
         const link = `${process.env.CLIENT_URL}/reset?token=${token}`
         const html = await ejs.renderFile("templates/setPassword.ejs", { user: newUser, url:link })
         await emailSender.sendMail({
@@ -91,7 +93,6 @@ router.put("/:id", validateAdmin, async (req, res) => {
         }),
         name: yup.string().optional(),
         account_type: yup.number().min(0).max(2).nullable(true),
-        profile_picture: yup.string().optional().nullable(true),
         profile_picture_type: yup.string().when("profile_picture_type", (profile_picture_type) => {
             if (profile_picture_type.length > 0) {
                 return yup.string().oneOf(["local", "gravatar"], "Profile picture type must be either local or gravatar.")
@@ -127,5 +128,21 @@ router.put("/:id", validateAdmin, async (req, res) => {
         res.status(400).json({ message: error.errors })
     }
 })
+
+router.post("/:id/upload", validateAdmin, async (req, res) => {
+    // Upload profile picture
+    const user = await User.findByPk(req.params.id)
+    if (!user) {
+        return res.status(404).json({message: "User not found"})
+    } else {
+        await uploadProfilePicture(req, res)
+    }
+    user.profile_picture = "//" + req.headers.host + `/uploads/profile/${user.id + path.extname(req.file.originalname)}`
+    user.profile_picture_type = "local"
+    await user.save()
+    res.json(user)
+})
+
+
 
 module.exports = router

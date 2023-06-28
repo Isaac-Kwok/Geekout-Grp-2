@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { Container, Typography, Chip, Button, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions } from '@mui/material'
+import { Container, Chip, Button, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions } from '@mui/material'
 import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import http from "../../../http";
-import LoadingSkeleton from '../../../components/LoadingSkeleton';
+import AdminPageTitle from '../../../components/AdminPageTitle';
 import EditIcon from '@mui/icons-material/Edit';
 import LabelIcon from '@mui/icons-material/Label';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import CloseIcon from '@mui/icons-material/Close';
+import EmailIcon from '@mui/icons-material/Email';
+import PhoneIcon from '@mui/icons-material/Phone';
 
 function getChipProps(params) {
     return {
@@ -23,6 +26,7 @@ function ViewUsers() {
     const [deactivateLoading, setDeactivateLoading] = useState(null)
     const [deactivateUserDialog, setDeactivateUserDialog] = useState(false)
     const [deactivateUser, setDeactivateUser] = useState(null)
+    const navigate = useNavigate()
     const columns = [
         { field: 'name', headerName: 'Name', width: 200 },
         { field: 'email', headerName: 'E-mail Address', flex: 1, minWidth: 250 },
@@ -44,10 +48,14 @@ function ViewUsers() {
         },
         { field: 'is_active', headerName: 'Active?', type: 'boolean', minWidth: 100 },
         {
-            field: 'actions', type: 'actions', width: 80, getActions: (params) => [
+            field: 'actions', type: 'actions', width: 120, getActions: (params) => [
                 <GridActionsCellItem
                     icon={<EditIcon />}
                     label="Edit User"
+                    onClick={() => {
+                        navigate("/admin/users/" + params.row.id)
+                    }}
+                    showInMenu
                 />,
                 <GridActionsCellItem
                     icon={<DeleteIcon />}
@@ -56,7 +64,18 @@ function ViewUsers() {
                         setDeactivateUser(params.row)
                         handleDeactivateUserDialogOpen()
                     }}
+                    showInMenu
                 />,
+                <GridActionsCellItem
+                    icon={<EmailIcon />}
+                    label="Send E-mail"
+                    href={"mailto:" + params.row.email}
+                />,
+                <GridActionsCellItem
+                    icon={<PhoneIcon />}
+                    label="Call"
+                    href={"tel:" + params.row.phone_number}
+                />
             ]
         },
     ];
@@ -71,7 +90,7 @@ function ViewUsers() {
 
     const handleDeactivateUser = () => {
         setDeactivateLoading(true)
-        http.put("/admin/users/" + deactivateUser.email, {is_active: false} ).then((res) => {
+        http.put("/admin/users/" + deactivateUser.id, {is_active: false} ).then((res) => {
             if (res.status === 200) {
                 setDeactivateLoading(false)
                 setDeactivateUserDialog(false)
@@ -96,15 +115,12 @@ function ViewUsers() {
     return (
         <>
             <Container maxWidth="xl" sx={{ marginY: "1rem", minWidth: 0 }}>
-                <Typography variant="h3" fontWeight={700} sx={{ marginY: ["1rem", "1rem", "2rem"], fontSize: ["2rem", "2rem", "3rem"] }}>View Users</Typography>
+                <AdminPageTitle title="View Users" />
                 <Button LinkComponent={Link} variant="contained" color="primary" sx={{ marginBottom: "1rem" }} startIcon={<PersonAddIcon />} to="/admin/users/create">Create User</Button>
                 <DataGrid
                     rows={users}
                     columns={columns}
                     pageSize={10}
-                    slots={{
-                        LoadingOverlay: LoadingSkeleton
-                    }}
                     loading={loading}
                     autoHeight
                     getRowId={(row) => row.email}

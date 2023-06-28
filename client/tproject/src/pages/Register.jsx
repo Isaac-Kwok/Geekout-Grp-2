@@ -52,7 +52,7 @@ function Register() {
 
     return (
         <Container maxWidth="xl" sx={{marginY: "1rem"}}>
-            <Card variant="outlined" sx={{ maxWidth: 500, margin: "auto" }}>
+            <Card sx={{ maxWidth: 500, margin: "auto" }}>
                 <Box component="form" onSubmit={formik.handleSubmit}>
                     <CardContent>
                         <CardTitle title="Register" icon={<PersonAddIcon color="text.secondary" />} />
@@ -60,7 +60,7 @@ function Register() {
                             <TextField 
                                 type="email"
                                 fullWidth
-                                label="E-mail"
+                                label="E-mail Address"
                                 variant="outlined"
                                 name="email"
                                 value={formik.values.email}

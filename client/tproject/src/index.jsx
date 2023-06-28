@@ -6,7 +6,6 @@ import './index.css';
 import AdminRoutes from './pages/admin/AdminRoutes';
 import UserRoutes from './pages/UserRoutes';
 
-
 import reportWebVitals from './reportWebVitals';
 import {
   BrowserRouter,
@@ -14,18 +13,17 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider, responsiveFontSizes } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
 import { Navbar } from './components/Navbar';
 import { Box } from '@mui/material';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { SnackbarProvider } from 'notistack';
 import jwt_decode from "jwt-decode";
 import Footer from './components/Footer';
 
 
 // Theme for the website, configure it here
-const theme = createTheme({
+let theme = createTheme({
   palette: {
     primary: {
       main: "#5D8A5C",
@@ -33,11 +31,19 @@ const theme = createTheme({
     secondary: {
       main: grey[500],
     },
+    blue: {
+      main: "#0083CA",
+    },
+    yellow: {
+      main: "#BC9D4B",
+    },
   },
   typography: {
     fontFamily: "Roboto, Helvetica, Arial, sans-serif",
   },
 });
+
+theme = responsiveFontSizes(theme);
 
 // Global context to store and change stuff on the fly
 export const UserContext = React.createContext(null);
@@ -72,19 +78,10 @@ function MainApp() {
         <Box sx={{ display: "flex", flexDirection: "column" }}>
           <Navbar />
           <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
-            <TransitionGroup style={{flexGrow: 1, display: "flex", flexDirection: "column"}}>
-              <CSSTransition
-                key={location.key}
-                classNames="fade"
-                timeout={300}
-                unmountOnExit
-              >
-                <Routes location={location}>
-                  <Route path='*' element={<UserRoutes />} />
-                  <Route path='/admin/*' element={<AdminRoutes />} />
-                </Routes>
-              </CSSTransition>
-            </TransitionGroup>
+            <Routes location={location}>
+              <Route path='*' element={<UserRoutes />} />
+              <Route path='/admin/*' element={<AdminRoutes />} />
+            </Routes>
           </Box>
           <Footer />
         </Box>
