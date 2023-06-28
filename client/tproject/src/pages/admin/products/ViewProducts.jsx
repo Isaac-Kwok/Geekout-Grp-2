@@ -23,7 +23,7 @@ function ViewProducts() {
     const navigate = useNavigate()
 
     const columns = [
-        { field: 'product_name', headerName: 'Product Name', flex: 1, width: 250 },
+        { field: 'product_name', headerName: 'Product Name', flex: 1, minWidth: 250 },
         { field: 'product_category', headerName: 'Category', minWidth: 200 },
         { field: 'product_stock', headerName: 'Stock', width: 200 },
         {
