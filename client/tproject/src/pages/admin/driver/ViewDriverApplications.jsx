@@ -187,7 +187,7 @@ function ViewDriverApplications() {
         <Container maxWidth="xl" sx={{ marginBottom: "100px", marginY: "1rem", minWidth: 0 }}>
             <AdminPageTitle title="Driver Applications" />
             <Grid container spacing={2} sx={{ marginBottom: "1.5em" }}>
-                <Grid item xs={3}>
+                <Grid item xs={6} xl={3}>
                     <Card>
                         <CardContent>
                             <Stack
@@ -222,7 +222,7 @@ function ViewDriverApplications() {
                         </CardContent>
                     </Card>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={6} xl={3}>
                     <Card>
                         <CardContent>
                             <Stack
@@ -257,7 +257,7 @@ function ViewDriverApplications() {
                         </CardContent>
                     </Card>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={6} xl={3}>
                     <Card>
                         <CardContent>
                             <Stack
@@ -291,7 +291,7 @@ function ViewDriverApplications() {
                         </CardContent>
                     </Card>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={6} xl={3}>
                     <Card>
                         <CardContent>
                             <Stack
