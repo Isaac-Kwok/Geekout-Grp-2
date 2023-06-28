@@ -8,6 +8,9 @@ import Test from '../Test'
 import ViewUsers from './users/ViewUsers'
 import CreateUser from './users/CreateUser'
 import EditUser from './users/EditUser'
+import ViewProducts from './products/ViewProducts'
+import CreateProduct from './products/CreateProduct'
+import EditProduct from './products/EditProduct'
 import BicycleAdmin from './BicycleAdmin'
 import ViewBicycle from './ViewBicycle'
 
@@ -48,6 +51,9 @@ function AdminRoutes() {
                 <Route path="/users" element={<ViewUsers />} />
                 <Route path="/users/create" element={<CreateUser />} />
                 <Route path="/users/:id" element={<EditUser />} />
+                <Route path="/products" element= {<ViewProducts />}/>
+                <Route path="/products/create" element= {<CreateProduct />}/>
+                <Route path="/products/:id" element= {<EditProduct />}/>
                 <Route path="/bicycle" element={<BicycleAdmin />} />
                 <Route path="/bicycletest" element={<ViewBicycle />} />
 
