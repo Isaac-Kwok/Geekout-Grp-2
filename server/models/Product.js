@@ -57,6 +57,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: false
         },
+        //Duration of pass
         duration_of_pass: {
             type: DataTypes.TINYINT,
             allowNull: false,
