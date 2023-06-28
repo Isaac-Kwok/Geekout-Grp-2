@@ -22,8 +22,10 @@ function ViewLogins() {
                                 2-Factor Authentication (2FA) is a security feature that adds an extra layer of security to your account. When you log in, you will be required to enter a 6-digit code sent to your email address.
                             </Typography>
                         </Box>
-                        <Button variant="text" color="primary" startIcon={<LockIcon />}>Enable 2FA</Button>
                     </CardContent>
+                    <CardActions>
+                        <Button variant="text" color="primary" startIcon={<LockIcon />}>Enable 2FA</Button>
+                    </CardActions>
                 </Card>
                 <Card>
                     <CardContent>

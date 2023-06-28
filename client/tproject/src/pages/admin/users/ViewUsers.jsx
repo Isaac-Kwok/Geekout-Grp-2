@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { Container, Typography, Chip, Button, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions } from '@mui/material'
+import { Container, Chip, Button, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions } from '@mui/material'
 import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import http from "../../../http";
-import LoadingSkeleton from '../../../components/LoadingSkeleton';
+import AdminPageTitle from '../../../components/AdminPageTitle';
 import EditIcon from '@mui/icons-material/Edit';
 import LabelIcon from '@mui/icons-material/Label';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -115,15 +115,12 @@ function ViewUsers() {
     return (
         <>
             <Container maxWidth="xl" sx={{ marginY: "1rem", minWidth: 0 }}>
-                <Typography variant="h3" fontWeight={700} sx={{ marginY: ["1rem", "1rem", "2rem"], fontSize: ["2rem", "2rem", "3rem"] }}>View Users</Typography>
+                <AdminPageTitle title="View Users" />
                 <Button LinkComponent={Link} variant="contained" color="primary" sx={{ marginBottom: "1rem" }} startIcon={<PersonAddIcon />} to="/admin/users/create">Create User</Button>
                 <DataGrid
                     rows={users}
                     columns={columns}
                     pageSize={10}
-                    slots={{
-                        LoadingOverlay: LoadingSkeleton
-                    }}
                     loading={loading}
                     autoHeight
                     getRowId={(row) => row.email}
