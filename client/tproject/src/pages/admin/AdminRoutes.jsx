@@ -11,6 +11,11 @@ import EditUser from './users/EditUser'
 import BicycleAdmin from './BicycleAdmin'
 import ViewBicycle from './ViewBicycle'
 
+// Driver 
+
+import ViewDriverApplications from './driver/ViewDriverApplications'
+import EditDriverApplication from './driver/EditDriverApplication'
+
 import { UserContext } from '../..'
 import AdminNavList from '../../components/AdminNavList'
 import { validateAdmin } from '../../functions/user'
@@ -46,6 +51,9 @@ function AdminRoutes() {
                 <Route path="/bicycle" element={<BicycleAdmin />} />
                 <Route path="/bicycletest" element={<ViewBicycle />} />
 
+                {/* Driver Paths */}
+                <Route path="/driver/viewDriverApplications" element={<ViewDriverApplications />} />
+                <Route path="/driver/EditDriverApplication/:id" element={<EditDriverApplication />} />
             </Routes>
 
         </Box>

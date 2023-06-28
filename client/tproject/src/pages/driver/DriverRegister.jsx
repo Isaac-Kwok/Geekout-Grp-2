@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Box, Typography, TextField, Button, Container, Grid, Stepper, Step, StepLabel, Card, CardContent } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
@@ -26,28 +26,25 @@ function DriverRegister() {
     const [formData, setFormData] = useState({});
 
     function handleChangeFace(e) {
-        console.log(e.target.files);
         setFaceFile(URL.createObjectURL(e.target.files[0]));
         setFaceFileUpload(e.target.files[0]);
     }
     function handleChangeCar(e) {
-        console.log(e.target.files);
         setCarFile(URL.createObjectURL(e.target.files[0]));
         setCarFileUpload(e.target.files[0]);
     }
     function handleChangeLicense(e) {
-        console.log(e.target.files);
         setLicenseFile(URL.createObjectURL(e.target.files[0]));
         setLicenseFileUpload(e.target.files[0]);
     }
     function handleChangeIc(e) {
-        console.log(e.target.files);
         setIcFile(URL.createObjectURL(e.target.files[0]));
         setIcFileUpload(e.target.files[0])
 
     }
-    const uploadAll = () => {
+    const uploadAll = async () => {
         let file_array = [];
+        let temp_array = []
         file_array.push(faceFileUpload);
         file_array.push(carFileUpload);
         file_array.push(licenseFileUpload);
@@ -61,20 +58,20 @@ function DriverRegister() {
                 }
                 let formData = new FormData();
                 formData.append('file', file);
-                http.post('/driver/upload', formData, {
+                const res = await http.post('/driver/upload', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
                 })
-                    .then((res) => {
-                        console.log(res.data);
-                    })
-                    .catch(function (error) {
-                        console.log(error.response);
-                    });
+
+                console.log("filedata:", res.data);
+                temp_array.push(res.data.filename);
+        
             }
 
         }
+        console.log("temp array", temp_array)
+        return temp_array
 
     };
     const handleBack = () => {
@@ -122,7 +119,7 @@ function DriverRegister() {
             driver_car_model: yup.string().trim().required("Car model is a required field"),
             driver_car_license_plate: yup.string().trim().required("Car License plate is a required field"),
         }),
-        onSubmit: (data) => {
+        onSubmit: async (data) => {
             data.driver_nric_name = formData.driver_nric_name;
             data.driver_nric_number = formData.driver_nric_number;
             data.driver_postalcode = parseInt(formData.driver_postalcode);
@@ -131,17 +128,19 @@ function DriverRegister() {
             data.driver_car_license_plate = data.driver_car_license_plate.trim();
             data.driver_car_model = data.driver_car_model.trim();
 
-            data.driver_face_image = faceFile
-            data.driver_car_image = carFile
-            data.driver_license = licenseFile
-            data.driver_ic = icFile
-
             if (icFile && licenseFile && carFile && faceFile) {
-                console.log(data)
-                uploadAll()
+                const file_upload_array = await uploadAll()
+                console.log(file_upload_array)
+                console.log(file_upload_array[0])
+                data.driver_face_image = file_upload_array[0]
+                data.driver_car_image = file_upload_array[1]
+                data.driver_license = file_upload_array[2]
+                data.driver_ic = file_upload_array[3]
+                console.log("new Data", data)
                 http.post("/driver/register", data)
                     .then((res) => {
                         console.log(res.data);
+                        enqueueSnackbar('Driver Application Submitted!', { variant: 'success' });
                         navigate('/')
                     });
             }
@@ -151,6 +150,10 @@ function DriverRegister() {
 
         }
     });
+    useEffect(() => {
+        console.log("faceFile", faceFile)
+        console.log("Upload", faceFileUpload)
+    }, [])
     return (
         <Box sx={{
             border: 'solid, black',
@@ -291,7 +294,7 @@ function DriverRegister() {
                                                 </Grid>
                                                 <Grid item xs={6}>
                                                     <Button variant="contained" component="label" fullWidth>
-                                                        Upload Car Image
+                                                        Upload IC Image
                                                         <input hidden accept="image/*" onChange={handleChangeIc} multiple type="file" />
                                                     </Button>
                                                     <img src={icFile} alt="" width="100%" />

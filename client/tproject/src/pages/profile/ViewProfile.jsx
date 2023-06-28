@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { Box, Card, CardContent, Typography, Button, Stack, Grid, Divider } from '@mui/material'
+import { Box, Card, CardContent, Typography, Button, Stack, Grid, Divider, CardActions } from '@mui/material'
 import InfoBox from '../../components/InfoBox'
 import CardTitle from '../../components/CardTitle'
 import TopUpDialog from '../../components/TopUpDialog'
-
+import EditIcon from '@mui/icons-material/Edit';
 import BadgeIcon from '@mui/icons-material/Badge';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { ProfileContext } from './ProfileRoutes'
@@ -63,6 +63,9 @@ function ViewProfile() {
                             </Grid>
                         </Grid>
                     </CardContent>
+                    <CardActions>
+                        <Button variant="text" color="primary" startIcon={<EditIcon/>}>Edit Profile</Button>
+                    </CardActions>
                 </Card>
                 <Card>
                     <CardContent>

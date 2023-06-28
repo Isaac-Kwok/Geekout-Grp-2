@@ -19,10 +19,10 @@ function AdminNavList() {
                     <ListItemText primary={"Users"} />
                 </ListItemButton>
             </ListItem>
-            <ListItem key={"Vehicles"} disablePadding>
-                <ListItemButton component={Link} to="/">
+            <ListItem key={"Drivers"} disablePadding>
+                <ListItemButton component={Link} to="/admin/driver/viewdriverapplications">
                     <ListItemIcon><DirectionsCarIcon /></ListItemIcon>
-                    <ListItemText primary={"Vehicles"} />
+                    <ListItemText primary={"Drivers"} />
                 </ListItemButton>
             </ListItem>
             <ListItem key={"Bicycles"} disablePadding>
