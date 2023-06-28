@@ -41,6 +41,8 @@ app.use("/auth", authRoutes)
 app.use("/uploads", uploadRoutes)
 app.use("/payment", paymentRoutes)
 app.use('/driver', driverRoutes)
+app.use('/admin/driver', driverRoutes)
+app.use('/admin/products', adminProductsRoutes)
 
 
 db.sequelize.sync({alter: true}).then(() => {
