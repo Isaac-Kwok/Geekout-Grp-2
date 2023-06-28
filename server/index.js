@@ -29,6 +29,7 @@ const uploadRoutes = require("./routes/upload")
 const paymentRoutes = require("./routes/payment")
 const driverRoutes = require('./routes/driver')
 const adminProductsRoutes = require("./routes/admin/products")
+const bicycleRoutes = require('./routes/bicycle')
 const adminDriverRoutes = require('./routes/admin/driver')
 
 app.use(express.urlencoded({ extended: false }));
@@ -43,6 +44,8 @@ app.use("/payment", paymentRoutes)
 app.use('/driver', driverRoutes)
 app.use('/admin/driver', adminDriverRoutes)
 app.use('/admin/products', adminProductsRoutes)
+app.use('/bicycle', bicycleRoutes)
+app.use("/admin/driver", adminDriverRoutes)
 
 
 db.sequelize.sync({alter: true}).then(() => {

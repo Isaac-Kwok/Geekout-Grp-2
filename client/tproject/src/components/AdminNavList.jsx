@@ -26,7 +26,7 @@ function AdminNavList() {
                 </ListItemButton>
             </ListItem>
             <ListItem key={"Bicycles"} disablePadding>
-                <ListItemButton component={Link} to="/">
+                <ListItemButton component={Link} to="/admin/bicycle">
                     <ListItemIcon><PedalBikeIcon /></ListItemIcon>
                     <ListItemText primary={"Bicycles"} />
                 </ListItemButton>
