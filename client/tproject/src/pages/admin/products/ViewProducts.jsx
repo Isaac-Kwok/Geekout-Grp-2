@@ -31,14 +31,14 @@ function ViewProducts() {
                 return params.value ? params.value : "NIL"
             }
         },
-        { field: 'product_price_greenmiles', headerName: 'GreenMiles', minWidth: 200 },
+        { field: 'product_price_greenmiles', headerName: 'GreenMiles', minWidth: 100 },
         { field: 'product_sale', headerName: 'On Sale?', type: 'boolean', minWidth: 100 },
         { field: 'product_status', headerName: 'Active?', type: 'boolean', minWidth: 100 },
         {
             field: 'actions', type: 'actions', width: 80, getActions: (params) => [
                 <GridActionsCellItem
                     icon={<EditIcon />}
-                    label="Edit User"
+                    label="Edit Product"
                     onClick={() => {
                         navigate("/admin/products/" + params.row.id)
                     }}
@@ -51,7 +51,7 @@ function ViewProducts() {
                         if (params.row.product_status) {
                             setDeactivateProduct(params.row)
                             handleDeactivateProductDialogOpen()
-                        } else {
+                        } else if(!params.row.product_status && params.row.product_stock > 0){
                             setActivateProduct(params.row)
                             handleActivateProductDialogOpen()
                         }
@@ -154,7 +154,7 @@ function ViewProducts() {
                 </DialogActions>
             </Dialog>
             <Dialog open={activateProductDialog} onClose={handleActivateProductDialogClose}>
-                <DialogTitle>activate Product</DialogTitle>
+                <DialogTitle>Activate Product</DialogTitle>
                 <DialogContent sx={{ paddingTop: 0 }}>
                     <DialogContentText>
                         Are you sure you want to activate this product?
