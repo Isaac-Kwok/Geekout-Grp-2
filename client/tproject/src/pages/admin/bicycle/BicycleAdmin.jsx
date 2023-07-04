@@ -1,7 +1,7 @@
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import { Container } from '@mui/material';
 import { useMemo } from "react";
-import '/Users/alyshaziz/FSDPProject/TProject/client/tproject/src/bicycle.css'
+import '../../bicycle.css'
 
 
 function BicycleAdmin() {

@@ -21,12 +21,24 @@ import { SnackbarProvider } from 'notistack';
 import jwt_decode from "jwt-decode";
 import Footer from './components/Footer';
 
+let fonts = [
+  'Poppins',
+  'Nunito',
+  'Roboto',
+  '"Segoe UI"',
+  '"Helvetica Neue"',
+  'Arial',
+  'sans-serif',
+  '"Apple Color Emoji"',
+  '"Segoe UI Emoji"',
+  '"Segoe UI Symbol"',
+].join(',');
 
 // Theme for the website, configure it here
 let theme = createTheme({
   palette: {
     primary: {
-      main: "#5D8A5C",
+      main: "#0f6d51",
     },
     secondary: {
       main: grey[500],
@@ -35,11 +47,22 @@ let theme = createTheme({
       main: "#0083CA",
     },
     yellow: {
-      main: "#BC9D4B",
+      main: "#faf2e9",
     },
   },
   typography: {
-    fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+    fontFamily: fonts,
+    "fontWeightLight": 300,
+    "fontWeightRegular": 400,
+    "fontWeightMedium": 500,
+    "fontWeightBold": 700,
+  },
+  components: {
+    MuiTypography: {
+      defaultProps: {
+        fontFamily: fonts,
+      },
+    },
   },
 });
 
