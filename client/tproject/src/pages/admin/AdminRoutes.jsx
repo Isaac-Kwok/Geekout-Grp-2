@@ -8,6 +8,8 @@ import Test from '../Test'
 import ViewUsers from './users/ViewUsers'
 import CreateUser from './users/CreateUser'
 import CreateLocation from './locations/CreateLocation'
+import ViewLocations from './locations/ViewLocations'
+import EditLocation from './locations/EditLocation'
 import EditUser from './users/EditUser'
 
 // Driver 
@@ -46,7 +48,9 @@ function AdminRoutes() {
                 <Route path="/" element={<Test />} />
                 <Route path="/users" element={<ViewUsers />} />
                 <Route path="/users/create" element={<CreateUser />} />
+                <Route path="/locations/view" element={<ViewLocations />} />
                 <Route path="/locations/create" element={<CreateLocation />} />
+                <Route path="/locations/edit/:id" element={<EditLocation />} />
                 <Route path="/users/:id" element={<EditUser />} />
                 {/* Driver Paths */}
                 <Route path="/driver/viewDriverApplications" element={<ViewDriverApplications />} />

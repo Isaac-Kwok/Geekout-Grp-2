@@ -50,10 +50,16 @@ function AdminNavList() {
                     <ListItemText primary={"Support"} />
                 </ListItemButton>
             </ListItem>
-            <ListItem key={"Locations"} disablePadding>
-                <ListItemButton component={Link} to="/admin/locations/create">
+            <ListItem key={"View Locations"} disablePadding>
+                <ListItemButton component={Link} to="/admin/locations/view">
                     <ListItemIcon><LocationOnIcon /></ListItemIcon>
                     <ListItemText primary={"Location"} />
+                </ListItemButton>
+            </ListItem>
+            <ListItem key={"Create Location"} disablePadding>
+                <ListItemButton component={Link} to="/admin/locations/create">
+                    <ListItemIcon><LocationOnIcon /></ListItemIcon>
+                    <ListItemText primary={"Create Location"} />
                 </ListItemButton>
             </ListItem>
         </>
