@@ -112,7 +112,7 @@ function CreateLocation() {
         >
           Create Location
         </LoadingButton>
-        <Card sx={{ margin: "auto" }}>
+        <Card sx={{ marginBottom: "1rem" }}>
           <Box component="form" onSubmit={formik.handleSubmit}>
             <CardContent>
               <CardTitle
