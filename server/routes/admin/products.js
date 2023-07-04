@@ -13,7 +13,7 @@ router.get("/", validateAdmin, async (req, res) => {
     try {
         const products = await Product.findAll({
             attributes: {
-                exclude: ["createdAt", "updatedAt"]
+                exclude: ["createdAt"]
             }
         });
         res.json(products);
@@ -41,19 +41,6 @@ router.post('/upload',validateAdmin, upload_picture, (req, res) => {
     res.json({ filename: req.file.filename });
 });
 
-router.get("/productImage/:filename", (req, res) => {
-    const fileName = req.params.filename;
-    const directoryPath = path.join(__dirname, "../../public/uploads/products/");
-    
-    res.download(directoryPath + fileName, fileName, (err) => {
-        if (err) {
-            res.status(500).send({
-                message: "Could not download the file. " + err,
-            });
-
-        }
-    });
-})
 
 router.post("/create", validateAdmin,upload_picture,  async (req, res) => {
     let data = req.body;
@@ -101,7 +88,6 @@ router.post("/create", validateAdmin,upload_picture,  async (req, res) => {
 router.get("/:id", async (req, res) => {
     let id = req.params.id;
     let product = await Product.findByPk(id, {
-        //include: { model: User, as: "user", attributes: ['name'] }
     });
     // Check id not found
     if (!product) {
