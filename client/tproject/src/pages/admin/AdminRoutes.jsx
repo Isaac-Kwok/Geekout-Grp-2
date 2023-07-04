@@ -11,6 +11,11 @@ import CreateLocation from './locations/CreateLocation'
 import ViewLocations from './locations/ViewLocations'
 import EditLocation from './locations/EditLocation'
 import EditUser from './users/EditUser'
+import ViewProducts from './products/ViewProducts'
+import CreateProduct from './products/CreateProduct'
+import EditProduct from './products/EditProduct'
+import BicycleAdmin from './BicycleAdmin'
+import ViewBicycle from './ViewBicycle'
 
 // Driver 
 
@@ -52,6 +57,12 @@ function AdminRoutes() {
                 <Route path="/locations/create" element={<CreateLocation />} />
                 <Route path="/locations/edit/:id" element={<EditLocation />} />
                 <Route path="/users/:id" element={<EditUser />} />
+                <Route path="/products" element= {<ViewProducts />}/>
+                <Route path="/products/create" element= {<CreateProduct />}/>
+                <Route path="/products/:id" element= {<EditProduct />}/>
+                <Route path="/bicycle" element={<BicycleAdmin />} />
+                <Route path="/bicycletest" element={<ViewBicycle />} />
+
                 {/* Driver Paths */}
                 <Route path="/driver/viewDriverApplications" element={<ViewDriverApplications />} />
                 <Route path="/driver/EditDriverApplication/:id" element={<EditDriverApplication />} />

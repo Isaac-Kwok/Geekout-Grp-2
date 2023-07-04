@@ -1,11 +1,9 @@
 body {
   margin: 0;
-  font-family: 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #fcf6e8;
+  font-family: "Poppins",'Nunito', sans-serif;
 }
 
 body, #root, #root > div {
@@ -15,23 +13,4 @@ body, #root, #root > div {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
-}
-
-.fade-enter {
-  opacity: 0;
-  z-index: 1;
-}
-
-.fade-enter.fade-enter-active {
-  opacity: 1;
-  transition: opacity 250ms ease-in;
-}
-
-.fade-exit {
-  opacity: 1;
-}
-
-.fade-exit.fade-exit-active {
-  opacity: 0;
-
 }
