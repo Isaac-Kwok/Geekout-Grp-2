@@ -3,25 +3,42 @@ const yup = require("yup")
 const { Bicycle, Sequelize } = require("../models")
 const router = express.Router()
 
+const bicycleSchema = yup.object().shape({
+    bicycle_lat: yup
+      .number()
+      .min(-90)
+      .max(90)
+      .required(),
+    bicycle_lng: yup
+      .number()
+      .min(-180)
+      .max(180)
+      .required(),
+    disabled: yup.boolean(),
+    reports: yup.number().integer().min(0),
+    passkey: yup.string().nullable(),
+    registered: yup.boolean()
+});
+
 // Create a new bicycle
 router.post('/', async (req, res) => {
-    try {
-        const { bicycle_lat, bicycle_lng, disabled, reports, passkey, registered } = req.body;
+try {
+    // Validate the request body against the schema
+    const validatedData = await bicycleSchema.validate(req.body);
 
-        const bicycle = await Bicycle.create({
-            bicycle_lat: 1.3800,
-            bicycle_lng: 103.8489,
-            disabled: true,
-            reports: 0,
-            passkey: null,
-            registered: false
-        });
+    // Create a new Bicycle object using the validated data
+    const bicycle = await Bicycle.create(validatedData);
 
-        res.status(201).json(bicycle);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+    res.status(200).json(bicycle);
+} catch (error) {
+    if (error.name === 'ValidationError') {
+    // Handle validation errors
+    res.status(400).json({ message: error.message });
+    } else {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
     }
+}
 });
 
 // Get all bicycles
@@ -61,14 +78,10 @@ router.put('/:id', async (req, res) => {
             return res.status(404).json({ message: 'Bicycle not found' });
         }
 
-        await bicycle.update({
-            bicycle_lat: 10,
-            bicycle_lng: 10,
-            disabled: true,
-            reports: 0,
-            passkey: null,
-            registered: false
-        });
+        // Validate the request body against the schema
+        const validatedData = await bicycleSchema.validate(req.body);
+
+        await bicycle.update(validatedData);
 
         res.json(bicycle);
     } catch (error) {
