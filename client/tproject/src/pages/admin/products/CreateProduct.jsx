@@ -1,17 +1,14 @@
 import React, { useState } from 'react'
-import { Container, Typography, Card, CardContent, CardActions, Box, Stack, Checkbox, InputAdornment, TextField, Grid, FormControlLabel, FormControl, IconButton, InputLabel, Select, MenuItem, Button, Dialog, DialogContent, DialogActions, DialogContentText, DialogTitle, Link, Input } from '@mui/material'
+import { Container, Typography, Card, CardContent, Box, Stack, Checkbox, InputAdornment, TextField, Grid, FormControlLabel, FormControl, InputLabel, Select, MenuItem, Button, Dialog, DialogContent, DialogActions, DialogContentText, DialogTitle } from '@mui/material'
 import LoadingButton from '@mui/lab/LoadingButton';
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import CategoryIcon from '@mui/icons-material/Category';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
-import FileUploadIcon from '@mui/icons-material/FileUpload';
 import CardTitle from "../../../components/CardTitle";
 import http from '../../../http';
 import MDEditor from '@uiw/react-md-editor';
 import { useSnackbar } from 'notistack';
-import { Form, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import * as Yup from "yup";;
 import { useFormik } from 'formik';
 import AdminPageTitle from '../../../components/AdminPageTitle';
@@ -288,7 +285,7 @@ function CreateProduct() {
                 </Grid>
                 <Grid xs={12} lg={6} spacing={2} item container>
                   <Grid item xs={12}>
-                    <Typography fontWeight={700}>Product Description</Typography>
+                    <Typography fontWeight={700} marginBottom={"0.25rem"}>Product Description</Typography>
                     <MDEditor
                       data-color-mode="light"
                       preview="edit"

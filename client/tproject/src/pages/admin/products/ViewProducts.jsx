@@ -10,6 +10,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
+import AdminPageTitle from '../../../components/AdminPageTitle';
 
 function ViewProducts() {
     const [products, setProducts] = useState([])
@@ -121,7 +122,7 @@ function ViewProducts() {
     return (
         <>
             <Container maxWidth="xl" sx={{ marginY: "1rem", minWidth: 0 }}>
-                <Typography variant="h3" fontWeight={700} sx={{ marginY: ["1rem", "1rem", "2rem"], fontSize: ["2rem", "2rem", "3rem"] }}>View Product</Typography>
+                <AdminPageTitle title="View Products" />
                 <Button LinkComponent={Link} variant="contained" color="primary" sx={{ marginBottom: "1rem" }} startIcon={<AddIcon />} to="/admin/products/create">Create Product</Button>
                 <DataGrid
                     rows={products}

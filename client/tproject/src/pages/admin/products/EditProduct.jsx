@@ -1,23 +1,17 @@
 import React, { useState, useEffect } from 'react'
-import { Container, Typography, Card, CardContent, CardActions, Box, Stack, Checkbox, InputAdornment, TextField, Grid, FormControlLabel, FormControl, IconButton, InputLabel, Select, MenuItem, Button, Dialog, DialogContent, DialogActions, DialogContentText, DialogTitle, Link, Input } from '@mui/material'
+import { Container, Typography, Card, CardContent, Box, Stack, Checkbox, InputAdornment, TextField, Grid, FormControlLabel, FormControl, InputLabel, Select, MenuItem, Button, Dialog, DialogContent, DialogActions, DialogContentText, DialogTitle } from '@mui/material'
 import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
 import CardTitle from '../../../components/CardTitle';
 import { useNavigate, useParams } from 'react-router-dom'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
 import http from '../../../http'
 import MDEditor from '@uiw/react-md-editor';
-import AdminPageTitle from '../../../components/AdminPageTitle';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
+import AdminPageTitle from '../../../components/AdminPageTitle'
 import CategoryIcon from '@mui/icons-material/Category';
 import { useSnackbar } from 'notistack'
 import * as Yup from "yup";
 import { useFormik } from 'formik';
-import ProfilePicture from '../../../components/ProfilePicture';
-import md5 from "md5";
 
 function EditProduct() {
   const navigate = useNavigate();
@@ -105,10 +99,10 @@ function EditProduct() {
 
       http.put("/admin/products/" + id, data).then((res) => {
         if (res.status === 200) {
-          enqueueSnackbar("Product updated successfully!.", { variant: "success" });
+          enqueueSnackbar("Product updated successfully!", { variant: "success" });
           navigate("/admin/products")
         } else {
-          enqueueSnackbar("Product update failed!.", { variant: "error" });
+          enqueueSnackbar("Product update failed!", { variant: "error" });
           setLoading(false);
         }
       }).catch((err) => {
@@ -124,7 +118,7 @@ function EditProduct() {
       if (res.status === 200) {
         setProduct(res.data);
       } else {
-        enqueueSnackbar("Product retrieval failed!.", { variant: "error" });
+        enqueueSnackbar("Product retrieval failed!", { variant: "error" });
         setLoading(false);
         return navigate(-1);
       }
@@ -298,7 +292,7 @@ function EditProduct() {
                 </Grid>
                 <Grid xs={12} lg={6} spacing={2} item container>
                   <Grid item xs={12}>
-                    <Typography fontWeight={700}>Product Description</Typography>
+                    <Typography fontWeight={700} marginBottom={"0.25rem"}>Product Description</Typography>
                     <MDEditor
                       data-color-mode="light"
                       preview="edit"
