@@ -8,8 +8,10 @@ import Test from '../Test'
 import ViewUsers from './users/ViewUsers'
 import CreateUser from './users/CreateUser'
 import EditUser from './users/EditUser'
-import BicycleAdmin from './BicycleAdmin'
-import ViewBicycle from './ViewBicycle'
+import BicycleAdmin from './bicycle/BicycleAdmin'
+import ViewBicycle from './bicycle/ViewBicycle'
+import AddBicycle from './bicycle/AddBicycle'
+import EditBicycle from './bicycle/EditBicycle'
 
 // Driver 
 
@@ -48,8 +50,13 @@ function AdminRoutes() {
                 <Route path="/users" element={<ViewUsers />} />
                 <Route path="/users/create" element={<CreateUser />} />
                 <Route path="/users/:id" element={<EditUser />} />
+
+                {/* Bicycle Paths */}
                 <Route path="/bicycle" element={<BicycleAdmin />} />
-                <Route path="/bicycletest" element={<ViewBicycle />} />
+                <Route path="/bicycle/view" element={<ViewBicycle />} />
+                <Route path="/bicycle/add" element={<AddBicycle />} />
+                <Route path="/bicycle/:id" element={<EditBicycle />} />
+
 
                 {/* Driver Paths */}
                 <Route path="/driver/viewDriverApplications" element={<ViewDriverApplications />} />
