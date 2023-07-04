@@ -11,8 +11,8 @@ import EditUser from './users/EditUser'
 import ViewProducts from './products/ViewProducts'
 import CreateProduct from './products/CreateProduct'
 import EditProduct from './products/EditProduct'
-import BicycleAdmin from './BicycleAdmin'
-import ViewBicycle from './ViewBicycle'
+import BicycleAdmin from './Bicycles/BicycleAdmin'
+import ViewBicycle from './Bicycles/ViewBicycle'
 
 // Driver 
 

@@ -3,7 +3,7 @@ import { Container, Typography, Chip, Button, Dialog, DialogContent, DialogConte
 import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
-import http from "../../http";
+import http from "../../../http";
 
 function ViewBicycle() {
 
