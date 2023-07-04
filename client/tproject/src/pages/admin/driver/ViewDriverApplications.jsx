@@ -236,7 +236,7 @@ function ViewDriverApplications() {
                                         color="text.secondary"
                                         variant="overline"
                                     >
-                                        Approved Applicaitons
+                                        Approved Applications
                                     </Typography>
                                     <Typography variant="h4">
                                         {approved.length}
@@ -271,7 +271,7 @@ function ViewDriverApplications() {
                                         color="text.secondary"
                                         variant="overline"
                                     >
-                                        Rejected appliations
+                                        Rejected Applications
                                     </Typography>
                                     <Typography variant="h4">
                                         {rejected.length}

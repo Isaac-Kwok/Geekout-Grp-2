@@ -25,7 +25,7 @@ export function Navbar() {
                         <Toolbar>
                             <Box sx={{ flexGrow: 1, display: "flex", alignItems: "center" }}>
                                 <IconButton color="inherit" sx={{ marginRight: "1rem", display: ["flex", "flex", "none"] }} onClick={() => setIsDrawerOpen(true)}><MenuIcon /></IconButton>
-                                <Typography variant="h6" component="div" sx={{ marginRight: "1rem" }}>EnviroGo</Typography>
+                                <Typography variant="h6" component="div" sx={{ marginRight: "1rem", fontFamily: "'caveat brush'" }}>EnviroGo</Typography>
                                 <Box sx={{ display: ["none", "none", "initial"] }}>
                                     <Button LinkComponent={Link} variant="text" color="inherit" to="/">Home</Button>
                                     <Button LinkComponent={Link} variant="text" color="inherit" to="/login">Car</Button>
@@ -44,7 +44,7 @@ export function Navbar() {
                     <Toolbar>
                         <Box sx={{ flexGrow: 1, display: "flex", alignItems: "center" }}>
                             <IconButton color="inherit" sx={{ marginRight: "1rem", display: ["flex", "flex", "none"] }} onClick={() => setIsAdminDrawerOpen(true)}><MenuIcon /></IconButton>
-                            <Typography variant="h6" component="div" sx={{ marginRight: "1rem" }}>EnviroGo</Typography>
+                            <Typography variant="h6" component="div" sx={{ marginRight: "1rem", fontFamily: "'caveat brush'" }}>EnviroGo</Typography>
                             <Divider orientation="vertical" flexItem sx={{ marginRight: "1rem" }} />
                             <Typography variant="h6" component="div" sx={{ marginRight: "1rem" }}>Admin Panel</Typography>
                         </Box>
