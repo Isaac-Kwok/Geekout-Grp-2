@@ -59,7 +59,7 @@ let uploadProfilePicture = multer({
 // Gregory upload file
 const locationUpload = multer.diskStorage({
   destination: (req, file, callback) => {
-    callback(null, "./public/uploads/location_picture");
+    callback(null, "./public/uploads/location_pictures");
   },
   filename: (req, file, callback) => {
     callback(null, nanoid(10) + path.extname(file.originalname));

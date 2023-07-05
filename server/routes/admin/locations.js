@@ -6,6 +6,7 @@ const router = express.Router();
 // const ejs = require("ejs");
 const { validateAdmin } = require("../../middleware/validateAdmin");
 const { name } = require("ejs");
+const path = require('path')
 
 // create new location (staff)
 router.post("/create", validateAdmin, async (req, res) => {
@@ -14,7 +15,7 @@ router.post("/create", validateAdmin, async (req, res) => {
     notes: yup.string().max(1024),
     status: yup.bool().required(),
     premium: yup.number(),
-    imageurl: yup.string().required(),
+    imageFile: yup.string().required(),
     arrivals: yup.number(),
     departures: yup.number(),
   });
@@ -73,7 +74,7 @@ router.put("/edit/:id", async (req, res) => {
     notes: yup.string().max(1024),
     status: yup.bool().required(),
     premium: yup.number(),
-    imageurl: yup.string().required(),
+    imageFile: yup.string().required(),
     arrivals: yup.number(),
     departures: yup.number(),
   });
@@ -143,5 +144,20 @@ router.delete("/deleteAll", async (req, res) => {
 //   }
 //   res.json(location);
 // });
+
+// Get driver images by name
+router.get("/images/:filename", (req, res) => {
+  const fileName = req.params.filename;
+  const directoryPath = path.join(__dirname, "../../public/uploads/location_pictures/");
+  
+  res.download(directoryPath + fileName, fileName, (err) => {
+      if (err) {
+          res.status(500).send({
+              message: "Could not download the file. " + err,
+          });
+
+      }
+  });
+})
 
 module.exports = router;

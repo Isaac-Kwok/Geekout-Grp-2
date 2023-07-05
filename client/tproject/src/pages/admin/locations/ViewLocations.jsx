@@ -10,14 +10,18 @@ import {
   TableRow,
   IconButton,
   Button,
+  Container,
 } from "@mui/material";
+import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import { Edit, Delete } from "@mui/icons-material";
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import http from "../../../http";
 import { useNavigate } from "react-router-dom";
 import AdminPageTitle from "../../../components/AdminPageTitle";
 
 function LocationList() {
   const [locationList, setLocationList] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchLocations();
@@ -27,10 +31,18 @@ function LocationList() {
     http.get("/admin/locations/all").then((res) => {
       console.log(res.data);
       setLocationList(res.data);
+      setImage(res.data.imageFile);
     });
   };
 
-  const navigate = useNavigate();
+  const [imageFile, setImage] = useState(null);
+
+  const handleDetail = (id) => {
+    http.get(`/admin/locations/${id}`).then((res) => {
+      console.log(res.data);
+      navigate(`/admin/locations/${id}`);
+    });
+  }
 
   const handleEdit = (id) => {
     console.log("Edit location:", id);
@@ -51,15 +63,46 @@ function LocationList() {
       });
   };
 
-  return (
-    <Box sx={{ maxWidth: "100%", mx: "auto", px: 2 }}>
-      <AdminPageTitle title="All Locations"/>
+  const columns = [
+    { field: 'imageFile', headerName: 'Image', minWidth: 200 },
+    { field: 'name', headerName: 'Location Name', minWidth: 200 },
+    // { field: 'notes', headerName: 'Notes', minWidth: 200, flex: 1 },
+    { field: 'premium', headerName: 'Premium', width: 150, type: "number" },
+    { field: 'arrivals', headerName: 'Arrivals', minWidth: 150, type: "number" },
+    { field: 'departures', headerName: 'Departures', minWidth: 150, type: "number" },
+    { field: 'status', headerName: 'Status', type: 'boolean', minWidth: 80 },
+    {
+      field: 'actions', headerName: 'Actions', type: 'actions', width: 100, getActions: (params) => [
+        <GridActionsCellItem
+          icon={<VisibilityIcon />}
+          label="View Details"
+          onClick={() => {
+            handleDetail(params.row.name)
+          }}
+        />,
+        <GridActionsCellItem
+          icon={<Edit />}
+          label="Edit Location"
+          onClick={() => {
+            handleEdit(params.row.name)
+          }}
+        />,
+        <GridActionsCellItem
+          icon={<Delete />}
+          label={"Delete Location"}
+          onClick={() => {
+            handleDelete(params.row.name)
+          }}
+        />
+      ]
+    },
+  ];
 
-      {locationList.length === 0 ? (
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Typography variant="body1" sx={{ mr: 2 }}>
-            There are no locations.
-          </Typography>
+  return (
+    <Container sx={{ marginTop: "1rem" }} maxWidth="xl">
+      <AdminPageTitle title="All Locations" />
+      <>
+        <Box sx={{ display: "flex", mb: "1rem" }}>
           <Button
             variant="contained"
             color="primary"
@@ -68,70 +111,16 @@ function LocationList() {
             Create Location
           </Button>
         </Box>
-      ) : (
-        <>
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => navigate("/admin/locations/create")}
-            >
-              Create Location
-            </Button>
-          </Box>
 
-          <TableContainer sx={{ width: "100%", overflowX: "auto" }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Image</TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Notes</TableCell>
-                  <TableCell>Premium</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {locationList.map((location) => (
-                  <TableRow key={location.id}>
-                    <TableCell>
-                      <img
-                        src={location.imageurl}
-                        alt="Location"
-                        style={{ width: "50px" }}
-                      />
-                    </TableCell>
-                    <TableCell>{location.name}</TableCell>
-                    <TableCell>{location.notes}</TableCell>
-                    <TableCell>{location.premium}</TableCell>
-                    <TableCell>
-                      {location.status ? "Active" : "Inactive"}
-                    </TableCell>
-                    <TableCell>
-                      <IconButton
-                        color="primary"
-                        aria-label="Edit"
-                        onClick={() => handleEdit(location.name)}
-                      >
-                        <Edit />
-                      </IconButton>
-                      <IconButton
-                        color="secondary"
-                        aria-label="Delete"
-                        onClick={() => handleDelete(location.name)}
-                      >
-                        <Delete />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </>
-      )}
-    </Box>
+        <DataGrid
+          rows={locationList}
+          columns={columns}
+          pageSize={10}
+          autoHeight
+          getRowId={(row) => row.name}
+        />
+      </>
+    </Container>
   );
 }
 
