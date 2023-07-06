@@ -1,15 +1,14 @@
 import React, { useState } from 'react'
-import { Container, Typography, Card, CardContent, CardActions, Box, Stack, Checkbox, InputAdornment, TextField, Grid, FormControlLabel, FormControl, IconButton, InputLabel, Select, MenuItem, Button } from '@mui/material'
+import { Container, Typography, Card, CardContent, Box, Stack, Checkbox, InputAdornment, TextField, Grid, FormControlLabel, FormControl, InputLabel, Select, MenuItem, Button, Dialog, DialogContent, DialogActions, DialogContentText, DialogTitle } from '@mui/material'
 import LoadingButton from '@mui/lab/LoadingButton';
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import CategoryIcon from '@mui/icons-material/Category';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
 import CardTitle from "../../../components/CardTitle";
 import http from '../../../http';
 import MDEditor from '@uiw/react-md-editor';
 import { useSnackbar } from 'notistack';
-import { Form, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import * as Yup from "yup";;
 import { useFormik } from 'formik';
 import AdminPageTitle from '../../../components/AdminPageTitle';
@@ -17,45 +16,43 @@ import AdminPageTitle from '../../../components/AdminPageTitle';
 function CreateProduct() {
 
   const [loading, setLoading] = useState(false);
-  const [productImageFileUpload, setProductImageFileUpload] = useState();
+  const [productFile, setProductFile] = useState();
+  const [productFileUpload, setProductFileUpload] = useState();
   const [descriptionValue, setDescriptionValue] = useState();
-  const [productImageFile, setImageProductFile] = useState();
+  const [loadingPicture, setLoadingPicture] = useState(false);
+  const [changePictureDialog, setChangePictureDialog] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
-  function handleChangeproduct(e) {
-    console.log(e.target.files);
-    setImageProductFile(URL.createObjectURL(e.target.files[0]));
-    setProductImageFileUpload(e.target.files[0]);
+  const handleChangePictureDialogClose = () => {
+    setChangePictureDialog(false);
   }
 
-  const uploadAll = () => {
-    let file_array = [];
-    file_array.push(productImageFileUpload);
-    for (let index = 0; index < file_array.length; index++) {
-      let file = file_array[index];
-      if (file) {
-        if (file.size > 1024 * 1024) {
-          enqueueSnackbar("File size cannot exceed more than 1MB", { variant: "error" })
-          return;
-        }
-        let formData = new FormData();
-        formData.append('file', file);
-        http.post('/admin/products/upload', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        })
-          .then((res) => {
-            console.log(res.data);
-          })
-          .catch(function (error) {
-            console.log(error.response);
-          });
-      }
-
+  const handleChangePictureDialogOpen = () => {
+    setChangePictureDialog(true);
+  }
+  function handleChangeProductImage(e) {
+    setProductFile(URL.createObjectURL(e.target.files[0]));
+    setProductFileUpload(e.target.files[0]);
+    console.log(productFileUpload)
+    if (productFileUpload !=  undefined) {
+    enqueueSnackbar("Successfully uploaded product picture. ", { variant: "success" })
+    } else {
+      enqueueSnackbar("Error uploading product picture. ", { variant: "error" })
     }
-  };
+  }
+
+  const handlePictureChange = (e) => {
+    setLoadingPicture(true);
+    console.log(e);
+    const formData = new FormData();
+
+    // Loop through the files and append each to the form data
+    for (let i = 0; i < e.target.files.length; i++) {
+      formData.append("product_picture", e.target.files[i]);
+    }
+
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -91,23 +88,39 @@ function CreateProduct() {
       data.product_category = data.product_category.trim();
       data.product_stock = data.product_stock;
       data.product_description = data.product_description.trim();
-      data.product_picture = data.product_picture;
-      data.product_picture_type = data.product_picture_type;
       data.product_price = data.product_price;
       data.product_sale = data.product_sale;
       data.product_discounted_percent = data.product_discounted_percent;
       data.product_status = data.product_status;
+      data.duration_of_pass = data.duration_of_pass;
+
 
       console.log(data)
-      uploadAll()
-      http.post("/admin/products/create", data)
-        .then((res) => {
-          if (res.status == 200) {
-            enqueueSnackbar('Product successfully created', { variant: 'success' });
-            navigate('/admin/products')
+      let formData = new FormData();
+      formData.append('file', productFileUpload);
+      http.post('/admin/products/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+        .then((uploadRes) => {
+          if (uploadRes.status === 200) {
+            data.product_picture = uploadRes.data.filename;
+            console.log(data)
+            http.post("/admin/products/create", data)
+              .then((res) => {
+                if (res.status === 200) {
+                  enqueueSnackbar('Product successfully created', { variant: 'success' });
+                  navigate('/admin/products');
+                }
+              })
+              .catch((e) => {
+                enqueueSnackbar("Error creating product. " + e.response.data.message, { variant: "error" });
+              });
           }
-        }).catch((e) => {
-          enqueueSnackbar("Error creating product. " + e.response.data.message, { variant: "error" })
+        })
+        .catch((e) => {
+          enqueueSnackbar("Error uploading file. " + e.response.data.message, { variant: "error" });
         });
 
     }
@@ -225,7 +238,7 @@ function CreateProduct() {
                       name="product_price_greenmiles"
                       label="GreenMiles"
                       variant="outlined"
-                      value={formik.values.product_price / 10}
+                      value={formik.values.product_price_greenmiles = formik.values.product_price / 10}
                       error={formik.touched.product_price_greenmiles && Boolean(formik.errors.product_price_greenmiles)}
                       helperText={formik.touched.product_price_greenmiles && formik.errors.product_price_greenmiles}
                     />
@@ -238,7 +251,7 @@ function CreateProduct() {
                       name="product_discounted_price_greenmiles"
                       label="GreenMiles Discounted"
                       variant="outlined"
-                      value={Math.floor(((1 - formik.values.product_discounted_percent / 100) * formik.values.product_price) / 10)}
+                      value={formik.values.product_discounted_price_greenmiles = Math.floor(((1 - formik.values.product_discounted_percent / 100) * formik.values.product_price) / 10)}
                       error={formik.touched.product_discounted_price_greenmiles && Boolean(formik.errors.product_discounted_price_greenmiles)}
                       helperText={formik.touched.product_discounted_price_greenmiles && formik.errors.product_discounted_price_greenmiles}
                     />
@@ -272,7 +285,7 @@ function CreateProduct() {
                 </Grid>
                 <Grid xs={12} lg={6} spacing={2} item container>
                   <Grid item xs={12}>
-                    <Typography fontWeight={700}>Product Description</Typography>
+                    <Typography fontWeight={700} marginBottom={"0.25rem"}>Product Description</Typography>
                     <MDEditor
                       data-color-mode="light"
                       preview="edit"
@@ -289,9 +302,8 @@ function CreateProduct() {
                   </Grid>
                   <Grid item xs={12}>
                     {/* product_picture */}
-                    <Button variant="contained" component="label" fullWidth>
+                    <Button variant="contained" component="label" fullWidth onClick={handleChangePictureDialogOpen}>
                       Upload Product Image
-                      <input hidden accept="image/*" onChange={handleChangeproduct} multiple type="file" />
                     </Button>
                   </Grid>
                 </Grid>
@@ -328,6 +340,25 @@ function CreateProduct() {
           </Box>
         </Card>
       </Container>
+      <Dialog open={changePictureDialog} onClose={handleChangePictureDialogClose}>
+        <DialogTitle>Upload Product Picture</DialogTitle>
+        <Box component="form">
+          <DialogContent sx={{ paddingTop: 0 }}>
+            <DialogContentText>
+              <img src={productFile} alt="" width="100%" />
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Stack direction={["column", "row"]} spacing={1}>
+              <Button style={{ justifyContent: "flex-end" }} onClick={handleChangePictureDialogClose} startIcon={<CloseIcon />}>Cancel</Button>
+              <Button variant="contained" component="label" fullWidth>
+                Upload Product Image
+                <input hidden accept="image/*" onChange={handleChangeProductImage} multiple type="file" />
+              </Button>
+            </Stack>
+          </DialogActions>
+        </Box>
+      </Dialog>
     </>
   )
 }

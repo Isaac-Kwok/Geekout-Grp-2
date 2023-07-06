@@ -31,6 +31,7 @@ const driverRoutes = require('./routes/driver')
 const adminProductsRoutes = require("./routes/admin/products")
 const bicycleRoutes = require('./routes/bicycle')
 const adminDriverRoutes = require('./routes/admin/driver')
+const productsRoutes = require('./routes/products')
 const adminLocationRoutes = require('./routes/admin/locations')
 const fileRoute = require('./routes/file');
 app.use("/file", fileRoute);
@@ -49,6 +50,7 @@ app.use('/admin/driver', adminDriverRoutes)
 app.use('/admin/products', adminProductsRoutes)
 app.use('/bicycle', bicycleRoutes)
 app.use("/admin/driver", adminDriverRoutes)
+app.use("/products", productsRoutes)
 app.use("/admin/locations", adminLocationRoutes)
 
 

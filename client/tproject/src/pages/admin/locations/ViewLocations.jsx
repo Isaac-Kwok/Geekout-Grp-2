@@ -64,22 +64,14 @@ function LocationList() {
   };
 
   const columns = [
-    { field: 'imageFile', headerName: 'Image', minWidth: 200 },
     { field: 'name', headerName: 'Location Name', minWidth: 200 },
-    // { field: 'notes', headerName: 'Notes', minWidth: 200, flex: 1 },
+    { field: 'notes', headerName: 'Notes', minWidth: 200, flex: 1 },
     { field: 'premium', headerName: 'Premium', width: 150, type: "number" },
     { field: 'arrivals', headerName: 'Arrivals', minWidth: 150, type: "number" },
     { field: 'departures', headerName: 'Departures', minWidth: 150, type: "number" },
     { field: 'status', headerName: 'Status', type: 'boolean', minWidth: 80 },
     {
-      field: 'actions', headerName: 'Actions', type: 'actions', width: 100, getActions: (params) => [
-        <GridActionsCellItem
-          icon={<VisibilityIcon />}
-          label="View Details"
-          onClick={() => {
-            handleDetail(params.row.name)
-          }}
-        />,
+      field: 'actions', type: 'actions', width: 100, getActions: (params) => [
         <GridActionsCellItem
           icon={<Edit />}
           label="Edit Location"
