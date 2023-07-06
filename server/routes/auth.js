@@ -59,6 +59,7 @@ router.post("/", async (req, res) => {
             account_type: user.account_type,
             profile_picture: user.profile_picture,
             profile_picture_type: user.profile_picture_type,
+            driver_application_sent: user.driver_application_sent
         }
 
         const token = jwt.sign({type: "session",user:userInfo}, process.env.APP_SECRET, { expiresIn: "7d" })
