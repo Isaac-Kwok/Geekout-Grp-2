@@ -71,7 +71,14 @@ function LocationList() {
     { field: 'departures', headerName: 'Departures', minWidth: 150, type: "number" },
     { field: 'status', headerName: 'Status', type: 'boolean', minWidth: 80 },
     {
-      field: 'actions', type: 'actions', width: 100, getActions: (params) => [
+      field: 'actions', type: 'actions', width: 120, getActions: (params) => [
+        <GridActionsCellItem
+          icon={<VisibilityIcon />}
+          label="View Location"
+          onClick={() => {
+            handleDetail(params.row.name)
+          }}
+        />,
         <GridActionsCellItem
           icon={<Edit />}
           label="Edit Location"

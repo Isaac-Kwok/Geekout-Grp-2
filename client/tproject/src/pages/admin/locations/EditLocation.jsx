@@ -188,28 +188,30 @@ function EditLocation() {
   return (
     <>
       <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
-        <AdminPageTitle title="Edit Location" backbutton />
+        <AdminPageTitle title="Edit Location" subtitle={location.name} backbutton />
+        <Box component="form" onSubmit={formik.handleSubmit}>
+          <LoadingButton
+            variant="contained"
+            color="primary"
+            type="submit"
+            loading={loading}
+            loadingPosition="start"
+            startIcon={<SaveIcon />}
+            onClick={formik.handleSubmit}
+            sx={{ marginBottom: "1rem" }}
+          >
+            Save changes
+          </LoadingButton>
+          <Card sx={{ margin: "auto" }}>
 
-        <Card sx={{ margin: "auto" }}>
-          <Box component="form" onSubmit={formik.handleSubmit}>
-            <LoadingButton
-              variant="contained"
-              color="primary"
-              type="submit"
-              loading={loading}
-              loadingPosition="start"
-              startIcon={<SaveIcon />}
-              onClick={formik.handleSubmit}
-              sx={{ marginBottom: "1rem" }}
-            >
-              Save changes
-            </LoadingButton>
+
             <CardContent>
+
               <CardTitle
                 title="Location Information"
                 icon={<PlaceIcon color="text.secondary" />}
               />
-              <Grid container spacing={2} sx={{ marginY: "1rem" }}>
+              <Grid container spacing={2} sx={{ marginBottom: "1rem" }}>
                 <Grid xs={12} lg={12} spacing={1} item container>
                   <Grid item xs={12} sm={12}>
                     <TextField
@@ -321,9 +323,9 @@ function EditLocation() {
                       }
                       sx={{ marginY: "1rem" }}
                     />
-                    </Grid>
-                      
-                    <Grid item xs={12} sm={12}>
+                  </Grid>
+
+                  <Grid item xs={12} sm={12}>
                     {/* Image upload */}
                     <Box sx={{ textAlign: "center", mt: 2 }}>
                       <Button variant="contained" component="label">
@@ -356,13 +358,14 @@ function EditLocation() {
                     </Box>
                   </Grid>
                   <Grid item xs={12} sm={12}>
-                  <img src={import.meta.env.VITE_API_URL + "/admin/locations/images/" + imageFile} alt="locImg" style={{ maxWidth: "100%", height: "auto" }}/>
+                    <img src={import.meta.env.VITE_API_URL + "/admin/locations/images/" + imageFile} alt="locImg" style={{ maxWidth: "100%", height: "auto" }} />
                   </Grid>
                 </Grid>
               </Grid>
             </CardContent>
-          </Box>
-        </Card>
+
+          </Card>
+        </Box>
       </Container>
     </>
   );

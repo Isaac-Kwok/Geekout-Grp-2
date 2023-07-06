@@ -59,6 +59,7 @@ let uploadProfilePicture = multer({
 // Gregory upload file
 const locationUpload = multer.diskStorage({
   destination: (req, file, callback) => {
+    fs.mkdirSync("./public/uploads/location_pictures", { recursive: true });
     callback(null, "./public/uploads/location_pictures");
   },
   filename: (req, file, callback) => {

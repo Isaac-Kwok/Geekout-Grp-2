@@ -40,7 +40,7 @@ const LocationDetails = () => {
 
   return (
     <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
-      <AdminPageTitle title="View Location Details" backbutton />
+      <AdminPageTitle title="Location Details" subtitle={location.name} backbutton />
       <Card sx={{ margin: "auto" }}>
         <CardMedia
           sx={{ height: 300 }}
