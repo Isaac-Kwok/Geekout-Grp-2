@@ -30,7 +30,7 @@ export function Navbar() {
                                     <Button LinkComponent={Link} variant="text" color="inherit" to="/">Home</Button>
                                     <Button LinkComponent={Link} variant="text" color="inherit" to="/login">Car</Button>
                                     <Button LinkComponent={Link} variant="text" color="inherit" to="/bicycle">Bicycles</Button>
-                                    <Button LinkComponent={Link} variant="text" color="inherit" to="/login">Shop</Button>
+                                    <Button LinkComponent={Link} variant="text" color="inherit" to="/products">Shop</Button>
                                 </Box>
                             </Box>
                             {!user && <Button LinkComponent={Link} variant="text" color="inherit" to="/login" startIcon={<LoginIcon/>}>Login</Button>}

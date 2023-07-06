@@ -48,10 +48,11 @@ router.post("/create", validateAdmin,upload_picture,  async (req, res) => {
     let validationSchema = yup.object().shape({
         product_name: yup.string().trim().min(3).max(100).required(),
         product_category: yup.string().trim().required(),
+        product_sub_category: yup.string().trim().required(),
+        pass_category_status: yup.bool(),
         product_stock: yup.number().integer().required(),
         product_description: yup.string().trim().min(3).max(1000).required(),
         product_picture: yup.string(),
-        product_picture_type: yup.string(),
         product_price: yup.number().positive().integer().required(),
         product_sale: yup.bool(),
         product_discounted_percent: yup.number().positive().integer().required(),
@@ -70,6 +71,7 @@ router.post("/create", validateAdmin,upload_picture,  async (req, res) => {
 
     data.product_name = data.product_name.trim();
     data.product_category = data.product_category.trim();
+    data.product_sub_category = data.product_sub_category.trim()
     data.product_stock = data.product_stock;
     data.product_description = data.product_description.trim();
     data.product_picture = data.product_picture;
@@ -97,14 +99,37 @@ router.get("/:id", async (req, res) => {
     res.json(product);
 });
 
+router.put("/status/:id", validateAdmin, async (req, res) => {
+    const schema = yup.object().shape({
+        product_status: yup.bool()
+    });
+    try {
+        const body = await schema.validate(req.body, { abortEarly: false })
+        const product = await Product.findByPk(req.params.id)
+        if (!product) {
+            return res.status(404).json({message:"Product not found"})
+        }
+
+        await product.update({
+            ...body
+        })
+
+        res.json(product)
+    } catch (error) {
+        res.status(400).json({ message: error.errors })
+    }
+
+});
+
 router.put("/:id", validateAdmin, async (req, res) => {
     const schema = yup.object().shape({
         product_name: yup.string().trim().min(3).max(100).required(),
         product_category: yup.string().trim().required(),
+        product_sub_category: yup.string().trim().required(),
+        pass_category_status: yup.bool(),
         product_stock: yup.number().integer().required(),
         product_description: yup.string().trim().min(3).max(1000).required(),
         product_picture: yup.string(),
-        product_picture_type: yup.string(),
         product_price: yup.number().positive().integer().required(),
         product_sale: yup.bool(),
         product_discounted_percent: yup.number().positive().integer().required(),
