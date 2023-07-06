@@ -65,6 +65,7 @@ const locationUpload = multer.diskStorage({
     callback(null, nanoid(10) + path.extname(file.originalname));
   },
 });
+
 const uploadLocationPicture = multer({
   storage: locationUpload,
   limits: { fileSize: 1024 * 1024 },

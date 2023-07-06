@@ -3,7 +3,7 @@ const router = express.Router();
 const { validateToken } = require("../middleware/validateToken");
 const { uploadLocationPicture } = require("../middleware/upload");
 
-router.post("/upload", validateToken, uploadLocationPicture, (req, res) => {
+router.post("/upload", validateToken, uploadLocationPicture, async (req, res) => {
   res.json({ filename: req.file.filename });
 });
 
