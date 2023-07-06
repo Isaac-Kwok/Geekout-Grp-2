@@ -33,6 +33,8 @@ const bicycleRoutes = require('./routes/bicycle')
 const adminDriverRoutes = require('./routes/admin/driver')
 const productsRoutes = require('./routes/products')
 const adminLocationRoutes = require('./routes/admin/locations')
+const fileRoute = require('./routes/file');
+app.use("/file", fileRoute);
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));

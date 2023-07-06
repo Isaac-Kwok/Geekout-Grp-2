@@ -3,8 +3,7 @@ module.exports = (sequelize, DataTypes) => {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
-      primaryKey: true
-
+      primaryKey: true,
     },
     notes: {
       type: DataTypes.TEXT,
@@ -19,9 +18,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 0.0,
     },
-    imageurl: {
+    imageFile: {
       type: DataTypes.STRING,
-      allowNull: false,
     },
     arrivals: {
       type: DataTypes.INTEGER,
@@ -32,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
-    }
+    },
   });
   return Location;
 };
