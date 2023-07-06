@@ -16,6 +16,7 @@ import ViewProfile from './ViewProfile'
 import ViewWallet from './ViewWallet'
 import ViewLogins from './ViewLogins';
 import ViewTransactionHistory from './ViewTransactionHistory';
+import ViewTransactionHistoryDetails from './ViewTransactionHistoryDetails';
 import http from '../../http'
 
 export const ProfileContext = createContext(null)
@@ -82,7 +83,7 @@ function ProfileRoutes() {
                                     </ListItemButton>
                                 </ListItem>
                                 <ListItem key={"Transaction History"} disablePadding>
-                                    <ListItemButton component={Link} to="/profile/history" selected={(location.pathname == "/profile/history")}>
+                                    <ListItemButton component={Link} to="/profile/history" selected={(location.pathname.includes("/profile/history"))}>
                                         <ListItemIcon><HistoryIcon /></ListItemIcon>
                                         <ListItemText primary={"Transaction History"} />
                                     </ListItemButton>
@@ -98,6 +99,7 @@ function ProfileRoutes() {
                                 <Route path="/wallet" element={<ViewWallet />} />
                                 <Route path="/logins" element={<ViewLogins />} />
                                 <Route path="/history" element={<ViewTransactionHistory />} />
+                                <Route path="/history/:id" element={<ViewTransactionHistoryDetails />} />
                             </Routes>
                         </ProfileContext.Provider>
 

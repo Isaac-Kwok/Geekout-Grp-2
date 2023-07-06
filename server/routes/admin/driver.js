@@ -52,7 +52,7 @@ router.put("/edit/:id",  async (req, res) => {
         where: { id: id }
     })
     let num2 = await User.update(newUser, {
-        where: { id: id }
+        where: { id: application.user_id }
     })
     if (num == 1 && num2 == 1) {
             // Send email
@@ -63,11 +63,13 @@ router.put("/edit/:id",  async (req, res) => {
         subject: data.subject,
         html: html,
     })
+        
         res.json({
             message: "Driver Application and User was updated successfully."
         });
     }
     else {
+        console.log(num + " " + num2)
         res.status(400).json({
             message: `Cannot update Driver application with id ${id}.`
         });

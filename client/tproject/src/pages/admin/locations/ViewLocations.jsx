@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import { Edit, Delete } from "@mui/icons-material";
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import http from "../../../http";
 import { useNavigate } from "react-router-dom";
 import AdminPageTitle from "../../../components/AdminPageTitle";
@@ -30,8 +31,18 @@ function LocationList() {
     http.get("/admin/locations/all").then((res) => {
       console.log(res.data);
       setLocationList(res.data);
+      setImage(res.data.imageFile);
     });
   };
+
+  const [imageFile, setImage] = useState(null);
+
+  const handleDetail = (id) => {
+    http.get(`/admin/locations/${id}`).then((res) => {
+      console.log(res.data);
+      navigate(`/admin/locations/${id}`);
+    });
+  }
 
   const handleEdit = (id) => {
     console.log("Edit location:", id);
@@ -60,7 +71,14 @@ function LocationList() {
     { field: 'departures', headerName: 'Departures', minWidth: 150, type: "number" },
     { field: 'status', headerName: 'Status', type: 'boolean', minWidth: 80 },
     {
-      field: 'actions', type: 'actions', width: 100, getActions: (params) => [
+      field: 'actions', type: 'actions', width: 120, getActions: (params) => [
+        <GridActionsCellItem
+          icon={<VisibilityIcon />}
+          label="View Location"
+          onClick={() => {
+            handleDetail(params.row.name)
+          }}
+        />,
         <GridActionsCellItem
           icon={<Edit />}
           label="Edit Location"

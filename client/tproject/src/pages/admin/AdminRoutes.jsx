@@ -9,6 +9,7 @@ import ViewUsers from './users/ViewUsers'
 import CreateUser from './users/CreateUser'
 import CreateLocation from './locations/CreateLocation'
 import ViewLocations from './locations/ViewLocations'
+import ViewSpecificLocation from './locations/ViewSpecificLocation'
 import EditLocation from './locations/EditLocation'
 import EditUser from './users/EditUser'
 import ViewProducts from './products/ViewProducts'
@@ -56,6 +57,7 @@ function AdminRoutes() {
                 <Route path="/users" element={<ViewUsers />} />
                 <Route path="/users/create" element={<CreateUser />} />
                 <Route path="/locations/view" element={<ViewLocations />} />
+                <Route path="/locations/:id" element={<ViewSpecificLocation />} />
                 <Route path="/locations/create" element={<CreateLocation />} />
                 <Route path="/locations/edit/:id" element={<EditLocation />} />
                 <Route path="/users/:id" element={<EditUser />} />

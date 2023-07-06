@@ -59,12 +59,14 @@ let uploadProfilePicture = multer({
 // Gregory upload file
 const locationUpload = multer.diskStorage({
   destination: (req, file, callback) => {
-    callback(null, "./public/uploads/location_picture");
+    fs.mkdirSync("./public/uploads/location_pictures", { recursive: true });
+    callback(null, "./public/uploads/location_pictures");
   },
   filename: (req, file, callback) => {
     callback(null, nanoid(10) + path.extname(file.originalname));
   },
 });
+
 const uploadLocationPicture = multer({
   storage: locationUpload,
   limits: { fileSize: 1024 * 1024 },
@@ -103,10 +105,4 @@ const upload_picture = multer({
 
 uploadProfilePicture = util.promisify(uploadProfilePicture);
 
-module.exports = {
-  uploadFile,
-  uploadProfilePicture,
-  upload,
-  uploadLocationPicture,
-};
-module.exports = { uploadFile, uploadProfilePicture, upload, upload_picture, uploadProductPicture};
+module.exports = { uploadFile, uploadProfilePicture, upload, upload_picture, uploadProductPicture, uploadLocationPicture};
