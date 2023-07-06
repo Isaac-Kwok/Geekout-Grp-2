@@ -93,4 +93,25 @@ router.get("/history", validateToken, async (req, res) => {
     }
 })
 
+router.get("/history/:id", validateToken, async (req, res) => {
+    // Get history
+    try {
+        const { id } = req.params
+        const transaction = await Transaction.findOne({
+            where: {
+                id: id,
+                user_id: req.user.id
+            }
+        })
+
+        if (!transaction) {
+            res.status(404).json({ message: "Transaction not found." })
+        }
+
+        res.status(200).json(transaction)
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
+})
+
 module.exports = router;

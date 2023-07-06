@@ -74,11 +74,12 @@ router.post("/register", async (req, res) => {
         email: yup.string().email().required(),
         name: yup.string().required(),
         password: yup.string().required().min(12).max(64),
+        phone_number: yup.string().required().min(8).max(8),
     })
 
     try {
-        const { email, name, password } = await schema.validate(req.body, { abortEarly: false })
-        const newUser = await User.create({ email, name, password })
+        const { email, name, password, phone_number } = await schema.validate(req.body, { abortEarly: false })
+        const newUser = await User.create({ email, name, password, phone_number })
         const token = jwt.sign({ type: "activate", id: newUser.id  }, process.env.APP_SECRET, { expiresIn: "30m" })
         const link = process.env.CLIENT_URL +`/verify?token=${token}`
         const html = await ejs.renderFile("templates/emailVerification.ejs", { url:link })

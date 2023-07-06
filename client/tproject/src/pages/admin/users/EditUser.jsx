@@ -92,8 +92,8 @@ function EditUser() {
         validationSchema: Yup.object({
             email: Yup.string().email("Invalid email address").required("Email is required"),
             name: Yup.string().required("Name is required"),
-            phone_number: Yup.string().optional(),
-            is_admin: Yup.boolean().optional(),
+            phone_number: Yup.string().required(),
+            is_admin: Yup.boolean().required(),
             cash: Yup.number().required("Cash balance is required"),
             points: Yup.number().required("Points balance is required")
         }),
