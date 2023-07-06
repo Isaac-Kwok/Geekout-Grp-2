@@ -45,6 +45,25 @@ function CreateProduct() {
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
+  const AspectRatioBox = ({ children }) => (
+    <div style={{
+      position: 'relative',
+      width: '100%',
+      height: 0,
+      paddingBottom: '56.25%', /* 16:9 Aspect Ratio (divide 9 by 16 = 0.5625 or 56.25%) */
+      overflow: 'hidden'
+    }}>
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%'
+      }}>
+        {children}
+      </div>
+    </div>
+  );
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -190,7 +209,7 @@ function CreateProduct() {
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs value={value} onChange={handleChange} variant="scrollable"
               scrollButtons="auto"
-              aria-label="scrollable auto tabs example">              
+              aria-label="scrollable auto tabs example">
               <Tab icon={<CategoryIcon />} iconPosition="start" label="Product Information" />
               <Tab icon={<ImageIcon />} iconPosition="start" label="Product Image" />
             </Tabs>
@@ -437,7 +456,13 @@ function CreateProduct() {
                 <Grid xs={12} lg={6} spacing={1} item container>
                   <Grid item xs={12}>
                     <Typography fontWeight={700} marginBottom={"0.25rem"}>Product Images</Typography>
-                    <img src={productFile} alt="" width="100%" />
+                    {
+                      productFile && (
+                        <AspectRatioBox>
+                          <img src={productFile} alt="" width="100%" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </AspectRatioBox>
+                      )
+                    }
                   </Grid>
                 </Grid>
                 <Grid xs={12} lg={6} spacing={2} item container>
