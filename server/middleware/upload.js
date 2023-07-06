@@ -104,10 +104,4 @@ const upload_picture = multer({
 
 uploadProfilePicture = util.promisify(uploadProfilePicture);
 
-module.exports = {
-  uploadFile,
-  uploadProfilePicture,
-  upload,
-  uploadLocationPicture,
-};
-module.exports = { uploadFile, uploadProfilePicture, upload, upload_picture, uploadProductPicture};
+module.exports = { uploadFile, uploadProfilePicture, upload, upload_picture, uploadProductPicture, uploadLocationPicture};
