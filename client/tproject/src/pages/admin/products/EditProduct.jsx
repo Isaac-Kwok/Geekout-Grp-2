@@ -488,7 +488,7 @@ function EditProduct() {
                   <Grid item xs={12}>
                     <Typography fontWeight={700} marginBottom={"0.25rem"}>Product Images</Typography>
                     <AspectRatioBox>
-                      <img src={productFile ? productFile : `${productPath}${product && product.product_picture}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img src={productFile ? productFile : product ? `${productPath}${product.product_picture}` : ""} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </AspectRatioBox>
                   </Grid>
                 </Grid>

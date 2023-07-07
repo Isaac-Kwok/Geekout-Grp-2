@@ -100,7 +100,7 @@ const uploadProductPicture = multer.diskStorage({
 
 const upload_picture = multer({
     storage: uploadProductPicture,
-    limits: { fileSize: 1024 * 1024 }
+    limits: { fileSize: 1024 * 1024 * 4 }
     }).single('file'); // file input name
 
 uploadProfilePicture = util.promisify(uploadProfilePicture);
