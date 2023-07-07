@@ -85,31 +85,31 @@ function ViewDriverInformation() {
                             </Box>
 
                             <Grid container spacing={2} marginTop={"1rem"}>
-                                <Grid item xs={6} md={4}>
+                                <Grid item xs={12} sm={6} lg={4}>
                                     <InfoBox title="NRIC Name" value={driverApplication.driver_nric_name} />
                                 </Grid>
-                                <Grid item xs={6} md={4}>
+                                <Grid item xs={12} sm={6} lg={4}>
                                     <InfoBox title="NRIC Number" value={driverApplication.driver_nric_number} />
                                 </Grid>
-                                <Grid item xs={6} md={4}>
+                                <Grid item xs={12} sm={6} lg={4}>
                                     <InfoBox title="Phone Number" value={driverApplication.phone_number} />
                                 </Grid>
-                                <Grid item xs={6} md={4}>
+                                <Grid item xs={12} sm={6} lg={4}>
                                     <InfoBox title="Email Address" value={driverApplication.driver_email} />
                                 </Grid>
-                                <Grid item xs={6} md={4}>
+                                <Grid item xs={12} sm={6} lg={4}>
                                     <InfoBox title="Age" value={driverApplication.driver_age} />
                                 </Grid>
-                                <Grid item xs={6} md={4}>
+                                <Grid item xs={12} sm={6} lg={4}>
                                     <InfoBox title="Why I want to be a driver?" value={driverApplication.driver_question} />
                                 </Grid>
-                                <Grid item xs={6} md={4}>
+                                <Grid item xs={12} sm={6} lg={4}>
                                     <InfoBox title="Postal Code" value={driverApplication.driver_postalcode} />
                                 </Grid>
-                                <Grid item xs={6} md={4}>
+                                <Grid item xs={12} sm={6} lg={4}>
                                     <InfoBox title="Car Model" value={driverApplication.driver_car_model} />
                                 </Grid>
-                                <Grid item xs={6} md={4}>
+                                <Grid item xs={12} sm={6} lg={4}>
                                     <InfoBox title="License Plate" value={driverApplication.driver_car_license_plate} />
                                 </Grid>
                             </Grid>
@@ -118,7 +118,7 @@ function ViewDriverInformation() {
                                     <InfoBox title="Driver Face Image" value="" />
                                     <img style={imageStyles} src={`${driverPath}${driverApplication.driver_face_image}`} alt="" />
                                 </Grid>
-                                <Grid item xs={6} md={6} >
+                                <Grid item xs={6} md={8} >
                                     <InfoBox title="Driver Car Image" value="" />
                                     <img style={imageStyles} src={`${driverPath}${driverApplication.driver_car_image}`} alt="" />
                                 </Grid>

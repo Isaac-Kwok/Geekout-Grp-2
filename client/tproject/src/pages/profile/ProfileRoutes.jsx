@@ -8,7 +8,6 @@ import KeyIcon from '@mui/icons-material/Key';
 import HistoryIcon from '@mui/icons-material/History';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import { useSnackbar } from 'notistack'
-import Test from '../Test'
 import { UserContext } from '../..'
 import { validateUser } from '../../functions/user'
 import NotFound from '../errors/NotFound'
@@ -50,6 +49,7 @@ function ProfileRoutes() {
         http.get("/user").then(res => {
             setProfile(res.data)
         })
+        
     }, [])
 
     return (
