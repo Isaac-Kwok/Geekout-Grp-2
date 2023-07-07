@@ -7,17 +7,22 @@ import EditIcon from '@mui/icons-material/Edit';
 import ArticleIcon from '@mui/icons-material/Article';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { DriveEta } from '@mui/icons-material'
-import { ProfileContext } from '../profile/ProfileRoutes'
+import { ProfileContext } from './ProfileRoutes'
 import http from '../../http'
 import { Link } from 'react-router-dom'
 import dayjs from 'dayjs';
 import global from '../../global'
 
 
-function DriverInformation() {
+function ViewDriverInformation() {
     const { profile, setProfile } = useContext(ProfileContext)
     const driverPath = `${import.meta.env.VITE_API_URL}/admin/driver/driverImage/`
     const [driverApplication, setDriverApplication] = useState();
+
+    const imageStyles = {
+        width: "100%",
+        objectFit: "contain",
+    }
 
     function getDriverApplication() {
         http.get("/driver/getDriverApplication").then((res) => {
@@ -111,19 +116,19 @@ function DriverInformation() {
                             <Grid container spacing={2} marginTop={"1rem"} >
                                 <Grid item xs={6} md={4} >
                                     <InfoBox title="Driver Face Image" value="" />
-                                    <img src={`${driverPath}${driverApplication.driver_face_image}`} alt="" />
+                                    <img style={imageStyles} src={`${driverPath}${driverApplication.driver_face_image}`} alt="" />
                                 </Grid>
                                 <Grid item xs={6} md={6} >
                                     <InfoBox title="Driver Car Image" value="" />
-                                    <img src={`${driverPath}${driverApplication.driver_car_image}`} alt="" />
+                                    <img style={imageStyles} src={`${driverPath}${driverApplication.driver_car_image}`} alt="" />
                                 </Grid>
                                 <Grid item xs={6} md={6}>
                                     <InfoBox title="Driver License Image" value="" />
-                                    <img src={`${driverPath}${driverApplication.driver_license}`} alt="" />
+                                    <img style={imageStyles} src={`${driverPath}${driverApplication.driver_license}`} alt="" />
                                 </Grid>
                                 <Grid item xs={6} md={6}>
                                     <InfoBox title="Driver IC Image" value="" />
-                                    <img src={`${driverPath}${driverApplication.driver_ic}`} alt="" />
+                                    <img style={imageStyles} src={`${driverPath}${driverApplication.driver_ic}`} alt="" />
                                 </Grid>
                             </Grid>
 
@@ -149,4 +154,4 @@ function DriverInformation() {
     )
 }
 
-export default DriverInformation
+export default ViewDriverInformation

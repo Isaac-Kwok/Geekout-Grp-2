@@ -18,7 +18,7 @@ import ViewLogins from './ViewLogins';
 import ViewTransactionHistory from './ViewTransactionHistory';
 import ViewTransactionHistoryDetails from './ViewTransactionHistoryDetails';
 import http from '../../http'
-import DriverInformation from '../driver/DriverInformation';
+import ViewDriverInformation from './ViewDriverInformation';
 
 export const ProfileContext = createContext(null)
 function ProfileRoutes() {
@@ -107,7 +107,7 @@ function ProfileRoutes() {
                                 <Route path="/wallet" element={<ViewWallet />} />
                                 <Route path="/logins" element={<ViewLogins />} />
                                 <Route path="/history" element={<ViewTransactionHistory />} />
-                                <Route path="/driverInformation" element={<DriverInformation />} />
+                                <Route path="/driverInformation" element={<ViewDriverInformation />} />
                                 <Route path="/history/:id" element={<ViewTransactionHistoryDetails />} />
                             </Routes>
                         </ProfileContext.Provider>
