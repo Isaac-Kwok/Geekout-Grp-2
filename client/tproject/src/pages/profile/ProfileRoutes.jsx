@@ -6,7 +6,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import KeyIcon from '@mui/icons-material/Key';
 import HistoryIcon from '@mui/icons-material/History';
-
+import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import { useSnackbar } from 'notistack'
 import Test from '../Test'
 import { UserContext } from '../..'
@@ -18,12 +18,14 @@ import ViewLogins from './ViewLogins';
 import ViewTransactionHistory from './ViewTransactionHistory';
 import ViewTransactionHistoryDetails from './ViewTransactionHistoryDetails';
 import http from '../../http'
+import ViewDriverInformation from './ViewDriverInformation';
 
 export const ProfileContext = createContext(null)
 function ProfileRoutes() {
     const { user } = useContext(UserContext);
     const location = useLocation()
     const [profile, setProfile] = useState({
+        id: 1,
         name: "",
         email: "",
         phone_number: "",
@@ -70,6 +72,12 @@ function ProfileRoutes() {
                                         <ListItemText primary={"Account Overview"} />
                                     </ListItemButton>
                                 </ListItem>
+                                <ListItem key={"Driver Information"} disablePadding>
+                                    <ListItemButton component={Link} to="/profile/driverInformation" selected={(location.pathname == "/profile/driverInformation")}>
+                                        <ListItemIcon><DriveEtaIcon /></ListItemIcon>
+                                        <ListItemText primary={"Driver Information"} />
+                                    </ListItemButton>
+                                </ListItem>
                                 <ListItem key={"Wallet"} disablePadding>
                                     <ListItemButton component={Link} to="/profile/wallet" selected={(location.pathname == "/profile/wallet")}>
                                         <ListItemIcon><AccountBalanceWalletIcon /></ListItemIcon>
@@ -99,6 +107,7 @@ function ProfileRoutes() {
                                 <Route path="/wallet" element={<ViewWallet />} />
                                 <Route path="/logins" element={<ViewLogins />} />
                                 <Route path="/history" element={<ViewTransactionHistory />} />
+                                <Route path="/driverInformation" element={<ViewDriverInformation />} />
                                 <Route path="/history/:id" element={<ViewTransactionHistoryDetails />} />
                             </Routes>
                         </ProfileContext.Provider>

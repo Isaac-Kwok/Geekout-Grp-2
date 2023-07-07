@@ -19,6 +19,7 @@ function ProfileRoutes() {
     }, [])
 
     return (
+        
         <>
             <Routes>
                 <Route path="*" element={<NotFound />} />
