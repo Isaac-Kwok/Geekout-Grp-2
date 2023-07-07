@@ -53,8 +53,13 @@ app.use("/admin/driver", adminDriverRoutes)
 app.use("/products", productsRoutes)
 app.use("/admin/locations", adminLocationRoutes)
 
+app.use((err, req, res, next) => {
+    console.error(err.stack)
+    res.status(500).send('Something broke!')
+})
 
-db.sequelize.sync({alter: true}).then(() => {
+
+db.sequelize.sync({ alter: true }).then(() => {
     let port = process.env.APP_PORT
     app.listen(port, () => {
         console.clear()
