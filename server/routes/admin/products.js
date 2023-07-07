@@ -53,9 +53,9 @@ router.post("/create", validateAdmin,upload_picture,  async (req, res) => {
         product_stock: yup.number().integer().required(),
         product_description: yup.string().trim().min(3).max(1000).required(),
         product_picture: yup.string(),
-        product_price: yup.number().positive().integer().required(),
+        product_price: yup.number().min(0).integer().required(),
         product_sale: yup.bool(),
-        product_discounted_percent: yup.number().positive().integer().required(),
+        product_discounted_percent: yup.number().min(0).integer().required(),
         duration_of_pass: yup.number().integer(),
         product_status: yup.bool()
     });
@@ -75,7 +75,6 @@ router.post("/create", validateAdmin,upload_picture,  async (req, res) => {
     data.product_stock = data.product_stock;
     data.product_description = data.product_description.trim();
     data.product_picture = data.product_picture;
-    data.product_picture_type = data.product_picture_type;
     data.product_price = data.product_price;
     data.product_sale = data.product_sale;
     data.product_discounted_percent = data.product_discounted_percent;
@@ -130,9 +129,9 @@ router.put("/:id", validateAdmin, async (req, res) => {
         product_stock: yup.number().integer().required(),
         product_description: yup.string().trim().min(3).max(1000).required(),
         product_picture: yup.string(),
-        product_price: yup.number().positive().integer().required(),
+        product_price: yup.number().min(0).integer().required(),
         product_sale: yup.bool(),
-        product_discounted_percent: yup.number().positive().integer().required(),
+        product_discounted_percent: yup.number().min(0).integer().required(),
         duration_of_pass: yup.number().integer(),
         product_status: yup.bool()
     });

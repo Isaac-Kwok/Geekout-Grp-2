@@ -24,11 +24,9 @@ function TabPanel(props) {
       id={`simple-tabpanel-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
+      <Box p={3}>
+        <Typography>{children}</Typography>
+      </Box>
     </div>
   );
 }
@@ -66,11 +64,7 @@ function EditProduct() {
     setProductFile(URL.createObjectURL(e.target.files[0]));
     setProductFileUpload(e.target.files[0]);
     console.log(productFileUpload)
-    if (productFileUpload != undefined) {
-      enqueueSnackbar("Successfully uploaded product picture. ", { variant: "success" })
-    } else {
-      enqueueSnackbar("Error uploading product picture. ", { variant: "error" })
-    }
+    enqueueSnackbar("Successfully uploaded product picture. ", { variant: "success" })
   }
 
   const subCategories = {
@@ -126,7 +120,6 @@ function EditProduct() {
       product_stock: product ? product.product_stock : 0,
       product_description: product ? product.product_description : "",
       product_picture: product ? product.product_picture : "",
-      product_picture_type: product ? product.product_picture_type : "",
       product_price: product ? product.product_price : 0,
       product_sale: product ? product.product_sale : false,
       product_discounted_percent: product ? product.product_discounted_percent : 0,
@@ -141,10 +134,9 @@ function EditProduct() {
       product_stock: Yup.number("Invalid number").integer().required("Product Stock is required"),
       product_description: Yup.string().trim().min(3).max(1000).required("Product Description is required"),
       product_picture: Yup.string(),
-      product_picture_type: Yup.string(),
-      product_price: Yup.number().positive().integer().required("Product Price is required"),
+      product_price: Yup.number().min(0).integer().required("Product Price is required"),
       product_sale: Yup.bool(),
-      product_discounted_percent: Yup.number().positive().integer().required("Discount Percentage is required"),
+      product_discounted_percent: Yup.number().min(0).integer().required("Discount Percentage is required"),
       duration_of_pass: Yup.number().integer(),
       product_status: Yup.bool()
     }),
@@ -230,7 +222,7 @@ function EditProduct() {
   return (
     <>
       <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
-        <AdminPageTitle title="Edit Product" backbutton />
+        <AdminPageTitle title="Edit Product" subtitle={product && product.product_name} backbutton />
         <LoadingButton
           variant="contained"
           color="primary"
@@ -496,16 +488,7 @@ function EditProduct() {
                   <Grid item xs={12}>
                     <Typography fontWeight={700} marginBottom={"0.25rem"}>Product Images</Typography>
                     <AspectRatioBox>
-                      {
-                        !productFile && (<>
-                          <img src={`${productPath}${formik.values.product_picture}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        </>)
-                      }
-                      {
-                        productFile && (<>
-                          <img src={productFile} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        </>)
-                      }
+                      <img src={productFile ? productFile : `${productPath}${product && product.product_picture}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </AspectRatioBox>
                   </Grid>
                 </Grid>

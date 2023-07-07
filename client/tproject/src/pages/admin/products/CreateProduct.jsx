@@ -81,11 +81,7 @@ function CreateProduct() {
     setProductFile(URL.createObjectURL(e.target.files[0]));
     setProductFileUpload(e.target.files[0]);
     console.log(productFileUpload)
-    if (productFileUpload != undefined) {
-      enqueueSnackbar("Successfully uploaded product picture. ", { variant: "success" })
-    } else {
-      enqueueSnackbar("Error uploading product picture. ", { variant: "error" })
-    }
+    enqueueSnackbar("Successfully uploaded product picture. ", { variant: "success" })
   }
 
   const handlePictureChange = (e) => {
@@ -136,9 +132,9 @@ function CreateProduct() {
       product_description: Yup.string().trim().min(3).max(1000).required("Product Description is required"),
       product_picture: Yup.string(),
       product_picture_type: Yup.string(),
-      product_price: Yup.number().positive().integer().required("Product Price is required"),
+      product_price: Yup.number().min(0).integer().required("Product Price is required"),
       product_sale: Yup.bool(),
-      product_discounted_percent: Yup.number().positive().integer().required("Discount Percentage is required"),
+      product_discounted_percent: Yup.number().min(0).integer().required("Discount Percentage is required"),
       duration_of_pass: Yup.number().integer(),
       product_status: Yup.bool()
     }),
