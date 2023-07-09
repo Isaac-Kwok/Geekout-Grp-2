@@ -73,6 +73,22 @@ function checkFileType(file, cb) {
     }
 }
 
+// Products file upload
+const uploadProductPicture = multer.diskStorage({
+    destination: (req, file, callback) => {
+        fs.mkdirSync("./public/uploads/products", { recursive: true });
+        callback(null, './public/uploads/products');
+    },
+    filename: (req, file, callback) => {
+        callback(null, nanoid(10) + path.extname(file.originalname));
+    }
+});
+
+const upload_picture = multer({
+    storage: uploadProductPicture,
+    limits: { fileSize: 1024 * 1024 }
+    }).single('file'); // file input name
+
 uploadProfilePicture = util.promisify(uploadProfilePicture);
 
-module.exports = { uploadFile, uploadProfilePicture, upload };
+module.exports = { uploadFile, uploadProfilePicture, upload, upload_picture, uploadProductPicture};

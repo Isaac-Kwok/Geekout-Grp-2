@@ -1,9 +1,7 @@
-import { GoogleMap, MarkerF, useLoadScript, Marker } from "@react-google-maps/api";
-import { Container, Button } from '@mui/material';
-import { useMemo, useEffect, useState } from "react";
-import { useNavigate, Link } from 'react-router-dom';
-import http from "../../../http";
-import '/Users/alyshaziz/FSDPProject/TProject/client/tproject/src/bicycle.css'
+import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
+import { Container } from '@mui/material';
+import { useMemo } from "react";
+import '../../../bicycle.css'
 
 function BicycleAdmin() {
 

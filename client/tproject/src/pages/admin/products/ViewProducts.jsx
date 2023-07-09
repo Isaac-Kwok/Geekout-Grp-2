@@ -10,6 +10,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
+import AdminPageTitle from '../../../components/AdminPageTitle';
 
 function ViewProducts() {
     const [products, setProducts] = useState([])
@@ -31,14 +32,14 @@ function ViewProducts() {
                 return params.value ? params.value : "NIL"
             }
         },
-        { field: 'product_price_greenmiles', headerName: 'GreenMiles', minWidth: 200 },
+        { field: 'product_price_greenmiles', headerName: 'GreenMiles', minWidth: 100 },
         { field: 'product_sale', headerName: 'On Sale?', type: 'boolean', minWidth: 100 },
         { field: 'product_status', headerName: 'Active?', type: 'boolean', minWidth: 100 },
         {
             field: 'actions', type: 'actions', width: 80, getActions: (params) => [
                 <GridActionsCellItem
                     icon={<EditIcon />}
-                    label="Edit User"
+                    label="Edit Product"
                     onClick={() => {
                         navigate("/admin/products/" + params.row.id)
                     }}
@@ -51,7 +52,7 @@ function ViewProducts() {
                         if (params.row.product_status) {
                             setDeactivateProduct(params.row)
                             handleDeactivateProductDialogOpen()
-                        } else {
+                        } else if(!params.row.product_status && params.row.product_stock > 0){
                             setActivateProduct(params.row)
                             handleActivateProductDialogOpen()
                         }
@@ -121,7 +122,7 @@ function ViewProducts() {
     return (
         <>
             <Container maxWidth="xl" sx={{ marginY: "1rem", minWidth: 0 }}>
-                <Typography variant="h3" fontWeight={700} sx={{ marginY: ["1rem", "1rem", "2rem"], fontSize: ["2rem", "2rem", "3rem"] }}>View Product</Typography>
+                <AdminPageTitle title="View Products" />
                 <Button LinkComponent={Link} variant="contained" color="primary" sx={{ marginBottom: "1rem" }} startIcon={<AddIcon />} to="/admin/products/create">Create Product</Button>
                 <DataGrid
                     rows={products}
@@ -154,7 +155,7 @@ function ViewProducts() {
                 </DialogActions>
             </Dialog>
             <Dialog open={activateProductDialog} onClose={handleActivateProductDialogClose}>
-                <DialogTitle>activate Product</DialogTitle>
+                <DialogTitle>Activate Product</DialogTitle>
                 <DialogContent sx={{ paddingTop: 0 }}>
                     <DialogContentText>
                         Are you sure you want to activate this product?

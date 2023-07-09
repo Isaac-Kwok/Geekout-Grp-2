@@ -53,6 +53,9 @@ function AdminRoutes() {
                 <Route path="/users" element={<ViewUsers />} />
                 <Route path="/users/create" element={<CreateUser />} />
                 <Route path="/users/:id" element={<EditUser />} />
+                <Route path="/products" element= {<ViewProducts />}/>
+                <Route path="/products/create" element= {<CreateProduct />}/>
+                <Route path="/products/:id" element= {<EditProduct />}/>
                 <Route path="/bicycle" element={<BicycleAdmin />} />
                 <Route path="/bicycle/view" element={<ViewBicycle />} />
                 <Route path="/bicycle/add" element={<AddBicycle />} />

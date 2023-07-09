@@ -2,16 +2,18 @@ const express = require('express');
 const router = express.Router();
 const { User, Sequelize, Product } = require('../../models');
 const yup = require("yup");
+const path = require('path');
 const jwt = require("jsonwebtoken")
 const ejs = require("ejs")
 const { emailSender } = require("../../middleware/emailSender")
-const { validateAdmin } = require("../../middleware/validateAdmin")
+const { validateAdmin } = require("../../middleware/validateAdmin");
+const { upload_picture } = require('../../middleware/upload');
 
 router.get("/", validateAdmin, async (req, res) => {
     try {
         const products = await Product.findAll({
             attributes: {
-                exclude: ["createdAt", "updatedAt"]
+                exclude: ["createdAt"]
             }
         });
         res.json(products);
@@ -20,8 +22,27 @@ router.get("/", validateAdmin, async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
+// Get file
+router.get("/productImage/:filename", (req, res) => {
+    const fileName = req.params.filename;
+    const directoryPath = path.join(__dirname, "../../public/uploads/products/");
+    
+    res.download(directoryPath + fileName, fileName, (err) => {
+        if (err) {
+            res.status(500).send({
+                message: "Could not download the file. " + err,
+            });
 
-router.post("/create", validateAdmin, async (req, res) => {
+        }
+    });
+})
+// Upload file
+router.post('/upload',validateAdmin, upload_picture, (req, res) => {
+    res.json({ filename: req.file.filename });
+});
+
+
+router.post("/create", validateAdmin,upload_picture,  async (req, res) => {
     let data = req.body;
     // Create new product
     let validationSchema = yup.object().shape({
@@ -67,7 +88,6 @@ router.post("/create", validateAdmin, async (req, res) => {
 router.get("/:id", async (req, res) => {
     let id = req.params.id;
     let product = await Product.findByPk(id, {
-        //include: { model: User, as: "user", attributes: ['name'] }
     });
     // Check id not found
     if (!product) {
@@ -79,17 +99,16 @@ router.get("/:id", async (req, res) => {
 
 router.put("/:id", validateAdmin, async (req, res) => {
     const schema = yup.object().shape({
-        product_name: yup.string().trim().min(3).max(100),
-        product_category: yup.string().trim(),
-        product_stock: yup.number().integer(),
-        product_description: yup.string().trim().min(3).max(1000),
-        product_picture: yup.string().trim(),
-        product_picture_type: yup.string().trim(),
-        product_price: yup.number().positive().integer(),
+        product_name: yup.string().trim().min(3).max(100).required(),
+        product_category: yup.string().trim().required(),
+        product_stock: yup.number().integer().required(),
+        product_description: yup.string().trim().min(3).max(1000).required(),
+        product_picture: yup.string(),
+        product_picture_type: yup.string(),
+        product_price: yup.number().positive().integer().required(),
         product_sale: yup.bool(),
-        product_discounted_percent: yup.number().positive().integer(),
-        duration_of_pass_status: yup.bool(),
-        duration_of_pass: yup.number().positive().integer(),
+        product_discounted_percent: yup.number().positive().integer().required(),
+        duration_of_pass: yup.number().integer(),
         product_status: yup.bool()
     });
     try {
@@ -109,5 +128,25 @@ router.put("/:id", validateAdmin, async (req, res) => {
     }
 
 });
+
+router.post("/:id/upload", validateAdmin, async (req, res) => {
+    // Upload profile pictures
+    const product = await Product.findByPk(req.params.id);
+    if (!product) {
+        return res.status(404).json({message: "Product not found"});
+    } else {
+        await uploadProductPicture(req, res);
+    }
+    
+    // Assume product.product_pictures is an array of picture URLs
+    product.product_pictures = req.files.map(file => "//" + req.headers.host + `/uploads/products/${product.id}-${file.filename}`);
+    product.product_picture_type = "local";
+    await product.save();
+    
+    res.json(product);
+});
+
+
+
 
 module.exports = router;
