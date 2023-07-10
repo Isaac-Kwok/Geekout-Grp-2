@@ -1,7 +1,12 @@
-import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
+import { GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
 import { Container } from '@mui/material';
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
+import {Button} from "@mui/material";
+import { Link } from 'react-router-dom';
+import http from "../../../http"
 import '../../../bicycle.css'
+import AdminPageTitle from "../../../components/AdminPageTitle";
+import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 
 function BicycleAdmin() {
 
@@ -37,7 +42,8 @@ function BicycleAdmin() {
 
     return (
         <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
-            <Button LinkComponent={Link} variant="contained" color="primary" sx={{ marginBottom: "1rem" }} to="/admin/bicycle/view">View Bicycle</Button>
+            <AdminPageTitle title="Bicycle Map"/>
+            <Button startIcon={<FormatListNumberedIcon/>} LinkComponent={Link} variant="contained" color="primary" sx={{ marginBottom: "1rem" }} to="/admin/bicycle/view">View Bicycle List</Button>
 
             {!isLoaded ? (
                 <h1>Loading...</h1>
@@ -46,6 +52,7 @@ function BicycleAdmin() {
                     mapContainerClassName="map-container"
                     center={center}
                     zoom={14}
+                    mapContainerStyle={{width: "100%", marginBottom: "1rem"}}
                 >
                     {markers}
                 </GoogleMap>

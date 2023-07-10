@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Container, Card, CardContent, Box, Checkbox, TextField, Grid, FormControlLabel, IconButton } from '@mui/material'
+import { Container, Card, CardContent, Box, Checkbox, TextField, Grid, FormControlLabel, IconButton, InputAdornment } from '@mui/material'
 import LoadingButton from '@mui/lab/LoadingButton';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import AddIcon from '@mui/icons-material/Add';
@@ -79,30 +79,40 @@ function AddBicycle() {
                     <Box component="form">
                         <CardContent>
                             <CardTitle title="Bicycle Coordinates" icon={<PedalBikeIcon color="text.secondary" />} />
-                            <TextField
-                                fullWidth
-                                id="bicycle_lat"
-                                name="bicycle_lat"
-                                label="Latitude"
-                                variant="outlined"
-                                value={formik.values.bicycle_lat}
-                                onChange={formik.handleChange}
-                                error={formik.touched.bicycle_lat && Boolean(formik.errors.bicycle_lat)}
-                                helperText={formik.touched.bicycle_lat && formik.errors.bicycle_lat}
-                                sx={{ marginY: "1rem" }}
-                            />
-                            <TextField
-                                fullWidth
-                                id="bicycle_lng"
-                                name="bicycle_lng"
-                                label="Longitude"
-                                variant="outlined"
-                                value={formik.values.bicycle_lng}
-                                onChange={formik.handleChange}
-                                error={formik.touched.bicycle_lng && Boolean(formik.errors.bicycle_lng)}
-                                helperText={formik.touched.bicycle_lng && formik.errors.bicycle_lng}
-                                sx={{ marginY: "1rem" }}
-                            />
+                            <Grid container marginTop={"1rem"} spacing={2}>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        fullWidth
+                                        id="bicycle_lat"
+                                        name="bicycle_lat"
+                                        label="Latitude"
+                                        variant="outlined"
+                                        value={formik.values.bicycle_lat}
+                                        onChange={formik.handleChange}
+                                        error={formik.touched.bicycle_lat && Boolean(formik.errors.bicycle_lat)}
+                                        helperText={formik.touched.bicycle_lat && formik.errors.bicycle_lat}
+                                        InputProps={{
+                                            endAdornment: <InputAdornment position="start">° N</InputAdornment>,
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        fullWidth
+                                        id="bicycle_lng"
+                                        name="bicycle_lng"
+                                        label="Longitude"
+                                        variant="outlined"
+                                        value={formik.values.bicycle_lng}
+                                        onChange={formik.handleChange}
+                                        error={formik.touched.bicycle_lng && Boolean(formik.errors.bicycle_lng)}
+                                        helperText={formik.touched.bicycle_lng && formik.errors.bicycle_lng}
+                                        InputProps={{
+                                            endAdornment: <InputAdornment position="start">° E</InputAdornment>,
+                                        }}
+                                    />
+                                </Grid>
+                            </Grid>
                         </CardContent>
                     </Box>
                 </Card>
