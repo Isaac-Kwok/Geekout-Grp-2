@@ -4,6 +4,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
+import PedalBikeIcon from '@mui/icons-material/PedalBike';
 import CardTitle from "../../../components/CardTitle";
 import AdminPageTitle from '../../../components/AdminPageTitle';
 import http from '../../../http'
@@ -79,7 +80,7 @@ function EditBicycle() {
                 <Card sx={{ margin: "auto" }}>
                     <Box component="form">
                         <CardContent>
-                            <CardTitle title="Bicycle Coordinates" icon={<ManageAccountsIcon color="text.secondary" />} />
+                            <CardTitle title="Bicycle Coordinates" icon={<PedalBikeIcon color="text.secondary" />} />
                             <TextField
                                 fullWidth
                                 id="bicycle_lat"
