@@ -8,10 +8,12 @@ import BadgeIcon from '@mui/icons-material/Badge';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { ProfileContext } from './ProfileRoutes'
 import http from '../../http'
+import { useNavigate } from 'react-router-dom'
 
 function ViewProfile() {
     const { profile, setProfile } = useContext(ProfileContext)
     const [topupOpen, setTopupOpen] = useState(false)
+    const navigate = useNavigate()
 
     const handleTopupOpen = () => {
         setTopupOpen(true)
@@ -23,6 +25,10 @@ function ViewProfile() {
         http.get("/profile").then(res => {
             setProfile(res.data)
         })
+    }
+
+    const handleEditProfile = () => {
+        navigate("/profile/edit")
     }
 
     const handleOnPaymentSuccess = () => {
@@ -43,28 +49,28 @@ function ViewProfile() {
                     <CardContent>
                         <CardTitle icon={<BadgeIcon />} title="Profile Information" />
                         <Grid container spacing={2} marginTop={"1rem"}>
-                            <Grid item xs={6} md={4}>
+                            <Grid item xs={12} sm={6} lg={4}>
                                 <InfoBox title="Name" value={profile.name} />
                             </Grid>
-                            <Grid item xs={6} md={4}>
+                            <Grid item xs={12} sm={6} lg={4}>
                                 <InfoBox title="Phone Number" value={profile.phone_number} />
                             </Grid>
-                            <Grid item xs={12} md={4}>
+                            <Grid item xs={12} sm={6} lg={4}>
                                 <InfoBox title="E-mail Address" value={profile.email} />
                             </Grid>
-                            <Grid item xs={6} md={4}>
+                            <Grid item xs={12} sm={6} lg={4}>
                                 <InfoBox title="Driver Application" value="Not Approved" boolean={false} />
                             </Grid>
-                            <Grid item xs={6} md={4}>
+                            <Grid item xs={12} sm={6} lg={4}>
                                 <InfoBox title="Driver Status" value="Not Active" boolean={false} />
                             </Grid>
-                            <Grid item xs={12} md={4}>
+                            <Grid item xs={12} sm={6} lg={4}>
                                 <InfoBox title="2 Factor Authentication" value={profile.is_2fa_enabled ? "Active" : "Not Active"} boolean={profile.is_2fa_enabled} />
                             </Grid>
                         </Grid>
                     </CardContent>
                     <CardActions>
-                        <Button variant="text" color="primary" startIcon={<EditIcon/>}>Edit Profile</Button>
+                        <Button variant="text" color="primary" startIcon={<EditIcon/>} onClick={handleEditProfile}>Edit Profile</Button>
                     </CardActions>
                 </Card>
                 <Card>

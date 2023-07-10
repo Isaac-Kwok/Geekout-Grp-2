@@ -8,7 +8,6 @@ import KeyIcon from '@mui/icons-material/Key';
 import HistoryIcon from '@mui/icons-material/History';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import { useSnackbar } from 'notistack'
-import Test from '../Test'
 import { UserContext } from '../..'
 import { validateUser } from '../../functions/user'
 import NotFound from '../errors/NotFound'
@@ -17,8 +16,9 @@ import ViewWallet from './ViewWallet'
 import ViewLogins from './ViewLogins';
 import ViewTransactionHistory from './ViewTransactionHistory';
 import ViewTransactionHistoryDetails from './ViewTransactionHistoryDetails';
-import http from '../../http'
 import ViewDriverInformation from './ViewDriverInformation';
+import EditProfile from './EditProfile';
+import http from '../../http'
 
 export const ProfileContext = createContext(null)
 function ProfileRoutes() {
@@ -50,6 +50,7 @@ function ProfileRoutes() {
         http.get("/user").then(res => {
             setProfile(res.data)
         })
+        
     }, [])
 
     return (
@@ -67,7 +68,7 @@ function ProfileRoutes() {
                         <Card>
                             <List>
                                 <ListItem key={"Account Overview"} disablePadding>
-                                    <ListItemButton component={Link} to="/profile" selected={(location.pathname == "/profile")}>
+                                    <ListItemButton component={Link} to="/profile" selected={(location.pathname == "/profile" || location.pathname.includes("/profile/edit"))}>
                                         <ListItemIcon><PersonIcon /></ListItemIcon>
                                         <ListItemText primary={"Account Overview"} />
                                     </ListItemButton>
@@ -104,6 +105,7 @@ function ProfileRoutes() {
                             <Routes>
                                 <Route path="*" element={<NotFound />} />
                                 <Route path="/" element={<ViewProfile />} />
+                                <Route path="/edit" element={<EditProfile />} />
                                 <Route path="/wallet" element={<ViewWallet />} />
                                 <Route path="/logins" element={<ViewLogins />} />
                                 <Route path="/history" element={<ViewTransactionHistory />} />

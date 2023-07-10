@@ -52,8 +52,8 @@ router.put("/", validateToken, async (req, res) => {
                 return yup.string().notRequired()
             }
         }),
-        is_2fa_enabled: yup.boolean().nullable(true),
-        is_active: yup.boolean().nullable(true),
+        email: yup.string().email().optional(),
+        password: yup.string().min(12).max(64).optional(),
     }, [["phone_number", "phone_number"], ["profile_picture_type", "profile_picture_type"]]).noUnknown(true)
 
     try {
@@ -78,7 +78,5 @@ router.put("/", validateToken, async (req, res) => {
         res.status(400).json({ message: error.errors })
     }
 })
-
-
 
 module.exports = router

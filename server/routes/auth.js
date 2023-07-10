@@ -63,7 +63,7 @@ router.post("/", async (req, res) => {
         }
 
         const token = jwt.sign({type: "session",user:userInfo}, process.env.APP_SECRET, { expiresIn: "7d" })
-        res.json({ token, user: userInfo })
+        res.json({ token, user })
     } catch (error) {
         res.status(400).json({ message: error.message })
     }
@@ -213,16 +213,37 @@ router.post("/reset", async (req, res) => {
 })
 
 router.get("/validate", validateToken, async (req, res) => {
+    // Get user information
+    const user = await User.findByPk(req.user.id);
     let userInfo = {
-        id: req.user.id,
-        email: req.user.email,
-        name: req.user.name,
-        account_type: req.user.account_type,
-        profile_picture: req.user.profile_picture,
-        profile_picture_type: req.user.profile_picture_type,
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        account_type: user.account_type,
+        profile_picture: user.profile_picture,
+        profile_picture_type: user.profile_picture_type,
+        driver_application_sent: user.driver_application_sent
     };
     res.json({
         user: userInfo
     });
 });
+
+router.get("/refresh", validateToken, async (req, res) => {
+    // Refresh token
+    const user = await User.findByPk(req.user.id);
+    let userInfo = {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        account_type: user.account_type,
+        profile_picture: user.profile_picture,
+        profile_picture_type: user.profile_picture_type,
+        driver_application_sent: user.driver_application_sent
+    }
+
+    const token = jwt.sign({type: "session",user:userInfo}, process.env.APP_SECRET, { expiresIn: "7d" })
+    res.json({ token, user })
+})
+
 module.exports = router
