@@ -1,5 +1,5 @@
 import { useState, useContext } from "react"
-import { AppBar, Box, Container, Toolbar, IconButton, List, ListItem, ListItemIcon, ListItemText, ListItemButton, Typography, Divider, Drawer } from "@mui/material"
+import { AppBar, Box, Container, Toolbar, IconButton, List, ListItem, ListItemIcon, ListItemText, ListItemButton, Typography, Divider, Drawer, Stack } from "@mui/material"
 import MenuIcon from "@mui/icons-material/Menu"
 import HomeIcon from "@mui/icons-material/Home"
 import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike';
@@ -26,12 +26,13 @@ export function Navbar() {
                             <Box sx={{ flexGrow: 1, display: "flex", alignItems: "center" }}>
                                 <IconButton color="inherit" sx={{ marginRight: "1rem", display: ["flex", "flex", "none"] }} onClick={() => setIsDrawerOpen(true)}><MenuIcon /></IconButton>
                                 <Typography variant="h6" component="div" sx={{ marginRight: "1rem", fontFamily: "'caveat brush'" }}>EnviroGo</Typography>
-                                <Box sx={{ display: ["none", "none", "initial"] }}>
-                                    <Button LinkComponent={Link} variant="text" color="inherit" to="/">Home</Button>
-                                    <Button LinkComponent={Link} variant="text" color="inherit" to="/login">Car</Button>
-                                    <Button LinkComponent={Link} variant="text" color="inherit" to="/bicycle">Bicycles</Button>
-                                    <Button LinkComponent={Link} variant="text" color="inherit" to="/products">Shop</Button>
-                                </Box>
+                                <Divider orientation="vertical" flexItem sx={{ marginRight: "1rem", display: ["none", "none", "flex"] }} />
+                                <Stack spacing={2} direction="row" sx={{ display: ["none", "none", "flex"] }}>
+                                    <Button startIcon={<HomeIcon/>} LinkComponent={Link} variant="text" color="inherit" to="/">Home</Button>
+                                    <Button startIcon={<DirectionsCarIcon/>} LinkComponent={Link} variant="text" color="inherit" to="/login">Car</Button>
+                                    <Button startIcon={<DirectionsBikeIcon/>} LinkComponent={Link} variant="text" color="inherit" to="/bicycle">Bicycles</Button>
+                                    <Button startIcon={<StoreIcon/>} LinkComponent={Link} variant="text" color="inherit" to="/products">Shop</Button>
+                                </Stack>
                             </Box>
                             {!user && <Button LinkComponent={Link} variant="text" color="inherit" to="/login" startIcon={<LoginIcon/>}>Login</Button>}
                             {user && <NavbarProfile />}

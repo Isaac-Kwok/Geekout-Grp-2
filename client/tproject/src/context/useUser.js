@@ -14,6 +14,7 @@ function useUser() {
         if (res.status === 200) {
             setUser(res.data.user);
             localStorage.setItem("token", res.data.token)
+            console.log("local token refreshed");
         }
     }
 

@@ -63,7 +63,7 @@ router.post("/", async (req, res) => {
         }
 
         const token = jwt.sign({type: "session",user:userInfo}, process.env.APP_SECRET, { expiresIn: "7d" })
-        res.json({ token, user: userInfo })
+        res.json({ token, user })
     } catch (error) {
         res.status(400).json({ message: error.message })
     }
@@ -243,7 +243,7 @@ router.get("/refresh", validateToken, async (req, res) => {
     }
 
     const token = jwt.sign({type: "session",user:userInfo}, process.env.APP_SECRET, { expiresIn: "7d" })
-    res.json({ token, user: userInfo })
+    res.json({ token, user })
 })
 
 module.exports = router

@@ -16,8 +16,9 @@ import ViewWallet from './ViewWallet'
 import ViewLogins from './ViewLogins';
 import ViewTransactionHistory from './ViewTransactionHistory';
 import ViewTransactionHistoryDetails from './ViewTransactionHistoryDetails';
-import http from '../../http'
 import ViewDriverInformation from './ViewDriverInformation';
+import EditProfile from './EditProfile';
+import http from '../../http'
 
 export const ProfileContext = createContext(null)
 function ProfileRoutes() {
@@ -67,7 +68,7 @@ function ProfileRoutes() {
                         <Card>
                             <List>
                                 <ListItem key={"Account Overview"} disablePadding>
-                                    <ListItemButton component={Link} to="/profile" selected={(location.pathname == "/profile")}>
+                                    <ListItemButton component={Link} to="/profile" selected={(location.pathname == "/profile" || location.pathname.includes("/profile/edit"))}>
                                         <ListItemIcon><PersonIcon /></ListItemIcon>
                                         <ListItemText primary={"Account Overview"} />
                                     </ListItemButton>
@@ -104,6 +105,7 @@ function ProfileRoutes() {
                             <Routes>
                                 <Route path="*" element={<NotFound />} />
                                 <Route path="/" element={<ViewProfile />} />
+                                <Route path="/edit" element={<EditProfile />} />
                                 <Route path="/wallet" element={<ViewWallet />} />
                                 <Route path="/logins" element={<ViewLogins />} />
                                 <Route path="/history" element={<ViewTransactionHistory />} />
