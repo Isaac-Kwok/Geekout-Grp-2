@@ -18,6 +18,7 @@ export function NavbarProfile() {
 
     function handlePopoverOpen(event) {
         setAnchorEl(event.currentTarget);
+        console.log(user)
         setIsPopoverOpen(true);
     }
 
@@ -69,7 +70,7 @@ export function NavbarProfile() {
                             <ListItemText primary={"Driver's Dashboard"} />
                         </ListItemButton>
                     </ListItem> }
-                    {user.account_type == 1 && !user.driver_registered &&
+                    {user.account_type == 1  && !user.driver_application_sent &&
                     <ListItem key={"Driver's Dashboard"} disablePadding>
                         <ListItemButton component={Link} to="/driver/register" onClick={() => setIsPopoverOpen(false)}>
                             <ListItemIcon><DirectionsCarIcon /></ListItemIcon>

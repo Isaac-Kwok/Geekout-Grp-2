@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Box, Card, CardContent, Chip } from '@mui/material'
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
+import { useNavigate } from 'react-router-dom';
 import CardTitle from '../../components/CardTitle'
 import HistoryIcon from '@mui/icons-material/History';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -12,6 +13,7 @@ function ViewLogins() {
     const [transactions, setTransactions] = useState([])
     const [loading, setLoading] = useState(true)
     const date = new Date()
+    const navigate = useNavigate()
     const columns = [
         { field: 'id', headerName: 'ID', width: 100, type: 'number' },
         {
@@ -30,6 +32,9 @@ function ViewLogins() {
                 <GridActionsCellItem
                     icon={<VisibilityIcon />}
                     label="View Details"
+                    onClick={() => {
+                        navigate("/profile/history/" + params.row.id)
+                    }}
                 />
             ]
         },

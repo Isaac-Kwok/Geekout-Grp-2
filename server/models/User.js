@@ -67,6 +67,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: false
         },
+        driver_application_sent: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
+        },
     });
 
     User.associate = (models) => {

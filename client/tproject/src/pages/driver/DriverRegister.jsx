@@ -6,6 +6,7 @@ import * as yup from 'yup';
 import http from '../../http'
 import { useSnackbar } from 'notistack';
 import PageTitle from '../../components/PageTitle';
+import useUser from '../../context/useUser';
 
 function DriverRegister() {
 
@@ -24,6 +25,7 @@ function DriverRegister() {
     const { enqueueSnackbar } = useSnackbar();
     const [activeStep, setActiveStep] = useState(0);
     const [formData, setFormData] = useState({});
+    const { refreshUser } = useUser();
 
     function handleChangeFace(e) {
         setFaceFile(URL.createObjectURL(e.target.files[0]));
@@ -141,6 +143,7 @@ function DriverRegister() {
                     .then((res) => {
                         console.log(res.data);
                         enqueueSnackbar('Driver Application Submitted!', { variant: 'success' });
+                        refreshUser();
                         navigate('/')
                     });
             }

@@ -83,7 +83,8 @@ function ViewDriverApplications() {
         http.delete("/admin/driver/deletedriverapplicationbyID/" + deleteApplication.id).then((res) => {
             if (res.status === 200) {
                 setDeleteApplicationDialog(false)
-                navigate('/admin/driver/viewdriverapplications')
+                handleGetDriverApplications()
+                navigate('/admin/driver/viewdriverapplications');
                 enqueueSnackbar("Driver Application deleted successfully!", { variant: "success" });
             }
         })
@@ -101,7 +102,9 @@ function ViewDriverApplications() {
                     }
                 })
             }
-            navigate('/admin/driver/viewdriverapplications')
+            setDeleteAllApplicationDialog(false);
+            handleGetDriverApplications();
+            navigate('/admin/driver/viewdriverapplications');
             enqueueSnackbar("Driver Applications deleted successfully!", { variant: "success" });
         }
 

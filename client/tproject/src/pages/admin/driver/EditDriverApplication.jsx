@@ -10,11 +10,12 @@ import AdminPageTitle from '../../../components/AdminPageTitle';
 import CardTitle from '../../../components/CardTitle';
 import { Badge, MarkEmailRead } from '@mui/icons-material';
 
+
 function EditDriverApplication() {
     const navigate = useNavigate();
     const [driverApplication, setDriverApplication] = useState({
         driver_email: "",
-        driver_name: "",
+        driver_nric_name: "",
         driver_phone_number: "",
         driver_address: "",
         driver_car_model: "",

@@ -1,14 +1,22 @@
 const express = require("express")
 const yup = require("yup")
-const { DriverApplication, Sequelize } = require("../models")
+const { DriverApplication, Sequelize, User } = require("../models")
 const router = express.Router()
 require('dotenv').config();
-
-
 
 const { upload } = require('../middleware/upload');
 
 const { validateToken } = require("../middleware/validateToken");
+
+// Get the Application based on the token
+router.get("/getDriverApplication", validateToken, async (req, res) => {
+    try {
+        const application = await DriverApplication.findOne({ where: { user_id: req.user.id } })
+        res.json(application)
+    } catch (error) {
+        res.status(500).json({message: error.message})
+    }
+})
 
 router.post('/upload', validateToken, upload, (req, res) => {
     res.json({ filename: req.file.filename });
@@ -58,7 +66,13 @@ router.post("/register", validateToken, upload, async (req, res) => {
     data.driver_car_image = data.driver_car_image;
     data.driver_license = data.driver_license;
     data.driver_ic = data.driver_ic
-    
+
+    const newUser = {
+        driver_application_sent : true
+    }
+    let num2 = await User.update(newUser, {
+        where: { id: req.user.id }
+    })
 
     // Create Driver
     let result = await DriverApplication.create(data);

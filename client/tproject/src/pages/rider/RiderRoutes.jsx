@@ -4,9 +4,9 @@ import { Route, Routes, useNavigate } from 'react-router-dom'
 import { useSnackbar } from 'notistack'
 import { validateUser } from '../../functions/user'
 import NotFound from '../errors/NotFound'
-import DriverRegister from './DriverRegister'
+import CreateBooking from './CreateBooking'
 
-function ProfileRoutes() {
+function RiderRoutes() {
     const navigate = useNavigate()
     const { enqueueSnackbar } = useSnackbar()
 
@@ -19,14 +19,13 @@ function ProfileRoutes() {
     }, [])
 
     return (
-        
         <>
             <Routes>
                 <Route path="*" element={<NotFound />} />
-                <Route path="/register" element={<DriverRegister />} />
+                <Route path="/bookings" element={<CreateBooking />} />
             </Routes>
         </>
     )
 }
 
-export default ProfileRoutes
+export default RiderRoutes

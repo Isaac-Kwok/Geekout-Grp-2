@@ -27,7 +27,7 @@ function CreateUser() {
         validationSchema: Yup.object({
             email: Yup.string().email("Invalid email address").required("Email is required"),
             name: Yup.string().required("Name is required"),
-            phone_number: Yup.string().optional(),
+            phone_number: Yup.string().required(),
             is_admin: Yup.boolean().optional(),
         }),
         onSubmit: (data) => {

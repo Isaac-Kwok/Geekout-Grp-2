@@ -11,7 +11,7 @@ var MarkdownIt = require('markdown-it');
 
 
 // Route to update driver Applicaiton using 'PUT'
-router.put("/edit/:id",  async (req, res) => {
+router.put("/edit/:id", async (req, res) => {
     let id = req.params.id;
     let application = await DriverApplication.findByPk(id);
     if (!application) {
@@ -38,36 +38,53 @@ router.put("/edit/:id",  async (req, res) => {
     data.subject = data.subject.trim();
     let md = new MarkdownIt();
     data.body = md.render(data.body.trim());
-    console.log(data.body)
+    console.log("status", data.status)
     const link = process.env.CLIENT_URL
+    let newDriverApplication = {};
+    let newUser = {};
+    if (data.status == "Approved") {
+        console.log("reached")
+        newDriverApplication = {
+            driver_status: data.status
+        };
+        newUser = {
+            account_type: 2,
+            driver_application_sent: true
+        };
+    }
+    else if (data.status == "Rejected") {
+        newDriverApplication = {
+            driver_status: data.status
+        };
+        newUser = {
+            account_type: 1,
+            driver_application_sent: false
+        };
+    }
 
-    let newDriverApplication = {
-        driver_status: data.status
-    };
-    let newUser = {
-        account_type: 2
-    };
-
+    console.log("Driver appplication", newDriverApplication)
     let num = await DriverApplication.update(newDriverApplication, {
         where: { id: id }
     })
     let num2 = await User.update(newUser, {
-        where: { id: id }
+        where: { id: application.user_id }
     })
     if (num == 1 && num2 == 1) {
-            // Send email
-    const html = await ejs.renderFile("templates/driverApplicationReply.ejs", { body:data.body, url:link })
-    await emailSender.sendMail({
-        from: process.env.EMAIL_USER,
-        to: data.email,
-        subject: data.subject,
-        html: html,
-    })
+        // Send email
+        const html = await ejs.renderFile("templates/driverApplicationReply.ejs", { body: data.body, url: link })
+        await emailSender.sendMail({
+            from: process.env.EMAIL_USER,
+            to: data.email,
+            subject: data.subject,
+            html: html,
+        })
+
         res.json({
             message: "Driver Application and User was updated successfully."
         });
     }
     else {
+        console.log(num + " " + num2)
         res.status(400).json({
             message: `Cannot update Driver application with id ${id}.`
         });
@@ -79,7 +96,7 @@ router.put("/edit/:id",  async (req, res) => {
 router.get("/driverImage/:filename", (req, res) => {
     const fileName = req.params.filename;
     const directoryPath = path.join(__dirname, "../../public/uploads/driver/");
-    
+
     res.download(directoryPath + fileName, fileName, (err) => {
         if (err) {
             res.status(500).send({
@@ -103,7 +120,7 @@ router.get('/SearchDriverApplication', async (req, res) => {
     if (search) {
         condition[Sequelize.Op.or] = [
             { user_id: { [Sequelize.Op.like]: `%${search}%` } },
-            { driver_nric_name: { [Sequelize.Op.like]: `%${search}%` }},
+            { driver_nric_name: { [Sequelize.Op.like]: `%${search}%` } },
             { driver_nric_number: { [Sequelize.Op.like]: `%${search}%` } },
             { driver_age: { [Sequelize.Op.like]: `%${search}%` } },
             { driver_car_model: { [Sequelize.Op.like]: `%${search}%` } },

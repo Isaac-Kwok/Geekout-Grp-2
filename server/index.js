@@ -32,6 +32,9 @@ const adminProductsRoutes = require("./routes/admin/products")
 const bicycleRoutes = require('./routes/bicycle')
 const adminDriverRoutes = require('./routes/admin/driver')
 const productsRoutes = require('./routes/products')
+const adminLocationRoutes = require('./routes/admin/locations')
+const fileRoute = require('./routes/file');
+app.use("/file", fileRoute);
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
@@ -48,9 +51,15 @@ app.use('/admin/products', adminProductsRoutes)
 app.use('/bicycle', bicycleRoutes)
 app.use("/admin/driver", adminDriverRoutes)
 app.use("/products", productsRoutes)
+app.use("/admin/locations", adminLocationRoutes)
+
+app.use((err, req, res, next) => {
+    console.error(err.stack)
+    res.status(500).send('Something broke!')
+})
 
 
-db.sequelize.sync({alter: true}).then(() => {
+db.sequelize.sync({ alter: true }).then(() => {
     let port = process.env.APP_PORT
     app.listen(port, () => {
         console.clear()

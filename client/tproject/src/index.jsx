@@ -20,6 +20,7 @@ import { Box } from '@mui/material';
 import { SnackbarProvider } from 'notistack';
 import jwt_decode from "jwt-decode";
 import Footer from './components/Footer';
+import http from './http'
 
 let fonts = [
   'Poppins',
@@ -78,14 +79,22 @@ function MainApp() {
   // Global context to store if the current page is an admin page
   const [isAdminPage, setIsAdminPage] = useState(false);
 
-  // Try to decode the JWT token in local storage and set the user context to the decoded token
+  // Check if the user is logged in
   useEffect(() => {
     try {
-      setUser(jwt_decode(localStorage.getItem("token")).user)
+      // Request to the server to check if the token is valid
+      http.get("auth/refresh").then((res) => {
+        // If the token is valid, set the user context to the decoded token
+        setUser(res.data.user)
+        localStorage.setItem("token", res.data.token)
+      }).catch((err) => {
+        // If the token is invalid, set the user context to null
+        setUser(null)
+      })
+      console.log("User set")
     } catch {
       setUser(null)
     }
-
   }, [])
 
   // Return routes. * is a wildcard for any path that doesn't match the other routes, so it will always return the 404 page
