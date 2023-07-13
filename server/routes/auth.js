@@ -1,12 +1,13 @@
 const express = require("express")
 const yup = require("yup")
-const { User, Sequelize } = require("../models")
+const { Secret ,User, Sequelize } = require("../models")
 const router = express.Router()
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const ejs = require("ejs")
 const { emailSender } = require("../middleware/emailSender")
 const { validateToken } = require('../middleware/validateToken');
+const { authenticator } = require("otplib")
 require('dotenv').config();
 
 router.post("/", async (req, res) => {
@@ -14,12 +15,14 @@ router.post("/", async (req, res) => {
     const schema = yup.object().shape({
         email: yup.string().email().required(),
         password: yup.string().required().min(12).max(64),
+        code: yup.string().optional().min(6).max(15)
     })
 
     try {
         await schema.validate(req.body, { abortEarly: false })
-        const { email, password } = req.body
+        const { email, password, code } = req.body
         const user = await User.findOne({ where: { email: email } })
+        const secret = await Secret.findOne({ where: { user_id: user.id } })
 
         // Check if user exists
         if (!user) {
@@ -51,6 +54,25 @@ router.post("/", async (req, res) => {
             res.status(401).json({ message: "Invalid email or password." })
             return
         }
+
+        // Check user 2fa
+        if (secret) {
+            //check 2fa
+            if (!code) {
+                res.status(409).json({ message: "OTP code is required." })
+                return
+            }
+
+            try {
+                authenticator.verify({ token: req.body.code, secret: secret.secret })
+            } catch (error) {
+                if (req.body.code != secret.backup) {
+                    res.status(401).json({ message: "Invalid OTP code." })
+                    return
+                }
+            }
+        }
+            
 
         let userInfo = {
             id: user.id,

@@ -24,6 +24,9 @@ function Login() {
     const [resetPasswordDialog, setResetPasswordDialog] = useState(false);
     const [resendDialog, setResendDialog] = useState(false);
     const [resendLoading, setResendLoading] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [otpDialog, setOtpDialog] = useState(false);
     const { setUser } = useContext(UserContext);
     const { enqueueSnackbar } = useSnackbar();
     const navigate = useNavigate();
@@ -48,6 +51,10 @@ function Login() {
         setResendDialog(false);
     }
 
+    const handleOtpDialogClose = () => {
+        setOtpDialog(false);
+    }
+
     const formik = useFormik({
         initialValues: {
             email: "",
@@ -63,7 +70,7 @@ function Login() {
             data.password = data.password.trim();
             http.post("/auth", data).then((res) => {
                 if (res.status === 200) {
-                    enqueueSnackbar("Login successful!", { variant: "success" });
+                    enqueueSnackbar("Login successful. Welcome back!", { variant: "success" });
                     // Store token in local storage
                     localStorage.setItem("token", res.data.token);
                     // Set user context
@@ -74,8 +81,15 @@ function Login() {
                     setLoading(false);
                 }
             }).catch((err) => {
-                enqueueSnackbar("Login failed! " + err.response.data.message, { variant: "error" });
-                setLoading(false);
+                if (err.response.status === 409) {
+                    setEmail(data.email);
+                    setPassword(data.password);
+                    setOtpDialog(true);
+                    setLoading(false);
+                } else {
+                    enqueueSnackbar("Login failed! " + err.response.data.message, { variant: "error" });
+                    setLoading(false);
+                }
             })
         }
 
@@ -129,6 +143,36 @@ function Login() {
             }).catch((err) => {
                 enqueueSnackbar("Verification e-mail failed! " + err.response.data.message, { variant: "error" });
                 setResendLoading(false);
+            })
+        }
+    })
+
+    const otpFormik = useFormik({
+        initialValues: {
+            code: "",
+        },
+        validationSchema: Yup.object({
+            code: Yup.string().required("OTP code is required").min(6, "OTP code must be at least 6 characters").max(15, "OTP code cannot be longer than 15 characters"),
+        }),
+        onSubmit: (data) => {
+            setLoading(true);
+            data.email = email;
+            data.password = password;
+            http.post("/auth", data).then((res) => {
+                if (res.status === 200) {
+                    enqueueSnackbar("Login successful. Welcome back!", { variant: "success" });
+                    // Store token in local storage
+                    localStorage.setItem("token", res.data.token);
+                    // Set user context
+                    setUser(res.data.user);
+                    navigate("/")
+                } else {
+                    enqueueSnackbar("Login failed! Check your e-mail and password.", { variant: "error" });
+                    setLoading(false);
+                }
+            }).catch((err) => {
+                enqueueSnackbar("Login failed! " + err.response.data.message, { variant: "error" });
+                setLoading(false);
             })
         }
     })
@@ -263,6 +307,34 @@ function Login() {
                     <DialogActions>
                         <Button onClick={handleResendDialogClose} startIcon={<CloseIcon />}>Cancel</Button>
                         <LoadingButton type="submit" loadingPosition="start" loading={resendLoading} variant="text" color="primary" startIcon={<RefreshIcon />}>Resend E-mail</LoadingButton>
+                    </DialogActions>
+                </Box>
+            </Dialog>
+            <Dialog open={otpDialog} onClose={handleOtpDialogClose}>
+                <DialogTitle>Two-Factor Authentication</DialogTitle>
+                <Box component="form" onSubmit={otpFormik.handleSubmit}>
+                    <DialogContent sx={{ paddingTop: 0 }}>
+                        <DialogContentText>
+                            Please enter the 6-digit code from your authenticator app below. if you have lost access to your authenticator app, please enter the backup code.
+                        </DialogContentText>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="code"
+                            label="6-digit Code or Backup Code"
+                            type="text"
+                            name="code"
+                            fullWidth
+                            variant="standard"
+                            value={otpFormik.values.code}
+                            onChange={otpFormik.handleChange}
+                            error={otpFormik.touched.code && Boolean(otpFormik.errors.code)}
+                            helperText={otpFormik.touched.code && otpFormik.errors.code}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleOtpDialogClose} startIcon={<CloseIcon />}>Cancel</Button>
+                        <LoadingButton type="submit" loadingPosition="start" loading={loading} variant="text" color="primary" startIcon={<LockResetIcon />}>Verify</LoadingButton>
                     </DialogActions>
                 </Box>
             </Dialog>
