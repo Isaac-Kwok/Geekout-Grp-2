@@ -79,6 +79,11 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: "user_id",
             onDelete: "CASCADE",
         });
+
+        User.hasOne(models.Secret, {
+            foreignKey: "user_id",
+            onDelete: "CASCADE",
+        });
     };
     return User;
 }

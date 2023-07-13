@@ -1,10 +1,11 @@
 const express = require("express")
 const yup = require("yup")
-const { User, Sequelize } = require("../models")
+const { Secret, User, Sequelize } = require("../models")
 const router = express.Router()
 const { validateToken } = require("../middleware/validateToken")
 const { uploadProfilePicture } = require("../middleware/upload")
 const path = require("path")
+const { authenticator } = require("otplib")
 
 // Get the user based on the token
 router.get("/",validateToken, async (req, res) => {
@@ -77,6 +78,68 @@ router.put("/", validateToken, async (req, res) => {
 
         res.status(400).json({ message: error.errors })
     }
+})
+
+router.get("/2fa/backup", validateToken, async (req, res) => {
+    const secret = await Secret.findOne({
+        where: {
+            user_id: req.user.id
+        }
+    })
+    if (!secret) {
+        return res.status(404).json({message: "2FA not enabled"})
+    }
+
+    res.json({
+        backup: secret.backup
+    })
+})
+
+router.get("/2fa/enable", validateToken, async (req, res) => {
+    const user = await User.findByPk(req.user.id)
+    const secret = await Secret.findOne({
+        where: {
+            user_id: req.user.id
+        }
+    })
+    if (!user) {
+        return res.status(404).json({message: "User not found"})
+    }
+
+    if (secret) {
+        return res.status(400).json({message: "2FA already enabled"})
+    }
+
+    const otpSecret = authenticator.generateSecret()
+    const otpAuthUrl = authenticator.keyuri(user.email, "EnviroGo", otpSecret)
+    const backup = Array.from(Array(12), () => Math.floor(Math.random() * 36).toString(36)).join('');
+
+    await Secret.create({
+        user_id: req.user.id,
+        secret: otpSecret,
+        backup: backup
+    })
+
+    res.json({
+        otpAuthUrl,
+        backup
+    })
+})
+
+router.get("/2fa/disable", validateToken, async (req, res) => {
+    const secret = await Secret.findOne({
+        where: {
+            user_id: req.user.id
+        }
+    })
+
+    if (!secret) {
+        return res.status(404).json({message: "2FA not enabled"})
+    }
+
+    await secret.destroy()
+
+    res.json({message: "2FA disabled"})
 })
 
 module.exports = router
