@@ -63,14 +63,13 @@ router.post("/", async (req, res) => {
                 return
             }
 
-            try {
-                authenticator.verify({ token: req.body.code, secret: secret.secret })
-            } catch (error) {
+            if (!authenticator.verify({ token: req.body.code, secret: secret.secret })) {
                 if (req.body.code != secret.backup) {
                     res.status(401).json({ message: "Invalid OTP code." })
                     return
                 }
             }
+            
         }
             
 
