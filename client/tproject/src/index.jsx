@@ -103,7 +103,7 @@ function MainApp() {
     <>
       <UserContext.Provider value={{
         user: user,
-        setUser, setUser,
+        setUser: setUser,
         isAdminPage: isAdminPage,
         setIsAdminPage: setIsAdminPage
       }}>
