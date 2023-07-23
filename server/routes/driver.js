@@ -34,6 +34,8 @@ router.post("/register", validateToken, upload, async (req, res) => {
         driver_postalcode: yup.number().required(),
         driver_age: yup.number().required(),
         driver_question: yup.string().trim().min(10).max(300).required(),
+        driver_nationality: yup.string().trim().required(),
+        driver_sex: yup.string().trim().required(),
         driver_car_model: yup.string().trim().required(),
         driver_car_license_plate: yup.string().trim().required(),
         driver_face_image: yup.string().trim().required(),

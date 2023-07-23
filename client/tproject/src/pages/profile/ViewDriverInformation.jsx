@@ -112,6 +112,12 @@ function ViewDriverInformation() {
                                 <Grid item xs={12} sm={6} lg={4}>
                                     <InfoBox title="License Plate" value={driverApplication.driver_car_license_plate} />
                                 </Grid>
+                                <Grid item xs={12} sm={6} lg={4}>
+                                    <InfoBox title="Nationality" value={driverApplication.driver_nationality} />
+                                </Grid>
+                                <Grid item xs={12} sm={6} lg={4}>
+                                    <InfoBox title="Sex" value={driverApplication.driver_sex} />
+                                </Grid>
                             </Grid>
                             <Grid container spacing={2} marginTop={"1rem"} >
                                 <Grid item xs={6} md={4} >

@@ -104,6 +104,12 @@ function EditDriverApplication() {
                                         <TextField fullWidth label="Phone Number" value={driverApplication.driver_phone_number} inputProps={{ readOnly: true }} />
                                     </Grid>
                                     <Grid item xs={8}>
+                                        <TextField fullWidth label="Nationality" value={driverApplication.driver_nationality} inputProps={{ readOnly: true }} />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <TextField fullWidth label="Sex" value={driverApplication.driver_sex} inputProps={{ readOnly: true }} />
+                                    </Grid>
+                                    <Grid item xs={8}>
                                         <TextField fullWidth label="Car License Number" value={driverApplication.driver_car_license_plate} inputProps={{ readOnly: true }} />
                                     </Grid>
                                     <Grid item xs={4}>
