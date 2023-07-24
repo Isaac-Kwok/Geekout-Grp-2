@@ -1,6 +1,6 @@
 const express = require("express")
 const yup = require("yup")
-const { User, DriverApplication, Sequelize } = require("../../models")
+const { User, DriverApplication, Sequelize, Driver } = require("../../models")
 const router = express.Router()
 const { validateAdmin } = require("../../middleware/validateAdmin")
 const path = require('path')
@@ -42,7 +42,6 @@ router.put("/edit/:id", async (req, res) => {
     let newDriverApplication = {};
     let newUser = {};
     if (data.status == "Approved") {
-        console.log("reached")
         newDriverApplication = {
             driver_status: data.status,
             driver_reason: data.body
@@ -115,6 +114,7 @@ router.get("/GetAllDriverApplications", async (req, res) => {
     });
     res.json(list);
 })
+
 router.get('/SearchDriverApplication', async (req, res) => {
     let condition = {};
     let search = req.query.search;

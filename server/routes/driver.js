@@ -73,6 +73,7 @@ router.post("/register", validateToken, upload, async (req, res) => {
     const newUser = {
         driver_application_sent : true
     }
+    // Update User to make driver application sent
     let num2 = await User.update(newUser, {
         where: { id: req.user.id }
     })
