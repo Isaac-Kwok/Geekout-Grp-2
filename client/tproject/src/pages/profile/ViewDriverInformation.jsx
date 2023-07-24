@@ -12,6 +12,7 @@ import http from '../../http'
 import { Link } from 'react-router-dom'
 import dayjs from 'dayjs';
 import global from '../../global'
+import MDEditor from '@uiw/react-md-editor';
 
 
 function ViewDriverInformation() {
@@ -41,35 +42,38 @@ function ViewDriverInformation() {
     return (
         <>
             <Stack direction="column" spacing={2}>
-            {driverApplication &&
-                <Card>
-                    <CardContent>
-                        <CardTitle icon={<DriveEta />} title="Application Information" />
-                        <Grid container spacing={2} marginTop={"1rem"}>
-                            <Grid item xs={6} md={4}>
-                                <InfoBox title="Date Created" value={dayjs(driverApplication.createdAt).format(global.datetimeFormat)} />
-                            </Grid>
-                            {driverApplication.driver_status == "Approved" &&
+                {driverApplication &&
+                    <Card>
+                        <CardContent>
+                            <CardTitle icon={<DriveEta />} title="Application Information" />
+                            <Grid container spacing={2} marginTop={"1rem"}>
                                 <Grid item xs={6} md={4}>
-                                    <InfoBox title="Date Approved" value={dayjs(driverApplication.updatedAt).format(global.datetimeFormat)} />
-                                </Grid>}
-                            {driverApplication.driver_status == "Rejected" &&
+                                    <InfoBox title="Date Created" value={dayjs(driverApplication.createdAt).format(global.datetimeFormat)} />
+                                </Grid>
+                                {driverApplication.driver_status == "Approved" &&
+                                    <Grid item xs={6} md={4}>
+                                        <InfoBox title="Date Approved" value={dayjs(driverApplication.updatedAt).format(global.datetimeFormat)} />
+                                    </Grid>}
+                                {driverApplication.driver_status == "Rejected" &&
+                                    <Grid item xs={6} md={4}>
+                                        <InfoBox title="Date Rejected" value={dayjs(driverApplication.updatedAt).format(global.datetimeFormat)} />
+                                    </Grid>}
+
                                 <Grid item xs={6} md={4}>
-                                    <InfoBox title="Date Rejected" value={dayjs(driverApplication.updatedAt).format(global.datetimeFormat)} />
-                                </Grid>}
+                                    <InfoBox title="Application Status" value={driverApplication.driver_status} boolean={driverApplication.driver_status == "Rejected" ? false : true} />
+                                </Grid>
+                                <Grid item xs={12} md={12}>
+                                    <Typography variant="body1"><b>Reason</b> </Typography>
+                                    <MDEditor.Markdown
+                                        style={{ backgroundColor: "white", color: "black" }}
+                                        source={driverApplication.driver_reason} />
+                                </Grid>
 
-                            <Grid item xs={6} md={4}>
-                                <InfoBox title="Application Status" value={driverApplication.driver_status} boolean={driverApplication.driver_status == "Rejected" ? false : true} />
+
+
                             </Grid>
-                            <Grid item xs={12} md={12}>
-                                <InfoBox title="Reason" value={"Hello I rejected you"} />
-                            </Grid>
-
-
-
-                        </Grid>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
                 }
                 {driverApplication &&
                     <Card>
@@ -92,7 +96,7 @@ function ViewDriverInformation() {
                                     <InfoBox title="NRIC Number" value={driverApplication.driver_nric_number} />
                                 </Grid>
                                 <Grid item xs={12} sm={6} lg={4}>
-                                    <InfoBox title="Phone Number" value={driverApplication.phone_number} />
+                                    <InfoBox title="Phone Number" value={driverApplication.driver_phone_number} />
                                 </Grid>
                                 <Grid item xs={12} sm={6} lg={4}>
                                     <InfoBox title="Email Address" value={driverApplication.driver_email} />
@@ -119,12 +123,13 @@ function ViewDriverInformation() {
                                     <InfoBox title="Sex" value={driverApplication.driver_sex} />
                                 </Grid>
                             </Grid>
-                            <Grid container spacing={2} marginTop={"1rem"} >
-                                <Grid item xs={6} md={4} >
+                            <hr />
+                            <Grid container spacing={4} marginTop={"1rem"} >
+                                <Grid item xs={6} md={6} >
                                     <InfoBox title="Driver Face Image" value="" />
                                     <img style={imageStyles} src={`${driverPath}${driverApplication.driver_face_image}`} alt="" />
                                 </Grid>
-                                <Grid item xs={6} md={8} >
+                                <Grid item xs={6} md={6} >
                                     <InfoBox title="Driver Car Image" value="" />
                                     <img style={imageStyles} src={`${driverPath}${driverApplication.driver_car_image}`} alt="" />
                                 </Grid>

@@ -77,6 +77,7 @@ router.post("/", async (req, res) => {
             id: user.id,
             email: user.email,
             name: user.name,
+            phone_number: user.phone_number,
             account_type: user.account_type,
             profile_picture: user.profile_picture,
             profile_picture_type: user.profile_picture_type,
@@ -256,6 +257,7 @@ router.get("/refresh", validateToken, async (req, res) => {
     let userInfo = {
         id: user.id,
         email: user.email,
+        phone_number: user.phone_number,
         name: user.name,
         account_type: user.account_type,
         profile_picture: user.profile_picture,

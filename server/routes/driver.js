@@ -11,8 +11,9 @@ const { validateToken } = require("../middleware/validateToken");
 // Get the Application based on the token
 router.get("/getDriverApplication", validateToken, async (req, res) => {
     try {
-        const application = await DriverApplication.findOne({ where: { user_id: req.user.id } })
-        res.json(application)
+        const application = await DriverApplication.findAll({ where: { user_id: req.user.id }, order: [ [ 'updatedAt' ]] })
+        console.log('application:', application)
+        res.json(application[application.length - 1])
     } catch (error) {
         res.status(500).json({message: error.message})
     }
@@ -51,7 +52,7 @@ router.post("/register", validateToken, upload, async (req, res) => {
         res.status(400).json({ errors: err.errors });
         return;
     }
-
+    console.log('req.user:', req.user)
     // Trim string values
     data.user_id = req.user.id;
     data.driver_phone_number = req.user.phone_number;

@@ -23,6 +23,8 @@ function EditDriverApplication() {
         driver_nric_number: "",
         driver_age: "",
         driver_car_license_plate: "",
+        driver_nationality: "",
+        driver_sex: ""
     });
     const [emailValue, setEmailValue] = useState(`Hello`);
     const [status, setStatus] = useState();
@@ -43,6 +45,7 @@ function EditDriverApplication() {
     }
     useEffect(() => {
         getDriverApplication();
+        console.log(emailValue)
     }, [])
     const formik = useFormik({
         initialValues: {

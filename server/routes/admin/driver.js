@@ -38,14 +38,14 @@ router.put("/edit/:id", async (req, res) => {
     data.subject = data.subject.trim();
     let md = new MarkdownIt();
     data.body = md.render(data.body.trim());
-    console.log("status", data.status)
     const link = process.env.CLIENT_URL
     let newDriverApplication = {};
     let newUser = {};
     if (data.status == "Approved") {
         console.log("reached")
         newDriverApplication = {
-            driver_status: data.status
+            driver_status: data.status,
+            driver_reason: data.body
         };
         newUser = {
             account_type: 2,
@@ -54,7 +54,8 @@ router.put("/edit/:id", async (req, res) => {
     }
     else if (data.status == "Rejected") {
         newDriverApplication = {
-            driver_status: data.status
+            driver_status: data.status,
+            driver_reason: data.body
         };
         newUser = {
             account_type: 1,

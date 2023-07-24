@@ -29,6 +29,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.TEXT,
             allowNull: false
         },
+        driver_reason: {
+            type: DataTypes.TEXT,
+            allowNull: true
+        },
         driver_nationality: {
             type: DataTypes.STRING,
             allowNull: false

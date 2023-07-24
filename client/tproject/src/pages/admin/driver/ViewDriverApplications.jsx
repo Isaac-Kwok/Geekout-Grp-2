@@ -103,7 +103,7 @@ function ViewDriverApplications() {
                 })
             }
             setDeleteAllApplicationDialog(false);
-            handleGetDriverApplications();
+            handleGetDriverApplications()
             navigate('/admin/driver/viewdriverapplications');
             enqueueSnackbar("Driver Applications deleted successfully!", { variant: "success" });
         }
