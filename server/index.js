@@ -1,20 +1,29 @@
 const express = require("express");
-var path = require("path");
 var bodyParser = require("body-parser");
 var cookieParser = require("cookie-parser");
 const cors = require("cors");
-const colors = require("colors");
-const crypto = require("crypto");
 var MyInfoConnector = require("myinfo-connector-v4-nodejs");
 const fs = require("fs");
-
 const app = express();
-const port = process.env.APP_PORT;
-const config = require("./config/config.js");
-const connector = new MyInfoConnector(config.MYINFO_CONNECTOR_CONFIG);
 
 const db = require("./models/index.js")
 require("dotenv").config()
+let MYINFO_CONNECTOR_CONFIG = {
+  CLIENT_ID: process.env.APP_CLIENT_ID,
+  SUBENTITY_ID: process.env.APP_SUBENTITY_ID,
+  REDIRECT_URL: process.env.APP_CALLBACK_URL,
+  SCOPE : process.env.APP_SCOPES,
+  AUTHORIZE_JWKS_URL: `https://test.authorise.singpass.gov.sg/.well-known/keys.json`,
+  MYINFO_JWKS_URL: `https://test.authorise.singpass.gov.sg/.well-known/keys.json`,
+  TOKEN_URL: `https://test.api.myinfo.gov.sg/com/v4/token`,
+  PERSON_URL: `https://test.api.myinfo.gov.sg/com/v4/person`,
+  CLIENT_ASSERTION_SIGNING_KID :'', // optional parameter to specify specific kid for signing. Default will be thumbprint of JWK
+  USE_PROXY: "N",
+  PROXY_TOKEN_URL: "",
+  PROXY_PERSON_URL: "",
+  DEBUG_LEVEL: "info"
+};
+const connector = new MyInfoConnector(MYINFO_CONNECTOR_CONFIG);
 
 
 var sessionIdCache = {};
@@ -51,20 +60,20 @@ app.get("/", (request, response) => {
 app.get("/getEnv", function (req, res) {
   try {
     if (
-      config.APP_CONFIG.DEMO_APP_CLIENT_ID == undefined ||
-      config.APP_CONFIG.DEMO_APP_CLIENT_ID == null
+      process.env.APP_CLIENT_ID == undefined ||
+      process.env.APP_CLIENT_ID == null
     ) {
       res.status(500).send({
         error: "Missing Client ID",
       });
     } else {
       res.status(200).send({
-        clientId: config.APP_CONFIG.DEMO_APP_CLIENT_ID,
-        redirectUrl: config.APP_CONFIG.DEMO_APP_CALLBACK_URL,
-        scope: config.APP_CONFIG.DEMO_APP_SCOPES,
-        purpose_id: config.APP_CONFIG.DEMO_APP_PURPOSE_ID,
-        authApiUrl: config.APP_CONFIG.MYINFO_API_AUTHORIZE,
-        subentity: config.APP_CONFIG.DEMO_APP_SUBENTITY_ID,
+        clientId: process.env.APP_CLIENT_ID,
+        redirectUrl: process.env.APP_CALLBACK_URL,
+        scope: process.env.APP_SCOPES,
+        purpose_id: process.env.APP_PURPOSE_ID,
+        authApiUrl: process.env.MYINFO_API_AUTHORIZE,
+        subentity: process.env.APP_SUBENTITY_ID,
       });
     }
   } catch (error) {
@@ -115,7 +124,7 @@ app.post("/getPersonData", async function (req, res, next) {
 
     // retrieve private siging key and decode to utf8 from FS
     let privateSigningKey = fs.readFileSync(
-      config.APP_CONFIG.DEMO_APP_CLIENT_PRIVATE_SIGNING_KEY,
+      process.env.APP_CLIENT_PRIVATE_SIGNING_KEY,
       "utf8"
     );
     console.log('auth code:', authCode);
@@ -124,7 +133,7 @@ app.post("/getPersonData", async function (req, res, next) {
     let privateEncryptionKeys = [];
     // retrieve private encryption keys and decode to utf8 from FS, insert all keys to array
     readFiles(
-      config.APP_CONFIG.DEMO_APP_CLIENT_PRIVATE_ENCRYPTION_KEYS,
+      process.env.APP_CLIENT_PRIVATE_ENCRYPTION_KEYS,
       (filename, content) => {
         privateEncryptionKeys.push(content);
       },
