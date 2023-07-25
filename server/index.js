@@ -87,7 +87,7 @@ app.get("/getEnv", function (req, res) {
 // callback function - directs back to home page
 app.get("/callback", function (req, res) {
   console.log('callback route', req);
-  res.redirect("http://localhost:3000/driver/register?code="+req.query.code);
+  res.redirect(process.env.CLIENT_URL + "/driver/register?code="+ req.query.code);
 });
 
 //function to read multiple files from a directory
