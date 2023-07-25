@@ -6,6 +6,7 @@ import { validateUser } from '../../functions/user'
 import NotFound from '../errors/NotFound'
 import DriverRegister from './DriverRegister'
 
+
 function ProfileRoutes() {
     const navigate = useNavigate()
     const { enqueueSnackbar } = useSnackbar()

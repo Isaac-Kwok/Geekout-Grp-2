@@ -9,6 +9,14 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
+        driver_phone_number: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        driver_email: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
         driver_postalcode: {
             type: DataTypes.STRING,
             allowNull: false
@@ -18,6 +26,18 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         driver_question: {
+            type: DataTypes.TEXT,
+            allowNull: false
+        },
+        driver_reason: {
+            type: DataTypes.TEXT,
+            allowNull: true
+        },
+        driver_nationality: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        driver_sex: {
             type: DataTypes.STRING,
             allowNull: false
         },
@@ -49,6 +69,14 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false
+        },
+        // 0 - Pending
+        // 1 - Rejected
+        // 2 - Approved
+        driver_status: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: "Pending"
         },
     });
 

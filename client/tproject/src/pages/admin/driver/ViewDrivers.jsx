@@ -68,9 +68,16 @@ function ViewDriverApplications() {
     }
     // HTTP included methods
     const handleGetDriverApplications = () => {
+        let drivers = []
         http.get("/admin/driver/getalldriverapplications").then((res) => {
             if (res.status === 200) {
-                setDriverApplications(res.data)
+                for (let index = 0; index < res.data.length; index++) {
+                    const driver = res.data[index];
+                    if (driver.driver_status == "Approved") {
+                        drivers.push(driver)
+                    }     
+                }
+                setDriverApplications(drivers)
             }
         })
     }
@@ -194,7 +201,7 @@ function ViewDriverApplications() {
 
     return (
         <Container maxWidth="xl" sx={{ marginBottom: "100px", marginY: "1rem", minWidth: 0 }}>
-            <AdminPageTitle title="View Driver Applications" />
+            <AdminPageTitle title="View Drivers" />
             <Grid container spacing={2} sx={{ marginBottom: "1.5em" }}>
                 <Grid item xs={6} xl={3}>
                     <Card>
