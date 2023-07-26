@@ -86,7 +86,7 @@ function ViewDriverInformation() {
                                 {driverApplication.driver_status == "Rejected" &&
                                     <Button LinkComponent={Link} to="/driver/register" variant="text" color="primary" startIcon={<EditIcon />}>Re-Register Application</Button>
                                 }
-                                                                {driverApplication.driver_status == "Approved" &&
+                                {driverApplication.driver_status == "Approved" &&
                                     <Button LinkComponent={Link} to="/driver/register" variant="text" color="primary" startIcon={<DriveEta />}>Driver Dashboard</Button>
                                 }
                             </Box>
@@ -126,7 +126,7 @@ function ViewDriverInformation() {
                                     <InfoBox title="Sex" value={driverApplication.driver_sex} />
                                 </Grid>
                             </Grid>
-                            <hr />
+                            <Divider></Divider>
                             <Grid container spacing={4} marginTop={"1rem"} >
                                 <Grid item xs={6} md={6} >
                                     <InfoBox title="Driver Face Image" value="" />
