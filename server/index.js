@@ -34,6 +34,7 @@ const adminDriverRoutes = require('./routes/admin/driver')
 const productsRoutes = require('./routes/products')
 const adminLocationRoutes = require('./routes/admin/locations')
 const fileRoute = require('./routes/file');
+const rideRequestsRoutes = require("./routes/rideRequests");
 app.use("/file", fileRoute);
 
 app.use(express.urlencoded({ extended: false }));
@@ -52,6 +53,7 @@ app.use('/bicycle', bicycleRoutes)
 app.use("/admin/driver", adminDriverRoutes)
 app.use("/products", productsRoutes)
 app.use("/admin/locations", adminLocationRoutes)
+app.use("/riderequests", rideRequestsRoutes);
 
 
 db.sequelize.sync({alter: true}).then(() => {

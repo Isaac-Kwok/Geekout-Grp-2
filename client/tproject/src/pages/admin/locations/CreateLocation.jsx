@@ -33,14 +33,14 @@ function CreateLocation() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    formik.setFieldValue(name, value === "Active" ? true : false);
+    formik.setFieldValue(name, value); // Set the value directly
   };
 
   const formik = useFormik({
     initialValues: {
       name: "",
       notes: "",
-      status: false,
+      status: "Inactive",
       premium: 0,
       imageFile: "",
       arrivals: 0,
@@ -228,7 +228,7 @@ function CreateLocation() {
                       label="Status"
                       select
                       variant="outlined"
-                      value={formik.values.status ? "Active" : "Inactive"}
+                      value={formik.values.status}
                       onChange={formik.handleChange}
                       error={
                         formik.touched.status && Boolean(formik.errors.status)
