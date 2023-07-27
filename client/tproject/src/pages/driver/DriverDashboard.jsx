@@ -1,8 +1,16 @@
 import React from 'react'
+import { Link, Box } from '@mui/material'
 
 function DriverDashboard() {
   return (
-    <div>DriverDashboard</div>
+    <Box sx={{
+      border: 'solid, black',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center'
+    }}>
+    <Link href="/driver/routes">Driver routes</Link>
+    </Box>
   )
 }
 
