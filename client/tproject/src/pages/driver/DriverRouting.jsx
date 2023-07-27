@@ -2,25 +2,46 @@ import React from 'react'
 import { GoogleMap, MarkerF, useLoadScript, useJsApiLoader, DirectionsRenderer, Autocomplete } from "@react-google-maps/api";
 import { Button, Container, Stack, Divider, Grid, Card, CardContent, Box, TextField } from '@mui/material';
 import PageTitle from '../../components/PageTitle';
-import { useMemo, useState, useRef } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
+import googleMapsReverseGeocoder from '../../googleMapsReverseGeocoder'
 
 function DriverRouting() {
+  const [latitude, setlatitude] = useState(1.3521)
+  const [longtitude, setlongtitude] = useState(103.8198)
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_DRIVER_GOOGLE_API_KEY,
     libraries: ['places'],
   })
-  const center = useMemo(() => ({ lat: 1.3521, lng: 103.8198 }), []);
+  const center = { lat: latitude, lng: longtitude };
   const [map, setMap] = useState(/** @type google.maps.Map */(null))
   const [directionsResponse, setDirectionsResponse] = useState(null)
   const [distance, setDistance] = useState('')
   const [duration, setDuration] = useState('')
+  const [address, setaddress] = useState('')
 
   /** @type React.MutableRefObject<HTMLInputElement> */
   const originRef = useRef('')
   /** @type React.MutableRefObject<HTMLInputElement> */
   const destinationRef = useRef('')
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition);
+  }
+  function showPosition(position) {
+    setlatitude(position.coords.latitude)
+    setlongtitude(position.coords.longitude)
+    googleMapsReverseGeocoder.get("json?latlng=" + position.coords.latitude + "," + position.coords.longitude + "&key=" + import.meta.env.VITE_DRIVER_GOOGLE_API_KEY)
+      .then((res) => {
+        if (res.status === 200) {
+          setaddress(res.data.results[1].formatted_address)
+          originRef.current.value = address
+        } else {
+          console.log("Address retrieval failed", res.status)
+        }
+      })
+  }
+  useEffect(() => {
+  }, [])
 
-  const valueRef = useRef('') //creating a refernce for TextField Component
 
   if (!isLoaded) {
     return (
@@ -52,6 +73,7 @@ function DriverRouting() {
       setDuration('')
       originRef.current.value = ''
       destinationRef.current.value = ''
+      window.reload
     }
 
     return (
@@ -61,18 +83,14 @@ function DriverRouting() {
         flexDirection: 'column',
         alignItems: 'center'
       }}>
-        <PageTitle title="Driver Routing" subtitle="Be a driver with us today!" />
-        <Container maxWidth="xl" sx={{}}>
-
-
-
+        <Container maxWidth="xl" sx={{ marginTop: '2rem' }}>
           <Grid container spacing={2}>
-            <Grid item xs={9}>
+            <Grid item xs={9} lg={9} md={7} sm={12}>
 
               <GoogleMap
                 center={center}
                 zoom={15}
-                mapContainerStyle={{ width: '100%', height: '100%', minHeight: '600px' }}
+                mapContainerStyle={{ width: '100%', height: '100%', minHeight: '700px' }}
                 options={{
                   zoomControl: false,
                   streetViewControl: false,
@@ -88,7 +106,7 @@ function DriverRouting() {
                 <MarkerF position={center} />
               </GoogleMap>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={3} lg={3} md={5} sm={12}>
               <Card sx={{ marginBottom: '1rem' }}>
                 <CardContent>
                   <Grid container spacing={1}>
@@ -142,6 +160,7 @@ function DriverRouting() {
                         onClick={() => {
                           map.panTo(center)
                           map.setZoom(15)
+                          console.log(map.getOwnPropertyNames())
                         }}
                       >
                         Recenter
@@ -163,6 +182,7 @@ function DriverRouting() {
       </Box>
     );
   }
+
 }
 
 export default DriverRouting

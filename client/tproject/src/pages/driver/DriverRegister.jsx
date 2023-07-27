@@ -341,7 +341,7 @@ function DriverRegister() {
                                 {activeStep === 0 && (
                                     <>
                                         <Typography variant="h6">Tell us about yourself</Typography>
-                                        <Box sx={{ border: 0.5, borderRadius: 1, bgcolor: '#f0f0f0', boxShadow: 1, maxWidth: '600px', marginTop: 1 }}>
+                                        <Box sx={{ border: 0.5, borderRadius: 1, bgcolor: '#def0f1', boxShadow: 1, maxWidth: '600px', marginTop: 1 }}>
                                             <Grid container spacing={2}>
                                                 <Grid item xs={7} sx={{ margin: 1 }}>
                                                     <h3>Faster form filling with MyInfo.</h3>
