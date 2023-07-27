@@ -129,13 +129,13 @@ function MainApp() {
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <ThemeProvider theme={theme}>
-      <BrowserRouter>
-        <SnackbarProvider maxSnack={3}>
-          <MainApp />
-        </SnackbarProvider>
-      </BrowserRouter>
-    </ThemeProvider>
+  <ThemeProvider theme={theme}>
+    <BrowserRouter>
+      <SnackbarProvider maxSnack={3}>
+        <MainApp />
+      </SnackbarProvider>
+    </BrowserRouter>
+  </ThemeProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

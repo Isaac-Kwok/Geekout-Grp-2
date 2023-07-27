@@ -341,23 +341,18 @@ function DriverRegister() {
                                 {activeStep === 0 && (
                                     <>
                                         <Typography variant="h6">Tell us about yourself</Typography>
-                                        <Box sx={{ border: 0.5, borderRadius: 1, bgcolor: '#def0f1', boxShadow: 1, maxWidth: '600px', marginTop: 1 }}>
-                                            <Grid container spacing={2}>
-                                                <Grid item xs={7} sx={{ margin: 1 }}>
-                                                    <h3>Faster form filling with MyInfo.</h3>
-                                                    <Typography mt={0}>
-                                                        MyInfo is a platform that retrieves your personal data from participating government agencies, making your application more convenient.
-                                                    </Typography>
-                                                </Grid>
-                                                <Grid item xs={4}>
-                                                    <Button variant='contained' color="secondary" sx={{ mt: 4, border:1, bgcolor: '#bdbdbd' }}
-                                                        onClick={callAuthorizeApi}>
-                                                        Retrieve MyInfo
-                                                    </Button>
-                                                </Grid>
-                                            </Grid>
-
-                                        </Box>
+                                        <Card sx={{ border: 0.5, bgcolor: '#def0f1', maxWidth: '600px', marginTop: 1 }}>
+                                            <CardContent>
+                                                <h3 style={{margin: 0}}>Faster form filling with MyInfo.</h3>
+                                                <Typography mt={0} mb={"1rem"}>
+                                                    MyInfo is a platform that retrieves your personal data from participating government agencies, making your application more convenient.
+                                                </Typography>
+                                                <Button variant='contained' color="primary" 
+                                                    onClick={callAuthorizeApi}>
+                                                    Retrieve MyInfo
+                                                </Button>
+                                            </CardContent>
+                                        </Card>
                                         <Box component="form" sx={{ maxWidth: '600px' }} onSubmit={formik.handleSubmit}>
                                             <TextField
                                                 fullWidth margin="normal" autoComplete="off"
