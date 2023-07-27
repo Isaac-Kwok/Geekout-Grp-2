@@ -1,7 +1,6 @@
 import React from 'react'
 import { GoogleMap, MarkerF, useLoadScript, useJsApiLoader, DirectionsRenderer, Autocomplete } from "@react-google-maps/api";
 import { Button, Container, Stack, Divider, Grid, Card, CardContent, Box, TextField } from '@mui/material';
-import PageTitle from '../../components/PageTitle';
 import { useMemo, useState, useRef, useEffect } from "react";
 import googleMapsReverseGeocoder from '../../googleMapsReverseGeocoder'
 
@@ -120,9 +119,11 @@ function DriverRouting() {
                   <Autocomplete>
                     <TextField
                       fullWidth
+                      name='name'
                       margin="normal" autoComplete="off"
                       label="Current Location"
                       inputRef={originRef}
+                      InputLabelProps={{ shrink: true }}  
                     />
                   </Autocomplete>
 
@@ -137,12 +138,12 @@ function DriverRouting() {
                   <Grid container spacing={2}>
                     <Grid item xs={6}>
                       {distance && (
-                        <h5>Distance: {distance}</h5>
+                        <h5>Distance: {directionsResponse.routes[0].legs[0].distance.text}</h5>
                       )}
                     </Grid>
                     <Grid item xs={6} >
                       {duration && (
-                        <h5>Duration: {duration}</h5>
+                        <h5>Duration: {directionsResponse.routes[0].legs[0].duration.text}</h5>
                       )}
                     </Grid>
                   </Grid>
@@ -157,7 +158,6 @@ function DriverRouting() {
                         onClick={() => {
                           map.panTo(center)
                           map.setZoom(15)
-                          console.log(map.getOwnPropertyNames())
                         }}
                       >
                         Recenter
