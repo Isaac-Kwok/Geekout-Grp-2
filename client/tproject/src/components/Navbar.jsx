@@ -77,13 +77,13 @@ export function Navbar() {
                         </ListItemButton>
                     </ListItem>
                     <ListItem key={"Bicycle"} disablePadding>
-                        <ListItemButton component={Link} to="/" onClick={() => setIsDrawerOpen(false)}>
+                        <ListItemButton component={Link} to="/bicycle" onClick={() => setIsDrawerOpen(false)}>
                             <ListItemIcon><DirectionsBikeIcon /></ListItemIcon>
                             <ListItemText primary={"Bicycles"} />
                         </ListItemButton>
                     </ListItem>
                     <ListItem key={"Shop"} disablePadding>
-                        <ListItemButton component={Link} to="/" onClick={() => setIsDrawerOpen(false)}>
+                        <ListItemButton component={Link} to="/products" onClick={() => setIsDrawerOpen(false)}>
                             <ListItemIcon><StoreIcon /></ListItemIcon>
                             <ListItemText primary={"Shop"} />
                         </ListItemButton>
