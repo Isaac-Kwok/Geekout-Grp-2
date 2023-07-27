@@ -39,9 +39,6 @@ function DriverRouting() {
         }
       })
   }
-  useEffect(() => {
-  }, [])
-
 
   if (!isLoaded) {
     return (
