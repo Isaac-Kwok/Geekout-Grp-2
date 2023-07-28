@@ -1,4 +1,5 @@
 import { Box, Button, Container, Card, CardContent, CardActions, Stack, Typography, TextField, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, Grid, Divider } from "@mui/material"
+import { useGoogleLogin } from "@react-oauth/google";
 import CardTitle from "../components/CardTitle";
 import LoadingButton from '@mui/lab/LoadingButton';
 import LoginIcon from '@mui/icons-material/Login';
@@ -17,6 +18,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import http from "../http";
 import { UserContext } from "..";
+import axios from "axios";
 
 function Login() {
     const [loading, setLoading] = useState(false);
@@ -26,6 +28,7 @@ function Login() {
     const [resendLoading, setResendLoading] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [accessToken, setAccessToken] = useState("");
     const [otpDialog, setOtpDialog] = useState(false);
     const { setUser } = useContext(UserContext);
     const { enqueueSnackbar } = useSnackbar();
@@ -52,8 +55,37 @@ function Login() {
     }
 
     const handleOtpDialogClose = () => {
+        setAccessToken(null);
         setOtpDialog(false);
     }
+
+    const googleAuth = useGoogleLogin({
+        onSuccess: async (res) => {
+            setLoading(true);
+            http.post("/auth/google", { token: res.access_token }).then((res) => {
+                if (res.status === 200) {
+                    enqueueSnackbar("Login successful. Welcome back!", { variant: "success" });
+                    // Store token in local storage
+                    localStorage.setItem("token", res.data.token);
+                    // Set user context
+                    setUser(res.data.user);
+                    navigate("/")
+                } else {
+                    enqueueSnackbar("Login failed! " + err.response.data.message, { variant: "error" });
+                    setLoading(false);
+                }
+            }).catch((err) => {
+                if (err.response.status === 409) {
+                    setAccessToken(res.access_token);
+                    setOtpDialog(true);
+                    setLoading(false);
+                } else {
+                    enqueueSnackbar("Login failed! " + err.response.data.message, { variant: "error" });
+                    setLoading(false);
+                }
+            })
+        },
+    });
 
     const formik = useFormik({
         initialValues: {
@@ -156,9 +188,13 @@ function Login() {
         }),
         onSubmit: (data) => {
             setLoading(true);
-            data.email = email;
-            data.password = password;
-            http.post("/auth", data).then((res) => {
+            if (accessToken) {
+                data.token = accessToken;
+            } else {
+                data.email = email;
+                data.password = password;
+            }
+            http.post(accessToken ? "/auth/google" : "/auth", data).then((res) => {
                 if (res.status === 200) {
                     enqueueSnackbar("Login successful. Welcome back!", { variant: "success" });
                     // Store token in local storage
@@ -225,7 +261,7 @@ function Login() {
                             <Divider />
                             <CardContent>
                                 <Stack spacing={1}>
-                                    <Button variant="outlined" color="primary" startIcon={<GoogleIcon />} fullWidth>Login with Google</Button>
+                                    <Button variant="outlined" color="primary" startIcon={<GoogleIcon />} fullWidth onClick={googleAuth}>Login with Google</Button>
                                     <Button variant="outlined" color="primary" startIcon={<FacebookIcon />} fullWidth>Login with Facebook</Button>
                                 </Stack>
                             </CardContent>
