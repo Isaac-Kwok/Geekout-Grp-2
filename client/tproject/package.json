@@ -10,6 +10,7 @@
     "@mui/material": "^5.12.2",
     "@mui/x-data-grid": "^6.7.0",
     "@react-google-maps/api": "^2.18.1",
+    "@react-oauth/google": "^0.11.1",
     "@stripe/react-stripe-js": "^2.1.1",
     "@stripe/stripe-js": "^1.54.1",
     "@testing-library/jest-dom": "^5.16.5",
@@ -27,6 +28,7 @@
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.1",
     "md5": "^2.3.0",
+    "myinfo-connector-v4-nodejs": "1.0.2",
     "notistack": "^3.0.1",
     "qrcode": "^1.5.3",
     "react": "^18.2.0",
@@ -38,9 +40,7 @@
     "sort-by": "^0.0.2",
     "vite-plugin-rewrite-all": "^1.0.1",
     "web-vitals": "^2.1.4",
-    "yup": "^1.2.0",
-    "myinfo-connector-v4-nodejs": "1.0.2"
-
+    "yup": "^1.2.0"
   },
   "scripts": {
     "start": "vite",
