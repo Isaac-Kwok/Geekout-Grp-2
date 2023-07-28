@@ -53,7 +53,7 @@ function App() {
                         <form>
                             <Box display={"flex"} alignItems={"center"} justifyContent={"center"} marginTop={"1rem"} sx={searchStyle}>
                                 <InputBase
-                                    sx={{ ml: 1, flex: 1 }}
+                                    sx={{ ml: 1, flex: 1, width: "300px" }}
                                     placeholder="Where do you want to go?"
                                     inputProps={{ 'aria-label': 'Where do you want to go?' }}
                                 />
