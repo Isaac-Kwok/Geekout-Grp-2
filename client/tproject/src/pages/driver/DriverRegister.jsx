@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Box, Typography, TextField, Button, Container, Grid, Stepper, Step, StepLabel, Card, CardContent } from '@mui/material';
+import { Box, Typography, TextField, Button, Container, Grid, Stepper, Step, StepLabel, Card, CardContent, Divider } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -341,7 +341,19 @@ function DriverRegister() {
                                 {activeStep === 0 && (
                                     <>
                                         <Typography variant="h6">Tell us about yourself</Typography>
-                                        <Box component="form" sx={{ maxWidth: '500px' }} onSubmit={formik.handleSubmit}>
+                                        <Card sx={{ border: 0.5, bgcolor: '#def0f1', maxWidth: '600px', marginTop: 1 }}>
+                                            <CardContent>
+                                                <h3 style={{margin: 0}}>Faster form filling with MyInfo.</h3>
+                                                <Typography mt={0} mb={"1rem"}>
+                                                    MyInfo is a platform that retrieves your personal data from participating government agencies, making your application more convenient.
+                                                </Typography>
+                                                <Button variant='contained' color="primary" 
+                                                    onClick={callAuthorizeApi}>
+                                                    Retrieve MyInfo
+                                                </Button>
+                                            </CardContent>
+                                        </Card>
+                                        <Box component="form" sx={{ maxWidth: '600px' }} onSubmit={formik.handleSubmit}>
                                             <TextField
                                                 fullWidth margin="normal" autoComplete="off"
                                                 label="NRIC Name"
@@ -405,11 +417,6 @@ function DriverRegister() {
                                                 type="submit">
                                                 Next
                                             </Button>
-
-                                            <Button fullWidth variant="contained" sx={{ mt: 2 }}
-                                                onClick={callAuthorizeApi}>
-                                                Register with SingPass
-                                            </Button>
                                         </Box>
 
                                     </>
@@ -417,7 +424,7 @@ function DriverRegister() {
                                 {activeStep === 1 && (
                                     <>
                                         <Typography variant="h6">Driver details</Typography>
-                                        <Box component="form" sx={{ maxWidth: '500px' }} onSubmit={formik2.handleSubmit}>
+                                        <Box component="form" sx={{ maxWidth: '600px' }} onSubmit={formik2.handleSubmit}>
                                             <Grid container spacing={2} sx={{ mb: 1, mt: 1 }}>
                                                 <Grid item xs={6}>
                                                     <TextField

@@ -131,17 +131,15 @@ function MainApp() {
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-      <ThemeProvider theme={theme}>
-        <BrowserRouter>
-          <SnackbarProvider maxSnack={3}>
-            <MainApp />
-          </SnackbarProvider>
-        </BrowserRouter>
-      </ThemeProvider>
-    </GoogleOAuthProvider>
-  </React.StrictMode>
+  <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+    <ThemeProvider theme={theme}>
+      <BrowserRouter>
+        <SnackbarProvider maxSnack={3}>
+          <MainApp />
+        </SnackbarProvider>
+      </BrowserRouter>
+    </ThemeProvider>
+  </GoogleOAuthProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function
