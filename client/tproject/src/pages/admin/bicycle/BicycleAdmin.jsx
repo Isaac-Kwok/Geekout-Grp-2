@@ -14,6 +14,7 @@ function BicycleAdmin() {
     const [loading, setLoading] = useState(true);
     const [currentLocation, setCurrentLocation] = useState(null);
     const [selectedMarker, setSelectedMarker] = useState(null);
+    const [selectedSelf, setSelectedSelf] = useState(null);
 
     const { isLoaded } = useLoadScript({
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_API_KEY,
@@ -49,21 +50,27 @@ function BicycleAdmin() {
     };
 
     const handleMarkerClick = (marker) => {
-        setSelectedMarker(marker);
-        console.log(marker)
+        if (marker.id === 0) {
+            setSelectedSelf(marker);
+            console.log('currentLocation:', currentLocation);
+          } else {
+            setSelectedMarker(marker);
+            console.log('marker:', marker);
+          }
     };
 
     const handleInfoWindowClose = () => {
         setSelectedMarker(null);
+        setSelectedSelf(null);
     };
 
     const markers = useMemo(
         () =>
-            bicycle.map(({ id, bicycle_lat, bicycle_lng }) => (
+            bicycle.map(({ id, bicycle_lat, bicycle_lng, reports }) => (
                 <MarkerF 
                 key={id} 
                 position={{ lat: bicycle_lat, lng: bicycle_lng }}
-                onClick={() => handleMarkerClick({id, bicycle_lat, bicycle_lng})} />
+                onClick={() => handleMarkerClick({id, bicycle_lat, bicycle_lng, reports})} />
 
             )),
         [bicycle]
@@ -104,7 +111,21 @@ function BicycleAdmin() {
                     }}
                 >
                     {markers}
-                    {currentLocation && <MarkerF position={currentLocation} />}
+                    {currentLocation && <MarkerF position={currentLocation} onClick={() => handleMarkerClick({ id: 0, bicycle_lat: currentLocation.lat, bicycle_lng: currentLocation.lng, reports: 0 })} /> }
+
+                    {selectedSelf && (
+                        <InfoWindowF
+                        position={{ lat: currentLocation.lat, lng: currentLocation.lng }}
+                        onCloseClick={handleInfoWindowClose}
+                        >
+                        <div>
+                            <h3>Your Current Location</h3>
+                            <p>Latitude: {currentLocation.lat}</p>
+                            <p>Longitude: {currentLocation.lng}</p>
+                        </div>
+                        </InfoWindowF>
+                    )}
+
                     {selectedMarker && (
                         <InfoWindowF
                         position={{ lat: selectedMarker.bicycle_lat, lng: selectedMarker.bicycle_lng }}
@@ -114,6 +135,8 @@ function BicycleAdmin() {
                             <h3>Marker Information</h3>
                             <p>Latitude: {selectedMarker.bicycle_lat}</p>
                             <p>Longitude: {selectedMarker.bicycle_lng}</p>
+                            <p>Reports: {selectedMarker.reports}</p>
+                            <Link to={`details/${selectedMarker.id}`}>View Details</Link>
                         </div>
                         </InfoWindowF>
                     )}
