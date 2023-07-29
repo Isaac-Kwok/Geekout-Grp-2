@@ -313,14 +313,18 @@ function CreateLocation() {
                     </Box>
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <img
-                      src={
-                        import.meta.env.VITE_API_URL +
-                        "/admin/locations/images/" +
-                        imageFile
-                      }
-                      style={{ maxWidth: "100%", height: "auto" }}
-                    />
+                    {imageFile ? (
+                      <img
+                        src={
+                          import.meta.env.VITE_API_URL +
+                          "/admin/locations/images/" +
+                          imageFile
+                        }
+                        style={{ maxWidth: "100%", height: "auto" }}
+                      />
+                    ) : (
+                      <></>
+                    )}
                   </Grid>
                 </Grid>
               </Grid>
