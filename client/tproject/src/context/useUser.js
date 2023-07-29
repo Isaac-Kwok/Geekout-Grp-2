@@ -18,7 +18,7 @@ function useUser() {
         }
     }
 
-    return { getUser, refreshUser };
+    return { user,getUser, refreshUser };
 }
 
 export default useUser;
