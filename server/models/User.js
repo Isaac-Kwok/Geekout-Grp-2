@@ -68,7 +68,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true,
         },
         is_fb_auth_enabled: {
-            type: DataTypes.BOOLEAN,
+            type: DataTypes.STRING,
             allowNull: true,
         },
         is_email_verified: {
