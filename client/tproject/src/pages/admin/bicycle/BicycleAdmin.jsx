@@ -1,7 +1,7 @@
 import { GoogleMap, MarkerF, useLoadScript, InfoWindowF } from "@react-google-maps/api";
 import { Container } from '@mui/material';
 import { useMemo, useState, useEffect } from "react";
-import {Button} from "@mui/material";
+import { Button } from "@mui/material";
 import { Link } from 'react-router-dom';
 import http from "../../../http"
 import '../../../bicycle.css'
@@ -19,6 +19,7 @@ function BicycleAdmin() {
     const { isLoaded } = useLoadScript({
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_API_KEY,
     });
+
     const center = useMemo(() => ({ lat: 1.311, lng: 103.844 }), []);
 
     const handleGetBicycle = () => {
@@ -43,20 +44,45 @@ function BicycleAdmin() {
                     console.error('Error getting user location:', error);
                 }
             )
-        } 
+        }
         else {
             console.error('Geolocation is not supported by this browser.');
         }
     };
 
+    // async function reverseGeocode(lat, lng, apiKey) {
+    //     try {
+    //         const response = await fetch(
+    //             `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`
+    //         );
+    //         const data = await response.json();
+
+    //         if (data.status === 'OK' && data.results.length > 0) {
+    //             return data.results[0].formatted_address;
+    //         } else {
+    //             throw new Error('Reverse geocoding failed.');
+    //         }
+    //     } catch (error) {
+    //         console.error('Error during reverse geocoding:', error);
+    //         return null;
+    //     }
+    // };
+
     const handleMarkerClick = (marker) => {
         if (marker.id === 0) {
             setSelectedSelf(marker);
             console.log('currentLocation:', currentLocation);
-          } else {
+            // reverseGeocode(currentLocation.lat, currentLocation.lng, import.meta.env.VITE_GOOGLE_API_KEY)
+            // .then((address) => {
+            //     console.log('Reverse Geocoded Address:', address);
+            // })
+            // .catch((error) => {
+            //     console.error('Error:', error);
+            // });
+        } else {
             setSelectedMarker(marker);
             console.log('marker:', marker);
-          }
+        }
     };
 
     const handleInfoWindowClose = () => {
@@ -67,10 +93,10 @@ function BicycleAdmin() {
     const markers = useMemo(
         () =>
             bicycle.map(({ id, bicycle_lat, bicycle_lng, reports }) => (
-                <MarkerF 
-                key={id} 
-                position={{ lat: bicycle_lat, lng: bicycle_lng }}
-                onClick={() => handleMarkerClick({id, bicycle_lat, bicycle_lng, reports})} />
+                <MarkerF
+                    key={id}
+                    position={{ lat: bicycle_lat, lng: bicycle_lng }}
+                    onClick={() => handleMarkerClick({ id, bicycle_lat, bicycle_lng, reports })} />
 
             )),
         [bicycle]
@@ -92,8 +118,8 @@ function BicycleAdmin() {
 
     return (
         <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
-            <AdminPageTitle title="Bicycle Map"/>
-            <Button startIcon={<FormatListNumberedIcon/>} LinkComponent={Link} variant="contained" color="primary" sx={{ marginBottom: "1rem" }} to="/admin/bicycle/view">View Bicycle List</Button>
+            <AdminPageTitle title="Bicycle Map" />
+            <Button startIcon={<FormatListNumberedIcon />} LinkComponent={Link} variant="contained" color="primary" sx={{ marginBottom: "1rem" }} to="/admin/bicycle/view">View Bicycle List</Button>
 
             {!isLoaded ? (
                 <h1>Loading...</h1>
@@ -102,42 +128,42 @@ function BicycleAdmin() {
                     mapContainerClassName="map-container"
                     center={center}
                     zoom={14}
-                    mapContainerStyle={{width: "100%", marginBottom: "1rem"}}
+                    mapContainerStyle={{ width: "100%", marginBottom: "1rem" }}
                     options={{
                         restriction: {
-                        latLngBounds: bounds,
-                        strictBounds: true
+                            latLngBounds: bounds,
+                            strictBounds: true
                         }
                     }}
                 >
                     {markers}
-                    {currentLocation && <MarkerF position={currentLocation} onClick={() => handleMarkerClick({ id: 0, bicycle_lat: currentLocation.lat, bicycle_lng: currentLocation.lng, reports: 0 })} /> }
+                    {currentLocation && <MarkerF position={currentLocation} onClick={() => handleMarkerClick({ id: 0, bicycle_lat: currentLocation.lat, bicycle_lng: currentLocation.lng, reports: 0 })} />}
 
                     {selectedSelf && (
                         <InfoWindowF
-                        position={{ lat: currentLocation.lat, lng: currentLocation.lng }}
-                        onCloseClick={handleInfoWindowClose}
+                            position={{ lat: currentLocation.lat, lng: currentLocation.lng }}
+                            onCloseClick={handleInfoWindowClose}
                         >
-                        <div>
-                            <h3>Your Current Location</h3>
-                            <p>Latitude: {currentLocation.lat}</p>
-                            <p>Longitude: {currentLocation.lng}</p>
-                        </div>
+                            <div>
+                                <h3>Your Current Location</h3>
+                                <p>Latitude: {currentLocation.lat}</p>
+                                <p>Longitude: {currentLocation.lng}</p>
+                            </div>
                         </InfoWindowF>
                     )}
 
                     {selectedMarker && (
                         <InfoWindowF
-                        position={{ lat: selectedMarker.bicycle_lat, lng: selectedMarker.bicycle_lng }}
-                        onCloseClick={handleInfoWindowClose}
+                            position={{ lat: selectedMarker.bicycle_lat, lng: selectedMarker.bicycle_lng }}
+                            onCloseClick={handleInfoWindowClose}
                         >
-                        <div>
-                            <h3>Marker Information</h3>
-                            <p>Latitude: {selectedMarker.bicycle_lat}</p>
-                            <p>Longitude: {selectedMarker.bicycle_lng}</p>
-                            <p>Reports: {selectedMarker.reports}</p>
-                            <Link to={`details/${selectedMarker.id}`}>View Details</Link>
-                        </div>
+                            <div>
+                                <h3>Marker Information</h3>
+                                <p>Latitude: {selectedMarker.bicycle_lat}</p>
+                                <p>Longitude: {selectedMarker.bicycle_lng}</p>
+                                <p>Reports: {selectedMarker.reports}</p>
+                                <Link to={`details/${selectedMarker.id}`}>View Details</Link>
+                            </div>
                         </InfoWindowF>
                     )}
                 </GoogleMap>
