@@ -4,8 +4,6 @@ import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
 import CardTitle from '../../components/CardTitle';
 import { useNavigate, useParams } from 'react-router-dom'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
 import http from '../../http'
 import MDEditor from '@uiw/react-md-editor';
@@ -13,22 +11,33 @@ import AdminPageTitle from '../../components/AdminPageTitle';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CategoryIcon from '@mui/icons-material/Category';
-import { useSnackbar } from 'notistack'
-import LoadingSkeleton from '../../components/LoadingSkeleton';
-import * as Yup from "yup";
-import { useFormik } from 'formik';
-import md5 from "md5";
+import { useSnackbar } from 'notistack';
+
+const AspectRatioBox = ({ children }) => (
+    <div style={{
+        position: 'relative',
+        width: '100%',
+        height: 0,
+        paddingBottom: '56.25%', /* 16:9 Aspect Ratio (divide 9 by 16 = 0.5625 or 56.25%) */
+        overflow: 'hidden'
+    }}>
+        <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%'
+        }}>
+            {children}
+        </div>
+    </div>
+);
 
 function ViewSingleProduct() {
     const navigate = useNavigate();
     const [product, setProduct] = useState(null);
     const { id } = useParams();
     const [loading, setLoading] = useState(false);
-    const [productFile, setProductFile] = useState();
-    const [productFileUpload, setProductFileUpload] = useState();
-    const [loadingPicture, setLoadingPicture] = useState(false);
-    const [changePictureDialog, setChangePictureDialog] = useState(false);
-    const [descriptionValue, setDescriptionValue] = useState();
     const { enqueueSnackbar } = useSnackbar();
     const productPath = `${import.meta.env.VITE_API_URL}/admin/products/productImage/`
 
@@ -64,13 +73,12 @@ function ViewSingleProduct() {
         <>{product && (
             <>
                 <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
-                    <AdminPageTitle title={product.product_name} backbutton />
                     <Card sx={{ margin: "auto" }}>
                         <Box component="form">
                             <CardContent>
-                                <CardTitle title="Product Information" icon={<CategoryIcon />} />
+                                <CardTitle title="Product Information" icon={<IconButton size="large" onClick={() => navigate("/products")} ><ArrowBackIcon /><CategoryIcon/></IconButton>} />
                                 <Grid container spacing={1} sx={{ marginY: "1rem" }}>
-                                    <img src={`${productPath}${product.product_picture}`} alt={product.product_name} style={{ width: '100%', height: 'auto' }} />
+                                    <img src={`${productPath}${product.product_picture}`} alt={product.product_name} style={{ width: '100%', height: '500px', objectFit: 'cover' }} />
                                 </Grid>
                                 <Grid container spacing={2} sx={{ marginY: "1rem" }}>
                                     <Grid item xs={12} sm={6}>
@@ -89,10 +97,9 @@ function ViewSingleProduct() {
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
                                         <Typography variant="body1">Description: </Typography>
-                                        <MDEditor.Markdown sx={{
-                                            color: 'text.primary',
-                                            backgroundColor: 'background.paper',
-                                        }} source={product.product_description} />
+                                        <MDEditor.Markdown
+                                            style={{ backgroundColor: "white", color: "black" }}
+                                            source={product.product_description} />
                                     </Grid>
                                 </Grid>
                             </CardContent>

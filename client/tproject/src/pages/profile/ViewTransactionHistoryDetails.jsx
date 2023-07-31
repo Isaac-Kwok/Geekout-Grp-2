@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Box, Card, CardContent, Grid } from '@mui/material'
+import { Box, Card, CardContent, Grid, Button } from '@mui/material'
 import CardTitle from '../../components/CardTitle'
 import HistoryIcon from '@mui/icons-material/History';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import http from '../../http'
 import InfoBox from '../../components/InfoBox';
+import BackIcon from '@mui/icons-material/ArrowBack';
 
 function ViewTransactionHistoryDetails() {
 
@@ -12,6 +13,7 @@ function ViewTransactionHistoryDetails() {
     const [loading, setLoading] = useState(true)
     const { id } = useParams()
     const date = new Date()
+    const navigate = useNavigate()
 
     const getTransaction = async () => {
         setLoading(true)
@@ -27,7 +29,8 @@ function ViewTransactionHistoryDetails() {
 
     return (
         <>
-            <Card>
+            <Button variant="outlined" color="primary" onClick={() => { navigate(-1) }} startIcon={<BackIcon/>}>Back</Button>
+            <Card sx={{marginTop: "1rem"}}>
                 <CardContent>
                     <CardTitle icon={<HistoryIcon />} title="Transaction Details" />
                     <Grid container spacing={2} marginTop={"1rem"}>

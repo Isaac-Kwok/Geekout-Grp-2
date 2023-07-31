@@ -73,7 +73,7 @@ function ViewProducts() {
 
     const handleDeactivateProduct = () => {
         setDeactivateLoading(true)
-        http.put("/admin/products/" + deactivateProduct.id, {product_status: false} ).then((res) => {
+        http.put("/admin/products/status/" + deactivateProduct.id, {product_status: false} ).then((res) => {
             if (res.status === 200) {
                 setDeactivateLoading(false)
                 setDeactivateProductDialog(false)
@@ -92,7 +92,7 @@ function ViewProducts() {
 
     const handleActivateProduct = () => {
         setActivateLoading(true)
-        http.put("/admin/products/" + activateProduct.id, {product_status: true} ).then((res) => {
+        http.put("/admin/products/status/" + activateProduct.id, {product_status: true} ).then((res) => {
             if (res.status === 200) {
                 setActivateLoading(false)
                 setActivateProductDialog(false)
@@ -144,8 +144,8 @@ function ViewProducts() {
                         <br />
                         Product Details:
                         <ul>
-                            <li>Name: {deactivateProduct?.product_name}</li>
-                            <li>Product Stock: {deactivateProduct?.product_stock}</li>
+                            <li><b>Name:</b> {deactivateProduct?.product_name}</li>
+                            <li><b>Product Stock:</b> {deactivateProduct?.product_stock}</li>
                         </ul>
                     </DialogContentText>
                 </DialogContent>
@@ -162,8 +162,8 @@ function ViewProducts() {
                         <br />
                         Product Details:
                         <ul>
-                            <li>Name: {activateProduct?.product_name}</li>
-                            <li>Product Stock: {activateProduct?.product_stock}</li>
+                            <li><b>Name:</b> {activateProduct?.product_name}</li>
+                            <li><b>Product Stock:</b> {activateProduct?.product_stock}</li>
                         </ul>
                     </DialogContentText>
                 </DialogContent>
