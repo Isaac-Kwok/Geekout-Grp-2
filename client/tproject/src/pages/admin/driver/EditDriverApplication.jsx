@@ -23,6 +23,8 @@ function EditDriverApplication() {
         driver_nric_number: "",
         driver_age: "",
         driver_car_license_plate: "",
+        driver_nationality: "",
+        driver_sex: ""
     });
     const [emailValue, setEmailValue] = useState(`Hello`);
     const [status, setStatus] = useState();
@@ -43,6 +45,7 @@ function EditDriverApplication() {
     }
     useEffect(() => {
         getDriverApplication();
+        console.log(emailValue)
     }, [])
     const formik = useFormik({
         initialValues: {
@@ -102,6 +105,12 @@ function EditDriverApplication() {
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField fullWidth label="Phone Number" value={driverApplication.driver_phone_number} inputProps={{ readOnly: true }} />
+                                    </Grid>
+                                    <Grid item xs={8}>
+                                        <TextField fullWidth label="Nationality" value={driverApplication.driver_nationality} inputProps={{ readOnly: true }} />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <TextField fullWidth label="Sex" value={driverApplication.driver_sex} inputProps={{ readOnly: true }} />
                                     </Grid>
                                     <Grid item xs={8}>
                                         <TextField fullWidth label="Car License Number" value={driverApplication.driver_car_license_plate} inputProps={{ readOnly: true }} />

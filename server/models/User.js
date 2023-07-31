@@ -62,6 +62,14 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: false
         },
+        is_google_auth_enabled: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        is_fb_auth_enabled: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+        },
         is_email_verified: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
@@ -76,6 +84,11 @@ module.exports = (sequelize, DataTypes) => {
 
     User.associate = (models) => {
         User.hasMany(models.Transaction, {
+            foreignKey: "user_id",
+            onDelete: "CASCADE",
+        });
+
+        User.hasOne(models.Secret, {
             foreignKey: "user_id",
             onDelete: "CASCADE",
         });

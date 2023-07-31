@@ -14,6 +14,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { createTheme, ThemeProvider, responsiveFontSizes } from '@mui/material/styles';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { grey } from '@mui/material/colors';
 import { Navbar } from './components/Navbar';
 import { Box } from '@mui/material';
@@ -21,6 +22,7 @@ import { SnackbarProvider } from 'notistack';
 import jwt_decode from "jwt-decode";
 import Footer from './components/Footer';
 import http from './http'
+
 
 let fonts = [
   'Poppins',
@@ -103,7 +105,7 @@ function MainApp() {
     <>
       <UserContext.Provider value={{
         user: user,
-        setUser, setUser,
+        setUser: setUser,
         isAdminPage: isAdminPage,
         setIsAdminPage: setIsAdminPage
       }}>
@@ -129,7 +131,7 @@ function MainApp() {
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
+  <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <SnackbarProvider maxSnack={3}>
@@ -137,7 +139,7 @@ root.render(
         </SnackbarProvider>
       </BrowserRouter>
     </ThemeProvider>
-  </React.StrictMode>
+  </GoogleOAuthProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function
