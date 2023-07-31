@@ -19,63 +19,56 @@ function DriverRouting() {
   const [map, setMap] = useState(null)
   const [directionsResponse, setDirectionsResponse] = useState(null)
   const [distance, setDistance] = useState('')
+  const [profit, setprofit] = useState('')
   const [duration, setDuration] = useState('')
-  const [visibleRoutes, setVisibleRoutes] = useState();
+  const [visibleRoutes, setVisibleRoutes] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
+  const [renderCount, setRenderCount] = useState(1);
 
   const originRef = useRef({})
   const destinationRef = useRef({})
+  const isDataFetched = useRef(false); // useRef to track whether data has been fetched
 
-  const test = [
-    {
-      id: 1,
-      pickUp: "Yio Chu Kang MRT station",
-      destination: "Ang Mo Kio Hub",
-      rider_name: "Brian Yuk"
-    },
-    {
-      id: 2,
-      pickUp: "Marina Bay Sands",
-      destination: "Gardens by the Bay",
-      rider_name: "Brian Yuk"
-    },
-    {
-      id: 3,
-      pickUp: "Yio Chu Kang MRT station",
-      destination: "Ang Mo Kio Hub",
-      rider_name: "Brian Yuk"
-    },
-    {
-      id: 11,
-      pickUp: "Yio Chu Kang MRT station",
-      destination: "Ang Mo Kio Hub",
-      rider_name: "Brian Yuk"
-    },
-  ];
-  function groupRidesByPickUp(rides, maxRidesPerList) {
+  const handleGetRideRequests = async () => {
+    try {
+      const res = await http.get("/riderequests/allrequests");
+      if (res.status === 200) {
+        const ridesList = res.data;
+        const maxRidesPerList = 2; // Adjust the value as desired
+
+        // Group the rides based on pickUp location
+        const groupedRides = groupRidesWithMaxPerList(ridesList, maxRidesPerList);
+        const listsOfRoutes = createSummaryList(groupedRides);
+
+        // Now set the grouped rides in the state
+        setVisibleRoutes(listsOfRoutes);
+        isDataFetched.current = true; // Mark data as fetched
+      }
+    } catch (error) {
+      console.error("Error fetching ride requests:", error);
+    }
+  };
+
+  function groupRidesWithMaxPerList(rides, maxRidesPerList) {
     const groupedRides = [];
+
+    // Helper function to check if the last list in groupedRides can accept more rides
+    const canAddToLastList = () => groupedRides.length > 0 && groupedRides[groupedRides.length - 1].length < maxRidesPerList;
 
     // Iterate through each ride
     rides.forEach((ride) => {
-      let addedToExistingList = false;
-
-      // Check if the current ride can be added to an existing list
-      for (let i = 0; i < groupedRides.length; i++) {
-        if (groupedRides[i][0].pickUp === ride.pickUp && groupedRides[i].length < maxRidesPerList) {
-          groupedRides[i].push(ride);
-          addedToExistingList = true;
-          break;
-        }
-      }
-
-      // If the ride was not added to an existing list, create a new list for it
-      if (!addedToExistingList) {
+      if (canAddToLastList() && groupedRides[groupedRides.length - 1][0]['pickUp'] === ride['pickUp']) {
+        // If the last list can accept more rides and the pickUp location matches, add the ride to the last list
+        groupedRides[groupedRides.length - 1].push(ride);
+      } else {
+        // If not, create a new list and add the ride to it
         groupedRides.push([ride]);
       }
     });
-
     return groupedRides;
   }
+
+
   function createSummaryList(groupedRides) {
     const summaryList = [];
 
@@ -100,7 +93,7 @@ function DriverRouting() {
       wayPoints.pop();
 
       // Extract the names from the rides in the group
-      const names = rideGroup.map((ride) => ride.rider_name);
+      const names = rideGroup.map((ride) => ride.name);
 
       // Create the summary object and add it to the summaryList
       const summaryObject = {
@@ -152,16 +145,36 @@ function DriverRouting() {
           // eslint-disable-next-line no-undef
           travelMode: google.maps.TravelMode.DRIVING,
         });
+  
+        // Calculate total distance and duration
+        let totalDistance = 0;
+        let totalDuration = 0;
+  
+        for (const leg of results.routes[0].legs) {
+          totalDistance += leg.distance.value;
+          totalDuration += leg.duration.value;
+        }
+  
+        // Convert totalDistance and totalDuration to human-readable format if needed
+        const formattedTotalDistance = `${totalDistance / 1000} km`;
+        const formattedTotalDuration = `${Math.floor(totalDuration / 60)} mins`;
+
+        console.log('total distacne:', totalDistance)
+  
         setDirectionsResponse(results);
-        setDistance(results.routes[0].legs[0].distance.text);
-        setDuration(results.routes[0].legs[0].duration.text);
+        setDistance(formattedTotalDistance);
+        setDuration(formattedTotalDuration);
+        setprofit((((totalDistance / 1000) * 2) * 0.65).toFixed(2))
+        
+        console.log('total distacne:', distance)
       }
     } catch (error) {
       console.error('Error calculating route:', error);
       // Handle the error here, e.g., display an error message or take appropriate action
-      enqueueSnackbar("Please input a start destination", { variant: "error" })
+      enqueueSnackbar("Please input a start destination", { variant: "error" });
     }
   };
+  
 
 
   const configureDestination = async (waypoints, destination) => {
@@ -176,21 +189,37 @@ function DriverRouting() {
         // eslint-disable-next-line no-undef
         travelMode: google.maps.TravelMode.DRIVING,
       });
+  
+      // Calculate total distance and duration
+      let totalDistance = 0;
+      let totalDuration = 0;
+  
+      for (const leg of results.routes[0].legs) {
+        totalDistance += leg.distance.value;
+        totalDuration += leg.duration.value;
+      }
+  
+      // Convert totalDistance and totalDuration to human-readable format if needed
+      const formattedTotalDistance = `${totalDistance / 1000} km`;
+      const formattedTotalDuration = `${Math.floor(totalDuration / 60)} mins`;
+  
       setDirectionsResponse(results);
-      setDistance(results.routes[0].legs[0].distance.text);
-      setDuration(results.routes[0].legs[0].duration.text);
+      setDistance(formattedTotalDistance);
+      setDuration(formattedTotalDuration);
+      setprofit((((totalDistance / 1000) * 2) * 0.65).toFixed(2))
+  
       return {
-        distance: results.routes[0].legs[0].distance.text,
-        distanceValue: results.routes[0].legs[0].distance.value,
-        duration: results.routes[0].legs[0].duration.text,
+        distance: formattedTotalDistance,
+        distanceValue: totalDistance,
+        duration: formattedTotalDuration,
       };
     } catch (error) {
       console.error('Error configuring destination:', error);
       // Handle the error here, e.g., display an error message or take appropriate action
-      enqueueSnackbar("Please input a start destination", { variant: "error" })
+      enqueueSnackbar("Please input a start destination", { variant: "error" });
     }
-
   };
+  
 
 
   function clearRoute() {
@@ -250,16 +279,18 @@ function DriverRouting() {
 
 
   useEffect(() => {
+    if (renderCount === 1) {
+      setRenderCount(2);
+    }
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(showPosition);
     }
-    console.log('after')
-    const listsOfRides = groupRidesByPickUp(test, 3);
-    const listsOfRoutes = createSummaryList(listsOfRides);
-    setVisibleRoutes(listsOfRoutes);
-    console.log(listsOfRoutes)
+    // Call the function to fetch and group the rides
+    handleGetRideRequests();
+    console.log('routes:', visibleRoutes)
+  }, [renderCount]); // The empty dependency array ensures that this effect runs only once, after the initial render
 
-  }, [])
+
 
   return (
     <>
@@ -304,17 +335,17 @@ function DriverRouting() {
                       </Grid>
                       <Grid item xs={6}>
                         {distance && (
-                          <h5 style={{ margin: 0 }}>Distance: {directionsResponse.routes[0].legs[0].distance.text}</h5>
+                          <h5 style={{ margin: 0 }}>Distance: {distance}</h5>
                         )}
                       </Grid>
                       <Grid item xs={6} >
                         {duration && (
-                          <h5 style={{ margin: 0 }}>Duration: {directionsResponse.routes[0].legs[0].duration.text}</h5>
+                          <h5 style={{ margin: 0 }}>Duration: {duration}</h5>
                         )}
                       </Grid>
                       <Grid item xs={6} >
-                        {distance && (
-                          <h4 style={{ margin: 0, color: 'green' }}>Profit: ${(((directionsResponse.routes[0].legs[0].distance.value / 1000) * 2) * 0.65).toFixed(2)}</h4>
+                        {profit && (
+                          <h4 style={{ margin: 0, color: 'green' }}>Profit: ${profit}</h4>
                         )}
                       </Grid>
                     </Grid>
