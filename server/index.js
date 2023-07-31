@@ -200,6 +200,7 @@ const bicycleRoutes = require('./routes/bicycle.js')
 const adminDriverRoutes = require('./routes/admin/driver.js')
 const productsRoutes = require('./routes/products.js')
 const adminLocationRoutes = require('./routes/admin/locations.js')
+const cartRoutes = require('./routes/cart.js')
 const fileRoute = require('./routes/file.js');
 app.use("/file", fileRoute);
 
@@ -219,6 +220,7 @@ app.use('/bicycle', bicycleRoutes)
 app.use("/admin/driver", adminDriverRoutes)
 app.use("/products", productsRoutes)
 app.use("/admin/locations", adminLocationRoutes)
+app.use("/cart", cartRoutes)
 
 app.use((err, req, res, next) => {
   console.error(err.stack)

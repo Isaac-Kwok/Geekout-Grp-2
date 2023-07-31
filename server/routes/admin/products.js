@@ -99,12 +99,14 @@ router.get("/:id", async (req, res) => {
 });
 
 router.put("/status/:id", validateAdmin, async (req, res) => {
-    const schema = yup.object().shape({
-        product_status: yup.bool()
-    });
     try {
+        const schema = yup.object().shape({
+            product_status: yup.bool()
+        });
+
         const body = await schema.validate(req.body, { abortEarly: false })
         const product = await Product.findByPk(req.params.id)
+
         if (!product) {
             return res.status(404).json({message:"Product not found"})
         }
@@ -117,8 +119,8 @@ router.put("/status/:id", validateAdmin, async (req, res) => {
     } catch (error) {
         res.status(400).json({ message: error.errors })
     }
-
 });
+
 
 router.put("/:id", validateAdmin, async (req, res) => {
     const schema = yup.object().shape({

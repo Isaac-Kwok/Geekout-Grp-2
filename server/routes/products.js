@@ -9,9 +9,6 @@ router.get('/', async (req, res) => {
             attributes: {
                 exclude: ["createdAt"]
             },
-            where:{
-                product_status: true
-            }
         });
         res.json(product);
     } catch (error) {

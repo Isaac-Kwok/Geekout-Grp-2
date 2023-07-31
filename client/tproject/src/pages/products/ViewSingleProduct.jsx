@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Container, Typography, Card, CardContent, CardActions, Box, Stack, Checkbox, InputAdornment, TextField, Grid, FormControlLabel, FormControl, IconButton, InputLabel, Select, MenuItem, Button, Dialog, DialogContent, DialogActions, DialogContentText, DialogTitle, Link, Input } from '@mui/material'
-import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CardTitle from '../../components/CardTitle';
 import { useNavigate, useParams } from 'react-router-dom'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -40,7 +40,46 @@ function ViewSingleProduct() {
     const [loading, setLoading] = useState(false);
     const { enqueueSnackbar } = useSnackbar();
     const productPath = `${import.meta.env.VITE_API_URL}/admin/products/productImage/`
+    const [quantity, setQuantity] = useState(1);
 
+    function increaseQuantity() {
+        setQuantity(prevQuantity => prevQuantity + 1);
+    }
+
+    function decreaseQuantity() {
+        if (quantity > 1) {
+            setQuantity(prevQuantity => prevQuantity - 1);
+        }
+    }
+
+    const addToCart = () => {
+        http.post('/cart', {
+            productId: product.id,
+            quantity: quantity
+        })
+            .then(response => {
+                if (response.status === 201) {
+                    enqueueSnackbar(
+                        <span>
+                            Product added to cart.{' '}
+                            <span
+                                style={{ textDecoration: 'underline', cursor: 'pointer' }}
+                                onClick={() => navigate('/cart')}
+                            >
+                                Go to Cart
+                            </span>
+                        </span>,
+                        { variant: 'success' }
+                    );
+                } else {
+                    enqueueSnackbar('Error adding product to cart', { variant: 'error' });
+                }
+            })
+            .catch(err => {
+                console.error('Error adding product to cart:', err);
+                enqueueSnackbar('Error adding product to cart', { variant: 'error' });
+            });
+    }
 
     function getProduct() {
         http.get("/products/" + id)
@@ -71,45 +110,70 @@ function ViewSingleProduct() {
 
     return (
         <>{product && (
-            <>
-                <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
-                    <Card sx={{ margin: "auto" }}>
-                        <Box component="form">
-                            <CardContent>
-                                <CardTitle title="Product Information" icon={<IconButton size="large" onClick={() => navigate("/products")} ><ArrowBackIcon /><CategoryIcon/></IconButton>} />
-                                <Grid container spacing={1} sx={{ marginY: "1rem" }}>
-                                    <img src={`${productPath}${product.product_picture}`} alt={product.product_name} style={{ width: '100%', height: '500px', objectFit: 'cover' }} />
+            <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
+                <Card sx={{ margin: "auto" }}>
+                    <Box component="form">
+                        <CardContent>
+                            <CardTitle title="Product Information" icon={<IconButton size="large" onClick={() => navigate("/products")} ><ArrowBackIcon /><CategoryIcon /></IconButton>} />
+                            <Grid container spacing={2} sx={{ marginY: "1rem" }}>
+                                <Grid item xs={12} md={6}>
+                                    <AspectRatioBox>
+                                        <img src={`${productPath}${product.product_picture}`} alt={product.product_name} style={{ width: '100%', height: 'auto', objectFit: 'cover' }} />
+                                    </AspectRatioBox>
                                 </Grid>
-                                <Grid container spacing={2} sx={{ marginY: "1rem" }}>
-                                    <Grid item xs={12} sm={6}>
-                                        <Typography variant="h6">Product Name: {product.product_name}</Typography>
-                                        <Typography variant="body1">Category: {product.product_category}</Typography>
-                                        <Typography variant="body1">Stock: {product.product_stock}</Typography>
-                                        <Typography variant="body1">Price: {product.product_price}</Typography>
-                                        {product.product_sale && (
-                                            <Typography variant="body1">Sale: {product.product_sale}</Typography>,
-                                            <Typography variant="body1">Discounted Price: {(1 - product.product_discounted_percent / 100) * product.product_price}</Typography>
+                                <Grid item xs={12} md={6}>
+                                    <Typography variant="h6">Product Name: {product.product_name}</Typography>
+                                    <Typography variant="body1">Category: {product.product_category}</Typography>
+                                    <Typography variant="body1">Availability:&nbsp;
+                                        {product.product_stock ? (
+                                            <>
+                                                In Stock
+                                            </>
+                                        ) : (
+                                            <>
+                                                Out of Stock
+                                            </>
+                                        )}</Typography>
+                                    <Typography variant="body1">Price: {product.product_price}</Typography>
+                                    {product.product_sale && (
+                                        <Typography variant="body1">Sale: {product.product_sale}</Typography>,
+                                        <Typography variant="body1">Discounted Price: {(1 - product.product_discounted_percent / 100) * product.product_price}</Typography>
 
-                                        )}
-                                        {product.product_category === "Pass" && (
-                                            <Typography variant="body1">Duration of Pass: {product.duration_of_pass}</Typography>
-                                        )}
-                                    </Grid>
+                                    )}
+                                    {product.product_category === "Pass" && (
+                                        <Typography variant="body1">Duration of Pass: {product.duration_of_pass}</Typography>
+                                    )}
                                     <Grid item xs={12} sm={6}>
                                         <Typography variant="body1">Description: </Typography>
                                         <MDEditor.Markdown
-                                            style={{ backgroundColor: "white", color: "black" }}
+                                            style={{ backgroundColor: "white", color: "black", fontFamily: "Poppins" }}
                                             source={product.product_description} />
                                     </Grid>
+                                    <Grid container spacing={2} alignItems="center">
+                                        <Grid item>
+                                            <IconButton onClick={decreaseQuantity} disabled={quantity === 1}>
+                                                <RemoveIcon />
+                                            </IconButton>
+                                        </Grid>
+                                        <Grid item>
+                                            <Typography>{quantity}</Typography>
+                                        </Grid>
+                                        <Grid item>
+                                            <IconButton onClick={increaseQuantity}>
+                                                <AddIcon />
+                                            </IconButton>
+                                        </Grid>
+                                    </Grid>
+                                    <Button onClick={addToCart} variant="contained" color="primary">
+                                        Add to Cart
+                                    </Button>
                                 </Grid>
-                            </CardContent>
-                        </Box>
-                    </Card>
-                </Container>
-            </>
-        )}
-
-        </>
+                            </Grid>
+                        </CardContent>
+                    </Box>
+                </Card>
+            </Container>
+        )}</>
     )
 }
 
