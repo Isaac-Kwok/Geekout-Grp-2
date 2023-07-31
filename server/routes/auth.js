@@ -1,12 +1,15 @@
 const express = require("express")
 const yup = require("yup")
-const { User, Sequelize } = require("../models")
+const { Secret ,User, Sequelize } = require("../models")
 const router = express.Router()
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const ejs = require("ejs")
+const {OAuth2Client} = require('google-auth-library');
+const client = new OAuth2Client();
 const { emailSender } = require("../middleware/emailSender")
 const { validateToken } = require('../middleware/validateToken');
+const { authenticator } = require("otplib")
 require('dotenv').config();
 
 router.post("/", async (req, res) => {
@@ -14,12 +17,14 @@ router.post("/", async (req, res) => {
     const schema = yup.object().shape({
         email: yup.string().email().required(),
         password: yup.string().required().min(12).max(64),
+        code: yup.string().optional().min(6).max(15)
     })
 
     try {
         await schema.validate(req.body, { abortEarly: false })
-        const { email, password } = req.body
+        const { email, password, code } = req.body
         const user = await User.findOne({ where: { email: email } })
+        const secret = await Secret.findOne({ where: { user_id: user.id } })
 
         // Check if user exists
         if (!user) {
@@ -52,10 +57,108 @@ router.post("/", async (req, res) => {
             return
         }
 
+        // Check user 2fa
+        if (secret) {
+            //check 2fa
+            if (!code) {
+                res.status(409).json({ message: "OTP code is required." })
+                return
+            }
+
+            if (!authenticator.verify({ token: req.body.code, secret: secret.secret })) {
+                if (req.body.code != secret.backup) {
+                    res.status(401).json({ message: "Invalid OTP code." })
+                    return
+                }
+            }
+            
+        }
+            
+
         let userInfo = {
             id: user.id,
             email: user.email,
             name: user.name,
+            phone_number: user.phone_number,
+            account_type: user.account_type,
+            profile_picture: user.profile_picture,
+            profile_picture_type: user.profile_picture_type,
+            driver_application_sent: user.driver_application_sent
+        }
+
+        const token = jwt.sign({type: "session",user:userInfo}, process.env.APP_SECRET, { expiresIn: "7d" })
+        res.json({ token, user })
+    } catch (error) {
+        res.status(400).json({ message: error.message })
+    }
+})
+
+
+router.post("/google", async (req, res) => {
+    // Authenticate a user
+    const schema = yup.object().shape({
+        token: yup.string().required(),
+        code: yup.string().optional().min(6).max(15)
+    })
+
+    try {
+        await schema.validate(req.body, { abortEarly: false })
+        const accessToken = req.body.token
+        const code = req.body.code
+        const ticket = await client.getTokenInfo(accessToken)
+
+        const email = ticket.email
+        const user = await User.findOne({ where: { is_google_auth_enabled: email } })
+        
+        // Check if user exists
+        if (!user) {
+            res.status(401).json({ message: "Account selected does not exist." })
+            return
+        }
+
+        const secret = await Secret.findOne({ where: { user_id: user.id } })
+
+        // Check if account is activated
+        if (!user.is_active) {
+            res.status(401).json({ message: "Account is not activated." })
+            return
+        }
+
+        // Check if user has google account linked
+        if (!user.is_google_auth_enabled) {
+            res.status(401).json({ message: "Account is not linked to Google." })
+            return
+        }
+
+        // Check if user email is verified
+        if (!user.is_email_verified) {
+            res.status(401).json({ message: "Email is not verified." })
+            return
+        }
+
+        // Check user 2fa
+        if (secret) {
+            //check 2fa
+            if (!code) {
+                res.status(409).json({ message: "OTP code is required." })
+                return
+            }
+
+            if (!authenticator.verify({ token: req.body.code, secret: secret.secret })) {
+                if (req.body.code != secret.backup) {
+                    res.status(401).json({ message: "Invalid OTP code." })
+                    return
+                }
+            }
+            
+        }
+            
+
+        let userInfo = {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            phone_number: user.phone_number,
             account_type: user.account_type,
             profile_picture: user.profile_picture,
             profile_picture_type: user.profile_picture_type,
@@ -235,6 +338,7 @@ router.get("/refresh", validateToken, async (req, res) => {
     let userInfo = {
         id: user.id,
         email: user.email,
+        phone_number: user.phone_number,
         name: user.name,
         account_type: user.account_type,
         profile_picture: user.profile_picture,

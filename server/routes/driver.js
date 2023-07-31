@@ -11,8 +11,9 @@ const { validateToken } = require("../middleware/validateToken");
 // Get the Application based on the token
 router.get("/getDriverApplication", validateToken, async (req, res) => {
     try {
-        const application = await DriverApplication.findOne({ where: { user_id: req.user.id } })
-        res.json(application)
+        const application = await DriverApplication.findAll({ where: { user_id: req.user.id }, order: [ [ 'updatedAt' ]] })
+        console.log('application:', application)
+        res.json(application[application.length - 1])
     } catch (error) {
         res.status(500).json({message: error.message})
     }
@@ -34,6 +35,8 @@ router.post("/register", validateToken, upload, async (req, res) => {
         driver_postalcode: yup.number().required(),
         driver_age: yup.number().required(),
         driver_question: yup.string().trim().min(10).max(300).required(),
+        driver_nationality: yup.string().trim().required(),
+        driver_sex: yup.string().trim().required(),
         driver_car_model: yup.string().trim().required(),
         driver_car_license_plate: yup.string().trim().required(),
         driver_face_image: yup.string().trim().required(),
@@ -49,7 +52,7 @@ router.post("/register", validateToken, upload, async (req, res) => {
         res.status(400).json({ errors: err.errors });
         return;
     }
-
+    console.log('req.user:', req.user)
     // Trim string values
     data.user_id = req.user.id;
     data.driver_phone_number = req.user.phone_number;
@@ -70,6 +73,7 @@ router.post("/register", validateToken, upload, async (req, res) => {
     const newUser = {
         driver_application_sent : true
     }
+    // Update User to make driver application sent
     let num2 = await User.update(newUser, {
         where: { id: req.user.id }
     })

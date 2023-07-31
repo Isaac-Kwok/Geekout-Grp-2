@@ -25,6 +25,7 @@ import BicycleDetails from './bicycle/BicycleDetails'
 
 import ViewDriverApplications from './driver/ViewDriverApplications'
 import EditDriverApplication from './driver/EditDriverApplication'
+import ViewDrivers from './driver/ViewDrivers'
 
 import { UserContext } from '../..'
 import AdminNavList from '../../components/AdminNavList'
@@ -75,6 +76,7 @@ function AdminRoutes() {
                 {/* Driver Paths */}
                 <Route path="/driver/viewDriverApplications" element={<ViewDriverApplications />} />
                 <Route path="/driver/EditDriverApplication/:id" element={<EditDriverApplication />} />
+                <Route path="/driver/viewDrivers" element={<ViewDrivers />} />
             </Routes>
 
         </Box>
