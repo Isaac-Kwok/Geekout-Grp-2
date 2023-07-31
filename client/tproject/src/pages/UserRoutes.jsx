@@ -12,6 +12,9 @@ import ProfileRoutes from './profile/ProfileRoutes'
 import DriverRoutes from './driver/DriverRoutes'
 import Bicycle from './Bicycle'
 import ProductRoutes from './products/ProductRoutes'
+import CreateRideRequest from './rider/CreateRideRequest'
+import EditRideRequests from './rider/EditRideRequests'
+import ViewRideRequests from './rider/ViewRideRequests'
 
 import { UserContext } from '..'
 
@@ -36,6 +39,9 @@ function UserRoutes() {
             <Route path="/driver/*" element={<DriverRoutes />} />
             <Route path="/bicycle" element={<Bicycle />} />
             <Route path="/products/*" element={<ProductRoutes />} />
+            <Route path="/riderequests/create" element={<CreateRideRequest />} />
+            <Route path="/riderequests/myrequests/" element={<ViewRideRequests />} />
+            <Route path="/riderequests/update" element={<EditRideRequests />} />
         </Routes>
     )
 }
