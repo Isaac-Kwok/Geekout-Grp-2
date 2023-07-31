@@ -92,7 +92,7 @@ function DriverDashboard() {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button size="large">View all</Button>
+                <Button size="large" href='/driver/pastRoutes'>View all</Button>
               </CardActions>
             </Card>
           </Grid>

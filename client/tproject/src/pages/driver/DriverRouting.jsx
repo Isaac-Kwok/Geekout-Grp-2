@@ -3,6 +3,7 @@ import { GoogleMap, MarkerF, useLoadScript, useJsApiLoader, DirectionsRenderer, 
 import { Button, Container, Stack, Divider, Grid, Card, CardContent, Box, TextField, Typography } from '@mui/material';
 import { useMemo, useState, useRef, useEffect } from "react";
 import googleMapsReverseGeocoder from '../../googleMapsReverseGeocoder'
+import http from '../../http'
 import { CopyAllSharp } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
 
@@ -29,22 +30,26 @@ function DriverRouting() {
     {
       id: 1,
       pickUp: "Yio Chu Kang MRT station",
-      destination: "Ang Mo Kio Hub"
+      destination: "Ang Mo Kio Hub",
+      rider_name: "Brian Yuk"
     },
     {
       id: 2,
       pickUp: "Marina Bay Sands",
-      destination: "Gardens by the Bay"
+      destination: "Gardens by the Bay",
+      rider_name: "Brian Yuk"
     },
     {
       id: 3,
       pickUp: "Yio Chu Kang MRT station",
-      destination: "Ang Mo Kio Hub"
+      destination: "Ang Mo Kio Hub",
+      rider_name: "Brian Yuk"
     },
     {
       id: 11,
       pickUp: "Yio Chu Kang MRT station",
-      destination: "Ang Mo Kio Hub"
+      destination: "Ang Mo Kio Hub",
+      rider_name: "Brian Yuk"
     },
   ];
   function groupRidesByPickUp(rides, maxRidesPerList) {
@@ -157,7 +162,7 @@ function DriverRouting() {
       enqueueSnackbar("Please input a start destination", { variant: "error" })
     }
   };
-  
+
 
   const configureDestination = async (waypoints, destination) => {
     try {
@@ -174,13 +179,19 @@ function DriverRouting() {
       setDirectionsResponse(results);
       setDistance(results.routes[0].legs[0].distance.text);
       setDuration(results.routes[0].legs[0].duration.text);
+      return {
+        distance: results.routes[0].legs[0].distance.text,
+        distanceValue: results.routes[0].legs[0].distance.value,
+        duration: results.routes[0].legs[0].duration.text,
+      };
     } catch (error) {
       console.error('Error configuring destination:', error);
       // Handle the error here, e.g., display an error message or take appropriate action
       enqueueSnackbar("Please input a start destination", { variant: "error" })
     }
+
   };
-  
+
 
   function clearRoute() {
     setDirectionsResponse(null)
@@ -188,8 +199,55 @@ function DriverRouting() {
     setDuration('')
     originRef.current.value = ''
     destinationRef.current.value = ''
-    window.reload
   }
+
+  const storeRoute = async (originalObj, wayPoints, destination) => {
+    try {
+      const configResults = await configureDestination(wayPoints, destination); // Wait for configureDestination to finish
+      const { distance, distanceValue, duration } = configResults;
+
+      console.log('distance:', distance);
+      console.log('dv:', distanceValue);
+      console.log('duration:', duration);
+      const newObj = { ...originalObj };
+
+      // Convert wayPoints array to a string
+      newObj.wayPoints = newObj.wayPoints
+        .map(wayPoint => `${wayPoint.location}`)
+        .join(', ');
+
+      // Convert names array to a string
+      newObj.names = newObj.names.map(name => (name !== null ? name.toString() : 'null')).join(', ');
+
+      // Convert destination to a string
+      newObj.destination = newObj.destination.toString();
+      newObj.distance = distance
+      newObj.distance_value = distanceValue
+      newObj.duration = duration
+      newObj.driver_profit = (((distanceValue / 1000) * 2) * 0.65)
+      newObj.company_profit = (((distanceValue / 1000) * 2) * 0.35)
+      newObj.total_cost = ((distanceValue / 1000) * 2)
+
+      console.log('new:', newObj);
+
+      http.post("/driver/createRoute", newObj)
+        .then((res) => {
+          if (res.status === 200) {
+            console.log(res.data);
+            enqueueSnackbar('You have accepted Route!', { variant: 'success' });
+          } else {
+            console.log("Failed to create routes:", res.status);
+          }
+        })
+        .catch((err) => {
+          alert("ERROR:" + JSON.stringify(err.responseJSON.error));
+        });
+    } catch (error) {
+      console.error('Error storing route:', error);
+      enqueueSnackbar("Please input a start destination", { variant: "error" });
+    }
+  };
+
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -241,22 +299,22 @@ function DriverRouting() {
                   <CardContent>
                     <Grid container spacing={2}>
                       <Grid item xs={12}>
-                        <h3 style={{margin:0}}>Chosen Route Stats: </h3>
-                        <p style={{margin:0}}>Click on any of the route requests and their respective stats will be displayed</p>
+                        <h3 style={{ margin: 0 }}>Chosen Route Stats: </h3>
+                        <p style={{ margin: 0 }}>Click on any of the route requests and their respective stats will be displayed</p>
                       </Grid>
                       <Grid item xs={6}>
                         {distance && (
-                          <h5 style={{margin:0}}>Distance: {directionsResponse.routes[0].legs[0].distance.text}</h5>
+                          <h5 style={{ margin: 0 }}>Distance: {directionsResponse.routes[0].legs[0].distance.text}</h5>
                         )}
                       </Grid>
                       <Grid item xs={6} >
                         {duration && (
-                          <h5 style={{margin:0}}>Duration: {directionsResponse.routes[0].legs[0].duration.text}</h5>
+                          <h5 style={{ margin: 0 }}>Duration: {directionsResponse.routes[0].legs[0].duration.text}</h5>
                         )}
                       </Grid>
                       <Grid item xs={6} >
                         {distance && (
-                          <h4 style={{margin:0, color:'green'}}>Profit: ${(((directionsResponse.routes[0].legs[0].distance.value/1000) * 2) *0.65).toFixed(2)}</h4>
+                          <h4 style={{ margin: 0, color: 'green' }}>Profit: ${(((directionsResponse.routes[0].legs[0].distance.value / 1000) * 2) * 0.65).toFixed(2)}</h4>
                         )}
                       </Grid>
                     </Grid>
@@ -344,6 +402,7 @@ function DriverRouting() {
                           <Grid item xs={4} >
                             <Button
                               variant='contained' color='success'
+                              onClick={() => storeRoute(routeObj, routeObj.wayPoints, routeObj.destination)}
                             >
                               Accept
                             </Button>
