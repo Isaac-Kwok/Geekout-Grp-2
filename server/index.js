@@ -227,6 +227,10 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke!')
 })
 
+app.get('*', function(req, res){
+  res.status(404).send({message: 'Endpoint not implemented'});
+});
+
 
 db.sequelize.sync({ alter: true }).then(() => {
   let port = process.env.APP_PORT
