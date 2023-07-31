@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const { RideRequest } = require("./RideRequest");
 
 module.exports = (sequelize, DataTypes) => {
     // Account Types:
@@ -90,6 +91,11 @@ module.exports = (sequelize, DataTypes) => {
 
         User.hasOne(models.Secret, {
             foreignKey: "user_id",
+            onDelete: "CASCADE",
+        });
+
+        User.hasMany(models.RideRequest, {
+            foreignKey: "userId",
             onDelete: "CASCADE",
         });
     };
