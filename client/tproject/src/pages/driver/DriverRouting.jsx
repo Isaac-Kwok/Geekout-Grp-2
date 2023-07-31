@@ -6,9 +6,11 @@ import googleMapsReverseGeocoder from '../../googleMapsReverseGeocoder'
 import http from '../../http'
 import { CopyAllSharp } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
+import { useNavigate } from 'react-router-dom';
 
 
 function DriverRouting() {
+  const navigate = useNavigate()
   const [latitude, setlatitude] = useState(1.3521)
   const [longtitude, setlongtitude] = useState(103.8198)
   const { isLoaded } = useJsApiLoader({
@@ -24,6 +26,7 @@ function DriverRouting() {
   const [visibleRoutes, setVisibleRoutes] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
   const [renderCount, setRenderCount] = useState(1);
+  const [routeObj, setrouteObj] = useState({names:" ", wayPoints: []})
 
   const originRef = useRef({})
   const destinationRef = useRef({})
@@ -145,27 +148,27 @@ function DriverRouting() {
           // eslint-disable-next-line no-undef
           travelMode: google.maps.TravelMode.DRIVING,
         });
-  
+
         // Calculate total distance and duration
         let totalDistance = 0;
         let totalDuration = 0;
-  
+
         for (const leg of results.routes[0].legs) {
           totalDistance += leg.distance.value;
           totalDuration += leg.duration.value;
         }
-  
+
         // Convert totalDistance and totalDuration to human-readable format if needed
         const formattedTotalDistance = `${totalDistance / 1000} km`;
         const formattedTotalDuration = `${Math.floor(totalDuration / 60)} mins`;
 
         console.log('total distacne:', totalDistance)
-  
+
         setDirectionsResponse(results);
         setDistance(formattedTotalDistance);
         setDuration(formattedTotalDuration);
         setprofit((((totalDistance / 1000) * 2) * 0.65).toFixed(2))
-        
+
         console.log('total distacne:', distance)
       }
     } catch (error) {
@@ -174,7 +177,7 @@ function DriverRouting() {
       enqueueSnackbar("Please input a start destination", { variant: "error" });
     }
   };
-  
+
 
 
   const configureDestination = async (waypoints, destination) => {
@@ -189,25 +192,25 @@ function DriverRouting() {
         // eslint-disable-next-line no-undef
         travelMode: google.maps.TravelMode.DRIVING,
       });
-  
+
       // Calculate total distance and duration
       let totalDistance = 0;
       let totalDuration = 0;
-  
+
       for (const leg of results.routes[0].legs) {
         totalDistance += leg.distance.value;
         totalDuration += leg.duration.value;
       }
-  
+
       // Convert totalDistance and totalDuration to human-readable format if needed
       const formattedTotalDistance = `${totalDistance / 1000} km`;
       const formattedTotalDuration = `${Math.floor(totalDuration / 60)} mins`;
-  
+
       setDirectionsResponse(results);
       setDistance(formattedTotalDistance);
       setDuration(formattedTotalDuration);
       setprofit((((totalDistance / 1000) * 2) * 0.65).toFixed(2))
-  
+
       return {
         distance: formattedTotalDistance,
         distanceValue: totalDistance,
@@ -219,7 +222,7 @@ function DriverRouting() {
       enqueueSnackbar("Please input a start destination", { variant: "error" });
     }
   };
-  
+
 
 
   function clearRoute() {
@@ -264,6 +267,7 @@ function DriverRouting() {
           if (res.status === 200) {
             console.log(res.data);
             enqueueSnackbar('You have accepted Route!', { variant: 'success' });
+            setrouteObj(res.data);
           } else {
             console.log("Failed to create routes:", res.status);
           }
@@ -271,19 +275,26 @@ function DriverRouting() {
         .catch((err) => {
           alert("ERROR:" + JSON.stringify(err.responseJSON.error));
         });
+      let element1 = document.getElementById('browseRoutes')
+      element1.style.display = 'none'
+      let element2 = document.getElementById('route')
+      element2.style.display = 'block'
     } catch (error) {
       console.error('Error storing route:', error);
-      enqueueSnackbar("Please input a start destination", { variant: "error" });
+      enqueueSnackbar("Error storing route", { variant: "error" });
     }
   };
 
+  const handleAbort = () => {
+    navigate('/driver/routes')
+  }
 
   useEffect(() => {
-    if (renderCount === 1) {
-      setRenderCount(2);
-    }
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(showPosition);
+    }
+    if (renderCount === 1) {
+      setRenderCount(2);
     }
     // Call the function to fetch and group the rides
     handleGetRideRequests();
@@ -317,15 +328,17 @@ function DriverRouting() {
                     fullscreenControl: false,
                   }}
                   onLoad={map => setMap(map)}
+                  
                 >
 
                   {directionsResponse && (
-                    <DirectionsRenderer directions={directionsResponse} />
+                    <DirectionsRenderer directions={directionsResponse} panel={document.getElementById('instructions')} />
                   )}
                   <MarkerF position={center} />
                 </GoogleMap>
               </Grid>
-              <Grid item xs={12} lg={3} md={5} sm={12}>
+
+              <Grid id='browseRoutes' item xs={12} lg={3} md={5} sm={12} sx={{ display: 'block' }}>
                 <Card sx={{ marginBottom: '1rem' }}>
                   <CardContent>
                     <Grid container spacing={2}>
@@ -451,6 +464,69 @@ function DriverRouting() {
                     </Card>
                   ))}
                 </div>
+              </Grid>
+              <Grid id='route' item xs={12} lg={3} md={5} sm={12} sx={{ display: 'none' }} >
+              <div id="instructions"  style={{ maxHeight: '500px', overflowY: 'auto' }}></div>
+              <Card  style={{ marginBottom: '10px' }}>
+                      <CardContent>
+                      <Typography variant="h6" gutterBottom>
+                          <b>Route ID:</b> {routeObj.id}
+                        </Typography>
+                        <Typography variant="h6" gutterBottom>
+                          <b>Pick Up:</b> {routeObj.pickUp}
+                        </Typography>
+                        <Typography variant="body1" gutterBottom>
+                          <b>Riders:</b> {routeObj.names}
+                        </Typography>
+                        <Typography variant="body1" gutterBottom>
+                          <b>Waypoints:</b> {routeObj.wayPoints}
+                        </Typography>
+                        <Typography variant="body1" gutterBottom>
+                          <b>Destination:</b> {routeObj.destination}
+                        </Typography>
+                        <hr />
+                        <Grid container spacing={2}>
+                      <Grid item xs={12}>
+                        <h3 style={{ margin: 0 }}>Chosen Route Stats: </h3>
+                        <p style={{ margin: 0 }}>These are the stats for route: {routeObj.id}</p>
+                      </Grid>
+                      <Grid item xs={6}>
+                        {distance && (
+                          <h5 style={{ margin: 0 }}>Distance: {distance}</h5>
+                        )}
+                      </Grid>
+                      <Grid item xs={6} >
+                        {duration && (
+                          <h5 style={{ margin: 0 }}>Duration: {duration}</h5>
+                        )}
+                      </Grid>
+                      <Grid item xs={6} >
+                        {profit && (
+                          <h4 style={{ margin: 0, color: 'green' }}>Profit: ${profit}</h4>
+                        )}
+                      </Grid>
+                    </Grid>
+<hr />
+                        <Grid container spacing={0} sx={{ marginTop: 1 }}>
+                          <Grid item xs={6} >
+                            <Button
+                              variant='contained' color='success'
+                              onClick={() => storeRoute(routeObj, routeObj.wayPoints, routeObj.destination)}
+                            >
+                              Complete
+                            </Button>
+                          </Grid>
+                          <Grid item xs={6} >
+                            <Button
+                              onClick={() => handleAbort()}
+                              variant='contained' color='error'
+                            >
+                              Abort
+                            </Button>
+                          </Grid>
+                        </Grid>
+                      </CardContent>
+                    </Card>
               </Grid>
             </Grid>
           </Container>
