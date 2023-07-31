@@ -25,10 +25,12 @@ function App() {
     const bannerStyle = {
         backgroundImage: "url('/main_background.jpg')",
         //backgroundColor: "#0f6d51",
-        backgroundSize: "contain",
+        backgroundSize: "cover",
         marginTop: "1rem",
         borderRadius: "5px",
         boxShadow: "0 0 10px rgba(0,0,0,0.5)",
+        backgroundRepeat: "repeat-y",
+        backgroundPosition: "bottom",
     }
 
     const searchStyle = {
@@ -47,13 +49,13 @@ function App() {
         <>
 
             <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
-                <Box display={'flex'} alignItems={'center'} justifyContent={'center'} height={"500px"} sx={bannerStyle}>
-                    <Box sx={cardStyle}>
+                <Grid container display={'flex'} alignItems={'center'} justifyContent={'center'} height={"500px"} sx={bannerStyle}>
+                    <Grid item sx={cardStyle} xs={12} lg={6}>
                         <Typography variant="h3" fontSize={"24px"} fontWeight={700} textAlign={"center"}>Welcome to EnviroGo</Typography>
                         <form>
                             <Box display={"flex"} alignItems={"center"} justifyContent={"center"} marginTop={"1rem"} sx={searchStyle}>
                                 <InputBase
-                                    sx={{ ml: 1, flex: 1 }}
+                                    sx={{ ml: 1, flex: 1, width: "300px" }}
                                     placeholder="Where do you want to go?"
                                     inputProps={{ 'aria-label': 'Where do you want to go?' }}
                                 />
@@ -61,10 +63,9 @@ function App() {
                                     <SearchIcon />
                                 </IconButton>
                             </Box>
-
                         </form>
-                    </Box>
-                </Box>
+                    </Grid>
+                </Grid>
                 <Box display={'flex'} alignItems={'center'} justifyContent={'center'} flexDirection={"column"} marginY={"3rem"}>
                     <Typography variant="h4" fontWeight={700} marginTop={"1rem"}>Popular Destinations (WIP)</Typography>
                     <Grid container spacing={2} marginTop={"1rem"}>

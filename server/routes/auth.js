@@ -5,6 +5,9 @@ const router = express.Router()
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const ejs = require("ejs")
+const axios = require("axios")
+const {OAuth2Client} = require('google-auth-library');
+const client = new OAuth2Client();
 const { emailSender } = require("../middleware/emailSender")
 const { validateToken } = require('../middleware/validateToken');
 const { authenticator } = require("otplib")
@@ -52,6 +55,164 @@ router.post("/", async (req, res) => {
         const isPasswordValid = await bcrypt.compare(password, user.password)
         if (!isPasswordValid) {
             res.status(401).json({ message: "Invalid email or password." })
+            return
+        }
+
+        // Check user 2fa
+        if (secret) {
+            //check 2fa
+            if (!code) {
+                res.status(409).json({ message: "OTP code is required." })
+                return
+            }
+
+            if (!authenticator.verify({ token: req.body.code, secret: secret.secret })) {
+                if (req.body.code != secret.backup) {
+                    res.status(401).json({ message: "Invalid OTP code." })
+                    return
+                }
+            }
+            
+        }
+            
+
+        let userInfo = {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            phone_number: user.phone_number,
+            account_type: user.account_type,
+            profile_picture: user.profile_picture,
+            profile_picture_type: user.profile_picture_type,
+            driver_application_sent: user.driver_application_sent
+        }
+
+        const token = jwt.sign({type: "session",user:userInfo}, process.env.APP_SECRET, { expiresIn: "7d" })
+        res.json({ token, user })
+    } catch (error) {
+        res.status(400).json({ message: error.message })
+    }
+})
+
+
+router.post("/google", async (req, res) => {
+    // Authenticate a user
+    const schema = yup.object().shape({
+        token: yup.string().required(),
+        code: yup.string().optional().min(6).max(15)
+    })
+
+    try {
+        await schema.validate(req.body, { abortEarly: false })
+        const accessToken = req.body.token
+        const code = req.body.code
+        const ticket = await client.getTokenInfo(accessToken)
+
+        const email = ticket.email
+        const user = await User.findOne({ where: { is_google_auth_enabled: email } })
+        
+        // Check if user exists
+        if (!user) {
+            res.status(401).json({ message: "Account selected does not exist." })
+            return
+        }
+
+        const secret = await Secret.findOne({ where: { user_id: user.id } })
+
+        // Check if account is activated
+        if (!user.is_active) {
+            res.status(401).json({ message: "Account is not activated." })
+            return
+        }
+
+        // Check if user has google account linked
+        if (!user.is_google_auth_enabled) {
+            res.status(401).json({ message: "Account is not linked to Google." })
+            return
+        }
+
+        // Check if user email is verified
+        if (!user.is_email_verified) {
+            res.status(401).json({ message: "Email is not verified." })
+            return
+        }
+
+        // Check user 2fa
+        if (secret) {
+            //check 2fa
+            if (!code) {
+                res.status(409).json({ message: "OTP code is required." })
+                return
+            }
+
+            if (!authenticator.verify({ token: req.body.code, secret: secret.secret })) {
+                if (req.body.code != secret.backup) {
+                    res.status(401).json({ message: "Invalid OTP code." })
+                    return
+                }
+            }
+            
+        }
+            
+
+        let userInfo = {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            phone_number: user.phone_number,
+            account_type: user.account_type,
+            profile_picture: user.profile_picture,
+            profile_picture_type: user.profile_picture_type,
+            driver_application_sent: user.driver_application_sent
+        }
+
+        const token = jwt.sign({type: "session",user:userInfo}, process.env.APP_SECRET, { expiresIn: "7d" })
+        res.json({ token, user })
+    } catch (error) {
+        res.status(400).json({ message: error.message })
+    }
+})
+
+// TODO: Need to catch axios error
+router.post("/facebook", async (req, res) => {
+    // Authenticate a user
+    const schema = yup.object().shape({
+        token: yup.string().required(),
+        code: yup.string().optional().min(6).max(15)
+    })
+
+    try {
+        await schema.validate(req.body, { abortEarly: false })
+        const accessToken = req.body.token
+        const code = req.body.code
+        const ticket = await axios.get(`https://graph.facebook.com/me?fields=id,name,email&access_token=${accessToken}`)
+        console.log(ticket.data)
+        const facebook_id = ticket.data.id
+        const user = await User.findOne({ where: { is_fb_auth_enabled: facebook_id } })
+        
+        // Check if user exists
+        if (!user) {
+            res.status(401).json({ message: "Account selected does not exist." })
+            return
+        }
+
+        const secret = await Secret.findOne({ where: { user_id: user.id } })
+
+        // Check if account is activated
+        if (!user.is_active) {
+            res.status(401).json({ message: "Account is not activated." })
+            return
+        }
+
+        // Check if user has google account linked
+        if (!user.is_google_auth_enabled) {
+            res.status(401).json({ message: "Account is not linked to Google." })
+            return
+        }
+
+        // Check if user email is verified
+        if (!user.is_email_verified) {
+            res.status(401).json({ message: "Email is not verified." })
             return
         }
 

@@ -98,7 +98,7 @@ function LocationList() {
   ];
 
   return (
-    <Container sx={{ marginTop: "1rem" }} maxWidth="xl">
+    <Container sx={{ marginTop: "1rem", minWidth: 0 }} maxWidth="xl">
       <AdminPageTitle title="All Locations" />
       <>
         <Box sx={{ display: "flex", mb: "1rem" }}>

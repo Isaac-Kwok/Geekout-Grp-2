@@ -13,7 +13,20 @@ import { useNavigate } from 'react-router-dom'
 function ViewProfile() {
     const { profile, setProfile } = useContext(ProfileContext)
     const [topupOpen, setTopupOpen] = useState(false)
+    const [FAEnabled, setFAEnabled] = useState(false)
     const navigate = useNavigate()
+
+    const check2FA = () => {
+        http.get("/user/2fa/backup").then((res) => {
+            if (res.status === 200) {
+                setFAEnabled(true)
+            }
+        }).catch((err) => {
+            if (err.response.status != 404) {
+                enqueueSnackbar("Failed to check 2FA status", { variant: "error" });
+            }
+        })
+    }
 
     const handleTopupOpen = () => {
         setTopupOpen(true)
@@ -40,6 +53,7 @@ function ViewProfile() {
 
     useEffect(() => {
         document.title = "EnviroGo - Account Overview"
+        check2FA()
     }, [])
 
     return (
@@ -58,14 +72,14 @@ function ViewProfile() {
                             <Grid item xs={12} sm={6} lg={4}>
                                 <InfoBox title="E-mail Address" value={profile.email} />
                             </Grid>
-                            <Grid item xs={12} sm={6} lg={4}>
+                            {/* <Grid item xs={12} sm={6} lg={4}>
                                 <InfoBox title="Driver Application" value="Not Approved" boolean={false} />
                             </Grid>
                             <Grid item xs={12} sm={6} lg={4}>
                                 <InfoBox title="Driver Status" value="Not Active" boolean={false} />
-                            </Grid>
+                            </Grid> */}
                             <Grid item xs={12} sm={6} lg={4}>
-                                <InfoBox title="2 Factor Authentication" value={profile.is_2fa_enabled ? "Active" : "Not Active"} boolean={profile.is_2fa_enabled} />
+                                <InfoBox title="2 Factor Authentication" value={FAEnabled ? "Enabled" : "Disabled"} boolean={FAEnabled} />
                             </Grid>
                         </Grid>
                     </CardContent>
