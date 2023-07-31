@@ -110,11 +110,18 @@ router.post("/createRoute", validateToken, async (req, res) => {
     data.pickUp = data.pickUp.trim();
     data.destination = data.destination.trim();
     data.wayPoints = data.wayPoints.trim();
-    data.driver_pofit = data.driver_profit
+    data.driver_pofit = data.driver_profit;
+    data.rideDirections = data.rideDirections;
+    const jsonString = JSON.stringify(data.rideDirections);
 
+    // Create Route
+    let result = await Route.create(data);
     // Update User to increment accepted routes field by 1
     await User.update(
         {
+            on_duty: true,
+            current_route: result,
+            rideDirections: jsonString,
             accepted_routes: Sequelize.literal('accepted_routes + 1'),
         },
         {
@@ -122,8 +129,6 @@ router.post("/createRoute", validateToken, async (req, res) => {
         }
     );
 
-    // Create Route
-    let result = await Route.create(data);
     res.json(result);
 });
 
@@ -137,5 +142,43 @@ router.get("/getRoutes", validateToken, async (req, res) => {
         res.status(500).json({ message: error.message })
     }
 })
+router.put("/abort", validateToken, async (req, res) => {
+    // Update user by id
+    try {
+        const user = await User.findByPk(req.user.id)
+        if (!user) {
+            return res.status(404).json({ message: "User not found" })
+        }
+
+        await user.update({
+            on_duty: false,
+            aborted_routes: Sequelize.literal('aborted_routes + 1'),
+            rideDirections: null,
+            current_route: {}
+        })
+
+        res.json(user)
+    } catch (error) {
+
+        res.status(400).json({ message: error.errors })
+    }
+})
+// Delete route
+router.delete("/route/:id", async (req, res) => {
+    const { id } = req.params;
+  
+    try {
+      const route = await Route.findByPk(id);
+      if (!route) {
+        return res.status(404).json({ message: "route not found" });
+      }
+  
+      await route.destroy();
+      res.json({ message: "route deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting route:", error);
+      res.status(500).json({ message: "Error deleting route" });
+    }
+  });
 
 module.exports = router;

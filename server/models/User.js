@@ -86,10 +86,30 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: 0
         },
+        aborted_routes: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0
+        },
         driven_distance: {
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 0
+        },
+        current_route: {
+            type: DataTypes.JSON,
+            allowNull: false,
+            defaultValue: 0
+        },
+        rideDirections: {
+            type: DataTypes.TEXT ,
+            allowNull: true,
+            defaultValue: 0
+        },
+        on_duty: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
         },
     });
 

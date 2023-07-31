@@ -28,9 +28,14 @@ const connector = new MyInfoConnector(MYINFO_CONNECTOR_CONFIG);
 
 var sessionIdCache = {};
 
-app.use(cors({
-  origin: "*"
-}))
+const corsOptions ={
+   origin:'*', 
+   credentials:true,            //access-control-allow-credentials:true
+   optionSuccessStatus:200,
+}
+
+app.use(cors(corsOptions)) // Use this after the variable declaration
+
 app.use(express.json());
 
 app.use(express.static("public"));
