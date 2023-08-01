@@ -26,11 +26,38 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AspectRatio from "@mui/joy/AspectRatio";
 
+import DatePicker from "react-datepicker";
+import { parseISO, format } from "date-fns";
+import "react-datepicker/dist/react-datepicker.css";
+
 function CreateRideRequest() {
   const [loading, setLoading] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const [locations, setLocations] = useState([]);
+
+  // State to store the selected date
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const handleDateChange = (date) => {
+    // Check if the date parameter is an instance of Date
+    if (!(date instanceof Date)) {
+      // Create a new Date object from the provided date string
+      date = new Date(date);
+    }
+
+    // Format the date as "yyyy-MM-dd" and then set it in the state
+    const formattedDate = date.toISOString().slice(0, 10);
+    setSelectedDate(formattedDate);
+  };
+
+  const hours = Array.from({ length: 24 }, (_, index) =>
+    String(index).padStart(2, "0")
+  );
+
+  const minutes = Array.from({ length: 6 }, (_, index) =>
+    String(index * 10).padStart(2, "0")
+  );
 
   useEffect(() => {
     // Fetch the locations from the server using an HTTP request
@@ -89,7 +116,7 @@ function CreateRideRequest() {
     onSubmit: (data) => {
       console.log("test submit");
       setLoading(true);
-      data.date = data.date.trim();
+      data.date = format(selectedDate, "yyyy-MM-dd");
       data.time = data.time.trim();
       data.pickUp = data.pickUp.trim();
       data.destination = data.destination.trim();
@@ -139,6 +166,9 @@ function CreateRideRequest() {
               />
               <Grid container spacing={2} sx={{ marginY: "1rem" }}>
                 <Grid xs={12} lg={12} spacing={1} item container>
+                  {/* Date */}
+                  {/* Normal text field for date */}
+
                   <Grid item xs={6} sm={6}>
                     <TextField
                       fullWidth
@@ -154,20 +184,95 @@ function CreateRideRequest() {
                     />
                   </Grid>
 
-                  <Grid item xs={6} sm={6}>
-                    <TextField
-                      fullWidth
-                      id="time"
-                      name="time"
-                      label="Time"
-                      variant="outlined"
-                      value={formik.values.time}
-                      onChange={formik.handleChange}
-                      error={formik.touched.time && Boolean(formik.errors.time)}
-                      helperText={formik.touched.time && formik.errors.time}
-                      sx={{ marginY: "1rem" }}
-                    />
-                  </Grid>
+                  {/* Datepicker field for date */}
+                  {/* <Grid item xs={12} sm={6}>
+                    <Grid container spacing={0} alignItems="center">
+                      <Grid item xs={6} sm={6}>
+                        Date
+                      </Grid>
+                      <Grid item xs={6} sm={6}>
+                        <Box width="100%">
+                          <DatePicker
+                            selected={selectedDate}
+                            onChange={(date) => {
+                              handleDateChange(date)
+                              console.log("Selected date:", date);
+                            }}
+                            customInput={
+                              <TextField fullWidth variant="outlined" />
+                            }
+                            placeholderText="Select Date"
+                            name="date"
+                            isClearable
+                            scrollableYearDropdown
+                            minDate={new Date()} // Set the maximum date to the current date
+                            // Add the dateFormat attribute here for display in the TextField
+                            dateFormat="yyyy-MM-dd" // Example: "2023-08-01"
+                            showYearDropdown
+                            yearDropdownItemNumber={15}
+                          />
+                        </Box>
+                      </Grid>
+                    </Grid>
+                  </Grid> */}
+
+                  {/* Time */}
+                  {/* Hours and minutes split code */}
+                  {/* <Grid item xs={12} sm={6}>
+                    <Grid container spacing={1} alignItems="center">
+                      <Grid item xs={12} sm={4}>
+                        <label
+                          htmlFor="hour"
+                          style={{
+                            fontSize: "1rem",
+                            fontWeight: 500,
+                          }}
+                        >
+                          Time ( Hour || Minute )
+                        </label>
+                      </Grid>
+                      <Grid item xs={6} sm={4}>
+                        <TextField
+                          select
+                          id="hour"
+                          name="hour"
+                          value={formik.values.hour}
+                          onChange={formik.handleChange}
+                          fullWidth
+                          variant="outlined"
+                        >
+                          <MenuItem value="">
+                            <em>Select hour</em>
+                          </MenuItem>
+                          {hours.map((hour) => (
+                            <MenuItem key={hour} value={hour}>
+                              {hour}
+                            </MenuItem>
+                          ))}
+                        </TextField>
+                      </Grid>
+                      <Grid item xs={6} sm={4}>
+                        <TextField
+                          select
+                          id="minute"
+                          name="minute"
+                          value={formik.values.minute}
+                          onChange={formik.handleChange}
+                          fullWidth
+                          variant="outlined"
+                        >
+                          <MenuItem value="">
+                            <em>Select minute</em>
+                          </MenuItem>
+                          {minutes.map((minute) => (
+                            <MenuItem key={minute} value={minute}>
+                              {minute}
+                            </MenuItem>
+                          ))}
+                        </TextField>
+                      </Grid>
+                    </Grid>
+                  </Grid> */}
 
                   {/* <Grid item xs={12} sm={6}>
                     <TextField
@@ -185,6 +290,22 @@ function CreateRideRequest() {
                       sx={{ marginY: "1rem" }}
                     />
                   </Grid> */}
+
+                  {/* Normal text field code for time */}
+                  <Grid item xs={6} sm={6}>
+                    <TextField
+                      fullWidth
+                      id="time"
+                      name="time"
+                      label="Time"
+                      variant="outlined"
+                      value={formik.values.time}
+                      onChange={formik.handleChange}
+                      error={formik.touched.time && Boolean(formik.errors.time)}
+                      helperText={formik.touched.time && formik.errors.time}
+                      sx={{ marginY: "1rem" }}
+                    />
+                  </Grid>
 
                   <Grid item xs={12} sm={6}>
                     <TextField

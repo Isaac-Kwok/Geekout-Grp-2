@@ -13,7 +13,7 @@ import {
   Button,
 } from "@mui/material";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
-import { Edit, Delete } from "@mui/icons-material";
+import { Edit, Delete, Visibility } from "@mui/icons-material";
 import http from "../../http"; // Make sure you have an HTTP module to handle API requests
 import { useNavigate } from "react-router-dom";
 import AdminPageTitle from "../../components/AdminPageTitle";
@@ -56,9 +56,14 @@ function ViewRideRequests() {
   //   navigate(`/riderequests/${id}`);
   // };
 
+  // Function to handle viewing a specific request
+  const handleDetail = (id) => {
+    navigate(`/riderequests/myrequests/${user?.id}/${id}`);
+  };
+
   // Function to handle editing a ride request
   const handleEdit = (id) => {
-    navigate(`/riderequests/update/${id}`);
+    navigate(`/riderequests/${user?.id}/update/${id}`);
   };
 
   // Function to handle deleting a ride request
@@ -80,18 +85,32 @@ function ViewRideRequests() {
     { field: "requestId", headerName: "ID", width: 100 },
     { field: "date", headerName: "Date", width: 150 },
     { field: "time", headerName: "Time", width: 120 },
-    { field: "pickUp", headerName: "Pickup Location", width: 200 },
-    { field: "destination", headerName: "Destination Location", width: 200 },
+    { field: "pickUp", headerName: "Pickup", width: 200 },
+    { field: "destination", headerName: "Destination", width: 200 },
+    { field: "status", headerName: "Status", width: 200 },
     {
       field: "actions",
       headerName: "Actions",
       sortable: false,
+      width: 200,
       renderCell: (params) => (
         <>
-          <IconButton onClick={() => handleDetail(params.row.id)}>
+          <IconButton
+            onClick={() => handleDetail(params.row.requestId)}
+            title="View Request"
+          >
+            <Visibility />
+          </IconButton>
+          <IconButton
+            onClick={() => handleEdit(params.row.requestId)}
+            title="Edit Request"
+          >
             <Edit />
           </IconButton>
-          <IconButton onClick={() => handleEdit(params.row.id)}>
+          <IconButton
+            onClick={() => handleDelete(params.row.requestId)}
+            title="Delete Request"
+          >
             <Delete />
           </IconButton>
         </>
@@ -104,7 +123,13 @@ function ViewRideRequests() {
       <AdminPageTitle title="View Ride Requests" />
       <Box sx={{ display: "flex", mb: "1rem" }}>
         {/* Add any relevant buttons or actions here */}
-        {/* For example, a button to create a new ride request */}
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate("/riderequests/create")}
+        >
+          Create Ride Request
+        </Button>
         {/* <Button
           variant="contained"
           color="primary"

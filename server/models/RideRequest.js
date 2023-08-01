@@ -1,5 +1,6 @@
 const { Sequelize } = require(".");
 const { User } = require("./User");
+const { Location } = require("./Location");
 
 module.exports = (sequelize, DataTypes) => {
   const RideRequest = sequelize.define("RideRequest", {
@@ -40,6 +41,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 1,
     },
+    status: {
+      type: DataTypes.ENUM("Pending", "Accepted", "Completed"),
+      allowNull: false,
+      defaultValue: "Pending",
+    },
   });
 
   // // Define the association with User
@@ -50,6 +56,7 @@ module.exports = (sequelize, DataTypes) => {
   // });
 
   RideRequest.associate = (models) => {
+    // Assiciation between RideRequest and User
     RideRequest.belongsTo(models.User, {
       foreignKey: "userId",
       as: "user",

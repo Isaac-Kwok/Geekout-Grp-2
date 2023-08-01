@@ -325,7 +325,7 @@ function EditLocation() {
                     />
                   </Grid>
 
-                  <Grid item xs={12} sm={12}>
+                  <Grid item xs={6} sm={6}>
                     {/* Image upload */}
                     <Box sx={{ textAlign: "center", mt: 2 }}>
                       <Button variant="contained" component="label">
@@ -357,8 +357,8 @@ function EditLocation() {
                       <ToastContainer />
                     </Box>
                   </Grid>
-                  <Grid item xs={12} sm={12}>
-                    <img src={import.meta.env.VITE_API_URL + "/admin/locations/images/" + imageFile} alt="locImg" style={{ maxWidth: "100%", height: "auto" }} />
+                  <Grid item xs={6} sm={6}>
+                    <img src={import.meta.env.VITE_API_URL + "/admin/locations/images/" + imageFile} alt="locImg" style={{ maxWidth: "100%", maxHeight: "200px", marginLeft: "auto", marginRight: "auto" }} />
                   </Grid>
                 </Grid>
               </Grid>

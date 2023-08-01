@@ -6,7 +6,7 @@ const router = express.Router();
 // const ejs = require("ejs");
 const { validateAdmin } = require("../../middleware/validateAdmin");
 const { name } = require("ejs");
-const path = require('path')
+const path = require("path");
 
 // create new location (staff)
 router.post("/create", validateAdmin, async (req, res) => {
@@ -55,7 +55,7 @@ router.get("/all", async (req, res) => {
 // });
 
 // Get specific location by ID (For edit location & view specific location) (Staff)
-router.get("/:id", validateAdmin, async (req, res) => {
+router.get("/:id", async (req, res) => {
   // Get location by id
   const location = await Location.findByPk(req.params.id);
   if (!location) {
@@ -148,16 +148,18 @@ router.delete("/deleteAll", async (req, res) => {
 // Get driver images by name
 router.get("/images/:filename", (req, res) => {
   const fileName = req.params.filename;
-  const directoryPath = path.join(__dirname, "../../public/uploads/location_pictures/");
-  
-  res.download(directoryPath + fileName, fileName, (err) => {
-      if (err) {
-          res.status(500).send({
-              message: "Could not download the file. " + err,
-          });
+  const directoryPath = path.join(
+    __dirname,
+    "../../public/uploads/location_pictures/"
+  );
 
-      }
+  res.download(directoryPath + fileName, fileName, (err) => {
+    if (err) {
+      res.status(500).send({
+        message: "Could not download the file. " + err,
+      });
+    }
   });
-})
+});
 
 module.exports = router;

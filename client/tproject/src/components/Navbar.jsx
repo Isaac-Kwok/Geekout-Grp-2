@@ -28,7 +28,7 @@ export function Navbar() {
                                 <Typography variant="h6" component="div" sx={{ marginRight: "1rem", fontFamily: "'caveat brush'" }}>EnviroGo</Typography>
                                 <Box sx={{ display: ["none", "none", "initial"] }}>
                                     <Button LinkComponent={Link} variant="text" color="inherit" to="/">Home</Button>
-                                    <Button LinkComponent={Link} variant="text" color="inherit" to="/login">Car</Button>
+                                    <Button LinkComponent={Link} variant="text" color="inherit" to="/riderequests/myrequests">Car</Button>
                                     <Button LinkComponent={Link} variant="text" color="inherit" to="/bicycle">Bicycles</Button>
                                     <Button LinkComponent={Link} variant="text" color="inherit" to="/login">Shop</Button>
                                 </Box>
