@@ -46,6 +46,8 @@ let uploadProfilePicture = multer({
     filename: (req, file, cb) => {
       if (req.params.id) {
         cb(null, req.params.id + path.extname(file.originalname));
+      } else if (req.user.id) {
+        cb(null, req.user.id + path.extname(file.originalname));
       } else {
         cb(null, req.user.email + path.extname(file.originalname));
       }

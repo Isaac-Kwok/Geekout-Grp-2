@@ -13,7 +13,7 @@ function ProfilePicture(props) {
     return (
         <>
             {user.profile_picture_type === "gravatar" && <Avatar {...props} src={"https://www.gravatar.com/avatar/" + email_md5} />}
-            {user.profile_picture_type === "local" && <Avatar {...props} src={user.profile_picture} />}
+            {user.profile_picture_type === "local" && <Avatar {...props} src={user.profile_picture + "?t=" + new Date().getTime()} />}
             {!user.profile_picture_type && <Avatar  {...stringAvatar(user.name) } sx={s} />}
         </>
     )
