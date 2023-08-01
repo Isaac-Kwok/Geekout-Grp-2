@@ -1,5 +1,6 @@
 import { Box, Button, Container, Card, CardContent, CardActions, Stack, Typography, TextField, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, Grid, Divider } from "@mui/material"
 import { useGoogleLogin } from "@react-oauth/google";
+import FacebookLogin from '@greatsumini/react-facebook-login';
 import CardTitle from "../components/CardTitle";
 import LoadingButton from '@mui/lab/LoadingButton';
 import LoginIcon from '@mui/icons-material/Login';
@@ -28,6 +29,7 @@ function Login() {
     const [resendLoading, setResendLoading] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [loginType, setLoginType] = useState("email");
     const [accessToken, setAccessToken] = useState("");
     const [otpDialog, setOtpDialog] = useState(false);
     const { setUser } = useContext(UserContext);
@@ -59,9 +61,51 @@ function Login() {
         setOtpDialog(false);
     }
 
+    const handleFacebookSuccess = async (res) => {
+        setLoading(true);
+        setLoginType("facebook");
+        console.log(res);
+        http.post("/auth/facebook", { token: res.accessToken }).then((res) => {
+            if (res.status === 200) {
+                enqueueSnackbar("Login successful. Welcome back!", { variant: "success" });
+                // Store token in local storage
+                localStorage.setItem("token", res.data.token);
+                // Set user context
+                setUser(res.data.user);
+                navigate("/")
+            } else {
+                enqueueSnackbar("Login failed! " + err.response.data.message, { variant: "error" });
+                setLoading(false);
+            }
+        }).catch((err) => {
+            if (err.response.status === 409) {
+                setAccessToken(res.accessToken);
+                setOtpDialog(true);
+                setLoading(false);
+            } else {
+                enqueueSnackbar("Login failed! " + err.response.data.message, { variant: "error" });
+                setLoading(false);
+            }
+        })
+    }
+
+    const handleFacebookFailure = (err) => {
+        console.log(err);
+        if (err.status === "loginCancelled") {
+            enqueueSnackbar("Login failed! Cancelled by user.", { variant: "error" });
+            setLoading(false);
+        } else {
+            enqueueSnackbar("Login failed! " + err.status, { variant: "error" });
+            setLoading(false);
+        }
+    }
+
+
+
     const googleAuth = useGoogleLogin({
         onSuccess: async (res) => {
             setLoading(true);
+            setLoginType("google");
             http.post("/auth/google", { token: res.access_token }).then((res) => {
                 if (res.status === 200) {
                     enqueueSnackbar("Login successful. Welcome back!", { variant: "success" });
@@ -194,7 +238,8 @@ function Login() {
                 data.email = email;
                 data.password = password;
             }
-            http.post(accessToken ? "/auth/google" : "/auth", data).then((res) => {
+            const path = accessToken ? loginType == "google" ? "/auth/google" : "/auth/facebook" : "/auth";
+            http.post(path, data).then((res) => {
                 if (res.status === 200) {
                     enqueueSnackbar("Login successful. Welcome back!", { variant: "success" });
                     // Store token in local storage
@@ -262,7 +307,14 @@ function Login() {
                             <CardContent>
                                 <Stack spacing={1}>
                                     <Button variant="outlined" color="primary" startIcon={<GoogleIcon />} fullWidth onClick={googleAuth}>Login with Google</Button>
-                                    <Button variant="outlined" color="primary" startIcon={<FacebookIcon />} fullWidth>Login with Facebook</Button>
+                                    <FacebookLogin
+                                        appId={import.meta.env.VITE_FACEBOOK_APP_ID}
+                                        onSuccess={handleFacebookSuccess}
+                                        onFail={handleFacebookFailure}
+                                        render={({ onClick, logout }) => (
+                                            <Button variant="outlined" color="primary" startIcon={<FacebookIcon />} onClick={onClick} fullWidth>Login with Facebook</Button>
+                                        )}
+                                    />
                                 </Stack>
                             </CardContent>
                         </Card>
