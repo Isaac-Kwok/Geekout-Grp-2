@@ -5,7 +5,8 @@ const decisionMatrix = axios.create({
     headers: {
         "Content-Type": "application/json",
         "Allow-Control-Allow-Origin": "http://localhost:3000/",
-        "Access-Control-Allow-Headers": "X-Requested-With"
+        "Access-Control-Allow-Methods": "POST,GET,OPTIONS,PUT,DELETE",
+        "Access-Control-Allow-Headers": "Content-Type, X-Auth-Token, Origin, Authorization"
     },
 });
 

@@ -1,12 +1,16 @@
 import React from 'react'
 import { GoogleMap, MarkerF, useLoadScript, useJsApiLoader, DirectionsRenderer, Autocomplete, } from "@react-google-maps/api";
-import { Button, Container, Stack, Divider, Grid, Card, CardContent, Box, TextField, Typography } from '@mui/material';
+import { Avatar, Stack, Card, CardContent, Box, Container, Typography, Button, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, Input, IconButton, Grid } from '@mui/material';
 import { useMemo, useState, useRef, useEffect } from "react";
 import googleMapsReverseGeocoder from '../../googleMapsReverseGeocoder'
 import http from '../../http'
 import { CopyAllSharp } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
 import { DataGrid } from '@mui/x-data-grid';
+import useUser from '../../context/useUser';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import CheckIcon from '@mui/icons-material/Check';
+import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 
 
 function DriverPastRoutes() {
@@ -19,9 +23,8 @@ function DriverPastRoutes() {
     const center = { lat: latitude, lng: longtitude };
     const [map, setMap] = useState(null)
     const [directionsResponse, setDirectionsResponse] = useState(null)
-    const [visibleRoutes, setVisibleRoutes] = useState();
-    const { enqueueSnackbar } = useSnackbar();
     const [allRoutes, setallRoutes] = useState([])
+    const { user, refreshUser } = useUser();
 
     const originRef = useRef({})
 
@@ -97,7 +100,8 @@ function DriverPastRoutes() {
 
     }
     useEffect(() => {
-        console.log('test')
+        refreshUser()
+        console.log('user:', user)
         getAllRoutes()
 
     }, [])
@@ -113,24 +117,131 @@ function DriverPastRoutes() {
                     alignItems: 'center'
                 }}>
                     <Container maxWidth="xl" sx={{ marginTop: '2rem' }}>
+                        <Grid container spacing={2} sx={{ marginBottom: '2rem' }}>
+                            <Grid item xs={12} xl={4} md={4} sm={4} lg={4}>
+                                <Card>
+                                    <CardContent>
+                                        <Stack
+                                            alignItems="flex-start"
+                                            direction="row"
+                                            justifyContent="space-between"
+                                            spacing={3}
+                                        >
+                                            <Stack spacing={1}>
+                                                <Typography
+                                                    color="text.secondary"
+                                                    variant="h6"
+                                                >
+                                                    Total Accepted Routes
+                                                </Typography>
+                                                <Typography variant="h4">
+                                                    {user?.accepted_routes}
+                                                </Typography>
+                                            </Stack>
+                                            <Avatar
+                                                sx={{
+                                                    backgroundColor: 'secondary.main',
+                                                    height: 56,
+                                                    width: 56
+                                                }}
+                                            >
+
+                                                <DirectionsCarIcon></DirectionsCarIcon>
+
+                                            </Avatar>
+                                        </Stack>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                            <Grid item xs={12} xl={4} md={4} sm={4} lg={4}>
+                                <Card>
+                                    <CardContent>
+                                        <Stack
+                                            alignItems="flex-start"
+                                            direction="row"
+                                            justifyContent="space-between"
+                                            spacing={3}
+                                        >
+                                            <Stack spacing={1}>
+                                                <Typography
+                                                    color="text.secondary"
+                                                    variant="h6"
+                                                >
+                                                    Completed Routes
+                                                </Typography>
+                                                <Typography variant="h4">
+                                                    {user?.completed_routes}
+                                                </Typography>
+                                            </Stack>
+                                            <Avatar
+                                                sx={{
+                                                    backgroundColor: 'success.main',
+                                                    height: 56,
+                                                    width: 56
+                                                }}
+                                            >
+
+                                                <CheckIcon></CheckIcon>
+
+                                            </Avatar>
+                                        </Stack>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                            <Grid item xs={12} xl={4} md={4} sm={4} lg={4}>
+                                <Card>
+                                    <CardContent>
+                                        <Stack
+                                            alignItems="flex-start"
+                                            direction="row"
+                                            justifyContent="space-between"
+                                            spacing={3}
+                                        >
+                                            <Stack spacing={1}>
+                                                <Typography
+                                                    color="text.secondary"
+                                                    variant="h6"
+                                                >
+                                                    Aborted Routes
+                                                </Typography>
+                                                <Typography variant="h4">
+                                                    {user?.aborted_routes}
+                                                </Typography>
+                                            </Stack>
+                                            <Avatar
+                                                sx={{
+                                                    backgroundColor: 'warning.main',
+                                                    height: 56,
+                                                    width: 56
+                                                }}
+                                            >
+                                                <DoDisturbIcon></DoDisturbIcon>
+
+
+                                            </Avatar>
+                                        </Stack>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        </Grid>
                         <Grid container spacing={2}>
-                            <Grid item lg={8}>
-                                <div style={{ height: 700, width: '100%' }}>
+                            <Grid item lg={8} md={12} xm={12} xs={12}>
+                                <div style={{ height: 600, width: '100%' }}>
                                     <DataGrid
                                         rows={allRoutes}
                                         columns={columns}
                                         initialState={{
                                             pagination: {
-                                                paginationModel: { page: 0, pageSize: 5 },
+                                                paginationModel: { page: 0, pageSize: 10 },
                                             },
                                         }}
-                                        pageSizeOptions={[5, 10]}
+                                        pageSizeOptions={[10, 15]}
                                         onRowClick={handleRowClick}
 
                                     />
                                 </div>
                             </Grid>
-                            <Grid item xs={12} lg={4} md={7} sm={12}>
+                            <Grid item xs={12} md={12} xm={12} lg={4}>
 
                                 <GoogleMap
                                     center={center}
@@ -148,7 +259,6 @@ function DriverPastRoutes() {
                                     {directionsResponse && (
                                         <DirectionsRenderer directions={directionsResponse} />
                                     )}
-                                    <MarkerF position={center} />
                                 </GoogleMap>
                             </Grid>
 

@@ -12,12 +12,12 @@ let MYINFO_CONNECTOR_CONFIG = {
   CLIENT_ID: process.env.APP_CLIENT_ID,
   SUBENTITY_ID: process.env.APP_SUBENTITY_ID,
   REDIRECT_URL: process.env.APP_CALLBACK_URL,
-  SCOPE : process.env.APP_SCOPES,
+  SCOPE: process.env.APP_SCOPES,
   AUTHORIZE_JWKS_URL: `https://test.authorise.singpass.gov.sg/.well-known/keys.json`,
   MYINFO_JWKS_URL: `https://test.authorise.singpass.gov.sg/.well-known/keys.json`,
   TOKEN_URL: `https://test.api.myinfo.gov.sg/com/v4/token`,
   PERSON_URL: `https://test.api.myinfo.gov.sg/com/v4/person`,
-  CLIENT_ASSERTION_SIGNING_KID :'', // optional parameter to specify specific kid for signing. Default will be thumbprint of JWK
+  CLIENT_ASSERTION_SIGNING_KID: '', // optional parameter to specify specific kid for signing. Default will be thumbprint of JWK
   USE_PROXY: "N",
   PROXY_TOKEN_URL: "",
   PROXY_PERSON_URL: "",
@@ -28,36 +28,37 @@ const connector = new MyInfoConnector(MYINFO_CONNECTOR_CONFIG);
 
 var sessionIdCache = {};
 
-const corsOptions ={
-   origin:'*', 
-   credentials:true,            //access-control-allow-credentials:true
-   optionSuccessStatus:200,
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true,            //access-control-allow-credentials:true
+  optionSuccessStatus: 200
 }
+app.use(cors(corsOptions));
 
-app.use(cors(corsOptions)) // Use this after the variable declaration
 
-app.use(express.json());
+app.use(express.json({ limit: '100mb' }));
 
 app.use(express.static("public"));
 
-app.use(bodyParser.json());
-app.use(
-  bodyParser.urlencoded({
-    extended: false,
-  })
-);
+app.use(bodyParser.json({ limit: "100mb" }));
+app.use(bodyParser.urlencoded({ limit: "100mb", extended: false, parameterLimit: 5000000 }));
 app.use(cookieParser());
 
 // parse requests of content-type - application/x-www-form-urlencoded
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ limit: "100mb", extended: true }));
 app.use(function (err, req, res, next) {
-    console.error(err.stack);
-    res.status(500).send("Something broke! Check console for details");
+  console.error(err.stack);
+  res.status(500).send("Something broke! Check console for details");
 })
 
 // Main Route (Status check)
 app.get("/", (request, response) => {
-    response.json({ message: "Welcome to EnviroGo API. API Server is operational. Now with automatic deployments" })
+  response.setHeader("Access-Control-Allow-Origin", "*")
+  response.setHeader("Access-Control-Allow-Credentials", "true");
+  response.setHeader("Access-Control-Max-Age", "1800");
+  response.setHeader("Access-Control-Allow-Headers", "content-type");
+  response.setHeader("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, PATCH, OPTIONS");
+  response.json({ message: "Welcome to EnviroGo API. API Server is operational. Now with automatic deployments" })
 })
 
 
@@ -92,7 +93,7 @@ app.get("/getEnv", function (req, res) {
 // callback function - directs back to home page
 app.get("/callback", function (req, res) {
   console.log('callback route', req);
-  res.redirect(process.env.CLIENT_URL + "/driver/register?code="+ req.query.code);
+  res.redirect(process.env.CLIENT_URL + "/driver/register?code=" + req.query.code);
 });
 
 //function to read multiple files from a directory
@@ -181,7 +182,7 @@ app.post("/generateCodeChallenge", async function (req, res, next) {
     let pkceCodePair = connector.generatePKCECodePair();
     // create a session and store code_challenge and code_verifier pair
     sessionIdCache['verifier'] = pkceCodePair.codeVerifier;
-    console.log('session cache' , sessionIdCache)
+    console.log('session cache', sessionIdCache)
 
     //send code code_challenge to frontend to make /authorize call
     res.status(200).send(pkceCodePair.codeChallenge);
@@ -236,8 +237,8 @@ app.use((err, req, res, next) => {
 db.sequelize.sync({ alter: true }).then(() => {
   let port = process.env.APP_PORT
   app.listen(port, () => {
-      console.clear()
-      console.log(`The server has been started on port ${port}`)
+    console.clear()
+    console.log(`The server has been started on port ${port}`)
   })
 })
 

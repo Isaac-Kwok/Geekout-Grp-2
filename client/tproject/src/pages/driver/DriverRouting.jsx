@@ -1,6 +1,6 @@
 import React from 'react'
 import { GoogleMap, MarkerF, useJsApiLoader, DirectionsRenderer, Autocomplete, } from "@react-google-maps/api";
-import { Button, Container, Grid, Card, CardContent, Box, TextField, Typography } from '@mui/material';
+import { Button, Container, Grid, Card, CardContent, Box, TextField, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { useState, useRef, useEffect } from "react";
 import googleMapsReverseGeocoder from '../../googleMapsReverseGeocoder'
 import googleMapsDecisionMatrix from '../../googleMapsDecisionMatrix'
@@ -8,6 +8,7 @@ import http from '../../http'
 import useUser from '../../context/useUser';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
+
 
 
 function DriverRouting() {
@@ -29,12 +30,20 @@ function DriverRouting() {
   const [renderCount, setRenderCount] = useState(1);
   const [routeObj, setrouteObj] = useState({ names: " ", wayPoints: [] })
   const [destination, setdestination] = useState('Singapore')
+  const [open, setOpen] = useState(false);
   const { user, refreshUser } = useUser();
 
   const originRef = useRef({})
   const destinationRef = useRef({})
   const isDataFetched = useRef(false); // useRef to track whether data has been fetched
 
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const handleGetRideRequests = async () => {
     try {
@@ -44,49 +53,50 @@ function DriverRouting() {
         const maxRidesPerList = 3; // Adjust the value as desired
 
         // Group the rides based on pickUp location
-        const groupedRides = groupRidesWithMaxPerList(ridesList, maxRidesPerList);
-        const listsOfRoutes = await createSummaryList(groupedRides);
+        const groupedRides = groupObjectsByPickUp(ridesList);
+        const updatedGroupedRides = splitListsIfNeeded(groupedRides);
+        const listsOfRoutes = await createSummaryList(updatedGroupedRides);
 
         // Now set the grouped rides in the state
         setVisibleRoutes(listsOfRoutes);
         isDataFetched.current = true; // Mark data as fetched
-        console.log('ridesList', ridesList)
-        console.log('groupedRides', groupedRides)
-        console.log(visibleRoutes)
       }
     } catch (error) {
       console.error("Error fetching ride requests:", error);
     }
   };
+  function groupObjectsByPickUp(data) {
+    const groupedData = {};
 
-  function groupRidesWithMaxPerList(rides, maxRidesPerList) {
-    const groupedRides = [];
+    for (const ride of data) {
+      const pickUpLocation = ride.pickUp;
 
-    // Helper function to check if the last list in groupedRides can accept more rides
-    const canAddToLastList = () =>
-      groupedRides.length > 0 && groupedRides[groupedRides.length - 1].length < maxRidesPerList;
-
-    // Iterate through each ride
-    rides.forEach((ride) => {
-      if (canAddToLastList() && groupedRides[groupedRides.length - 1][0]['pickUp'] === ride['pickUp']) {
-        // If the last list can accept more rides and the pickUp location matches, add the ride to the last list
-        groupedRides[groupedRides.length - 1].push(ride);
+      if (groupedData[pickUpLocation]) {
+        groupedData[pickUpLocation].push(ride);
       } else {
-        // If not, create a new list and add the ride to it
-        groupedRides.push([ride]);
-      }
-    });
-
-    // If a pick-up location has more than 2 rides, distribute the rides to multiple lists
-    for (let i = 0; i < groupedRides.length - 1; i++) {
-      const currentGroup = groupedRides[i];
-      while (currentGroup.length > maxRidesPerList) {
-        const newGroup = currentGroup.splice(0, maxRidesPerList);
-        groupedRides.push(newGroup);
+        groupedData[pickUpLocation] = [ride];
       }
     }
 
-    return groupedRides;
+    // Convert the object values to an array to get the final grouped list
+    const groupedList = Object.values(groupedData);
+    return groupedList;
+  }
+
+  function splitListsIfNeeded(groupedData) {
+    const updatedGroupedData = [];
+
+    for (const group of groupedData) {
+      if (group.length > 3) {
+        while (group.length > 3) {
+          const newGroup = group.splice(3);
+          updatedGroupedData.push(newGroup);
+        }
+      }
+      updatedGroupedData.push(group);
+    }
+
+    return updatedGroupedData;
   }
 
 
@@ -97,12 +107,12 @@ function DriverRouting() {
     // Iterate through each group of rides with the same pickUp location
     for (const rideGroup of groupedRides) {
       const pickUpLocation = rideGroup[0].pickUp;
-      const destinationList = []
+      const destinationList = [];
       const wayPoints = [
         {
           location: pickUpLocation,
-          stopover: true
-        }
+          stopover: true,
+        },
       ]; // Create a new waypoints array for each group
 
       // Populate the waypoints array for the current group
@@ -112,11 +122,11 @@ function DriverRouting() {
           stopover: true,
         };
         wayPoints.push(wayPoint);
-        destinationList.push(ride.destination)
+        destinationList.push(ride.destination);
       }
 
-      let result = await decisionMatrix(pickUpLocation, destinationList)
-      console.log('res', result)
+      let result = await decisionMatrix(pickUpLocation, destinationList);
+      console.log('res', result);
 
       // Get the destination from the last waypoint
 
@@ -126,12 +136,16 @@ function DriverRouting() {
       // Extract the names from the rides in the group
       const names = rideGroup.map((ride) => ride.name);
 
+      // Convert the rideIds array to a comma-separated string
+      const rideIds = rideGroup.map((ride) => ride.requestId).join(', ');
+
       // Create the summary object and add it to the summaryList
       const summaryObject = {
         pickUp: pickUpLocation,
         wayPoints: wayPoints,
         names: names,
         destination: result, // Add the destination attribute
+        rideIds: rideIds, // Add the rideIds attribute as a string
       };
 
       summaryList.push(summaryObject);
@@ -139,6 +153,7 @@ function DriverRouting() {
 
     return summaryList;
   }
+
 
   const handleDelete = (index) => {
     const newRoutes = visibleRoutes.filter((_, i) => i !== index);
@@ -385,6 +400,7 @@ function DriverRouting() {
   };
 
   const handleAbort = () => {
+    handleClose()
     // delete route from DB
     http.delete("/driver/route/" + user.current_route.id)
       .then((res) => {
@@ -417,14 +433,49 @@ function DriverRouting() {
     clearRoute()
   };
 
-  const handleComplete = () => {
-
+  const handleComplete = (routeObj) => {
+    // delete Ride requests from DB
+    console.log(
+      routeObj
+    )
+    const rideIdsList = routeObj.rideIds.split(","); // Split the string by commas
+    for (let index = 0; index < rideIdsList.length; index++) {
+      const rideId = rideIdsList[index];
+      http.delete("/driver/ride/" + rideId)
+        .then((res) => {
+          if (res.status === 200) {
+            console.log(res.data);
+          } else {
+            console.log("Failed to delete rides:", res.status);
+          }
+        })
+        .catch((err) => {
+          console.error("Error deleting rides:", err);
+          // Handle the error here, e.g., display an error message or take appropriate action
+        });
+    }
+    http.put("/driver/complete")
+      .then((res) => {
+        if (res.status === 200) {
+          console.log(res.data);
+          refreshUser();
+          enqueueSnackbar('You have Completed Route!', { variant: 'success' });
+        } else {
+          console.log("Failed to complete routes:", res.status);
+        }
+      })
+      .catch((err) => {
+        console.error("Error updating driver status:", err);
+        // Handle the error here, e.g., display an error message or take appropriate action
+      });
+    refreshUser()
+    handleGetRideRequests()
+    navigate('/driver/routes')
   }
 
 
   useEffect(() => {
     refreshUser()
-    console.log('result;', decisionMatrix('singapore', ['Newton MRT', "amk hub", "bedok sports hall"]))
     console.log('user', user)
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(showPosition);
@@ -637,6 +688,7 @@ function DriverRouting() {
                 </GoogleMap>
               </Grid>
               <Grid id='route' item xs={12} lg={3} md={5} sm={12} >
+
                 <div id="instructions" style={{ maxHeight: '500px', overflowY: 'auto' }}></div>
                 <Card style={{ marginBottom: '10px' }}>
                   <CardContent>
@@ -668,12 +720,12 @@ function DriverRouting() {
                       </Grid>
                       <Grid item xs={6} >
                         {user.current_route.distance && (
-                          <h5 style={{ margin: 0 }}>Duration: {user.current_route.distance}</h5>
+                          <h5 style={{ margin: 0 }}>Duration: {user.current_route.duration}</h5>
                         )}
                       </Grid>
                       <Grid item xs={6} >
                         {user.current_route.driver_profit && (
-                          <h4 style={{ margin: 0, color: 'green' }}>Profit: ${user.current_route.driver_profit}</h4>
+                          <h4 style={{ margin: 0, color: 'green' }}>Profit: ${user.current_route.driver_profit.toFixed(2)}</h4>
                         )}
                       </Grid>
                     </Grid>
@@ -682,22 +734,48 @@ function DriverRouting() {
                       <Grid item xs={6} >
                         <Button
                           variant='contained' color='success'
-                          onClick={() => storeRoute(routeObj, routeObj.wayPoints, routeObj.destination)}
+                          onClick={() => handleComplete(user.current_route)}
                         >
                           Complete
                         </Button>
                       </Grid>
                       <Grid item xs={6} >
                         <Button
-                          onClick={() => handleAbort()}
-                          variant='contained' color='error'
-                        >
+                          onClick={handleClickOpen}
+                          variant='contained' color='error'>
                           Abort
                         </Button>
+
                       </Grid>
                     </Grid>
                   </CardContent>
                 </Card>
+                <Dialog
+                  open={open}
+                  onClose={handleClose}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description"
+                >
+                  <DialogTitle id="alert-dialog-title">
+                    Confirm Abort Route?
+                  </DialogTitle>
+                  <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                      By aborting route, you will not make the profits and your aborted routes stat will increment
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleClose}
+                      variant='contained'
+                    >Back</Button>
+                    <Button
+                      onClick={() => handleAbort()}
+                      variant='contained' color='error'
+                    >
+                      Abort
+                    </Button>
+                  </DialogActions>
+                </Dialog>
               </Grid>
             </Grid>
           </Container>

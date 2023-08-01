@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
+        rideIds: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
         destination: {
             type: DataTypes.STRING,
             allowNull: false

@@ -1,6 +1,6 @@
 const express = require("express")
 const yup = require("yup")
-const { DriverApplication, Sequelize, User, Route } = require("../models")
+const { DriverApplication, Sequelize, User, Route, RideRequest } = require("../models")
 const router = express.Router()
 require('dotenv').config();
 
@@ -163,22 +163,65 @@ router.put("/abort", validateToken, async (req, res) => {
         res.status(400).json({ message: error.errors })
     }
 })
+
+router.put("/complete", validateToken, async (req, res) => {
+    // Update user by id
+    try {
+        const user = await User.findByPk(req.user.id)
+        if (!user) {
+            return res.status(404).json({ message: "User not found" })
+        }
+        console.log('user', user)
+        await user.update({
+            on_duty: false,
+            driven_distance: Sequelize.literal(`driven_distance + ${user.current_route.distance_value}`),
+            total_earned: Sequelize.literal(`total_earned + ${user.current_route.driver_profit}`),
+            completed_routes: Sequelize.literal('completed_routes + 1'),
+            rideDirections: null,
+            current_route: {}
+        })
+
+        res.json(user)
+    } catch (error) {
+
+        res.status(400).json({ message: error.errors })
+    }
+})
 // Delete route
 router.delete("/route/:id", async (req, res) => {
     const { id } = req.params;
-  
-    try {
-      const route = await Route.findByPk(id);
-      if (!route) {
-        return res.status(404).json({ message: "route not found" });
-      }
-  
-      await route.destroy();
-      res.json({ message: "route deleted successfully" });
-    } catch (error) {
-      console.error("Error deleting route:", error);
-      res.status(500).json({ message: "Error deleting route" });
-    }
-  });
 
+    try {
+        const route = await Route.findByPk(id);
+        if (!route) {
+            return res.status(404).json({ message: "route not found" });
+        }
+
+        await route.destroy();
+        res.json({ message: "route deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting route:", error);
+        res.status(500).json({ message: "Error deleting route" });
+    }
+});
+
+// Delete a ride request by ID
+router.delete("/ride/:id", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const rideRequest = await RideRequest.findByPk(id);
+
+        if (!rideRequest) {
+            return res
+                .status(404)
+                .json({ message: `Ride request of ID: ${id} not found.` });
+        }
+
+        await rideRequest.destroy();
+        res.json({ message: `Ride request of ID: ${id} deleted successfully.` });
+    } catch (error) {
+        res.status(400).json({ message: "Failed to delete ride request." });
+    }
+});
 module.exports = router;
