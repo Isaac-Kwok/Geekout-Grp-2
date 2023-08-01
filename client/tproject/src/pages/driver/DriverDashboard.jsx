@@ -1,11 +1,13 @@
 import { React, useEffect, useState } from 'react'
 import { Link, Box, Card, CardContent, Stack, Avatar, Typography, Grid, Container, Button, CardActions } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid';
+import CardTitle from '../../components/CardTitle';
 import useUser from '../../context/useUser';
 import WalletIcon from '@mui/icons-material/Wallet';
 import DirectionsCarFilledIcon from '@mui/icons-material/DirectionsCarFilled';
 import SocialDistanceIcon from '@mui/icons-material/SocialDistance';
 import ReviewsIcon from '@mui/icons-material/Reviews';
+import TimeToLeaveIcon from '@mui/icons-material/TimeToLeave';
 import http from '../../http'
 import { Margin } from '@mui/icons-material';
 
@@ -234,7 +236,7 @@ function DriverDashboard() {
           <Grid item xl={6} lg={6} md={6} sm={12} xs={12}>
             <Card>
               <CardContent>
-                <h3>Time to drive</h3>
+                <CardTitle icon={<TimeToLeaveIcon />} title="Time to drive" />
                 <p>Start Accepting route requests and start driving to earn some money!</p>
                 <Button href="/driver/routes" variant='contained' >Start Driving</Button>
               </CardContent>
