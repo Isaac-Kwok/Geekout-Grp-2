@@ -28,6 +28,10 @@ module.exports = (sequelize, DataTypes) => {
         unlocked: {
             type: DataTypes.BOOLEAN,
             allowNull: false
+        },
+        unlockedAt: {
+            type: DataTypes.DATE,
+            allowNull: true
         }
     });
 
@@ -35,6 +39,14 @@ module.exports = (sequelize, DataTypes) => {
         Bicycle.belongsTo(models.User, {
             foreignKey: "user_id",
             onDelete: "CASCADE"
+        });
+        Bicycle.hasMany(models.BicycleReports, {
+            foreignKey: "id",
+            onDelete: "CASCADE",
+        });
+        Bicycle.hasMany(models.BicycleUsages, {
+            foreignKey: "id",
+            onDelete: "CASCADE",
         });
     }
 

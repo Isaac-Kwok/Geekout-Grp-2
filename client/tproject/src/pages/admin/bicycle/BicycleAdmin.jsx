@@ -1,35 +1,37 @@
 import { GoogleMap, MarkerF, useLoadScript, InfoWindowF } from "@react-google-maps/api";
-import { Container } from '@mui/material';
+import { Container, Button } from '@mui/material';
 import { useMemo, useState, useEffect } from "react";
-import { Button } from "@mui/material";
 import { Link } from 'react-router-dom';
 import http from "../../../http"
 import '../../../bicycle.css'
 import AdminPageTitle from "../../../components/AdminPageTitle";
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 
-function BicycleAdmin() {
+const libraries = ['geometry'];
 
+function BicycleAdmin() {
     const [bicycle, setBicycle] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentLocation, setCurrentLocation] = useState(null);
     const [selectedMarker, setSelectedMarker] = useState(null);
     const [selectedSelf, setSelectedSelf] = useState(null);
+    const [filter, setFilter] = useState('all');
 
     const { isLoaded } = useLoadScript({
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_API_KEY,
+        libraries: libraries,
     });
 
     const center = useMemo(() => ({ lat: 1.311, lng: 103.844 }), []);
 
     const handleGetBicycle = () => {
-        http.get("/bicycle").then((res) => {
+        http.get('/bicycle').then((res) => {
             if (res.status === 200) {
-                setBicycle(res.data)
-                setLoading(false)
+                setBicycle(res.data);
+                setLoading(false);
             }
-        })
-    }
+        });
+    };
 
     const handleGetLocation = () => {
         if (navigator.geolocation) {
@@ -37,48 +39,22 @@ function BicycleAdmin() {
                 (position) => {
                     setCurrentLocation({
                         lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    })
+                        lng: position.coords.longitude,
+                    });
                 },
                 (error) => {
                     console.error('Error getting user location:', error);
                 }
-            )
-        }
-        else {
+            );
+        } else {
             console.error('Geolocation is not supported by this browser.');
         }
     };
-
-    // async function reverseGeocode(lat, lng, apiKey) {
-    //     try {
-    //         const response = await fetch(
-    //             `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`
-    //         );
-    //         const data = await response.json();
-
-    //         if (data.status === 'OK' && data.results.length > 0) {
-    //             return data.results[0].formatted_address;
-    //         } else {
-    //             throw new Error('Reverse geocoding failed.');
-    //         }
-    //     } catch (error) {
-    //         console.error('Error during reverse geocoding:', error);
-    //         return null;
-    //     }
-    // };
 
     const handleMarkerClick = (marker) => {
         if (marker.id === 0) {
             setSelectedSelf(marker);
             console.log('currentLocation:', currentLocation);
-            // reverseGeocode(currentLocation.lat, currentLocation.lng, import.meta.env.VITE_GOOGLE_API_KEY)
-            // .then((address) => {
-            //     console.log('Reverse Geocoded Address:', address);
-            // })
-            // .catch((error) => {
-            //     console.error('Error:', error);
-            // });
         } else {
             setSelectedMarker(marker);
             console.log('marker:', marker);
@@ -90,36 +66,56 @@ function BicycleAdmin() {
         setSelectedSelf(null);
     };
 
-    const markers = useMemo(
-        () =>
-            bicycle.map(({ id, bicycle_lat, bicycle_lng, reports }) => (
-                <MarkerF
-                    key={id}
-                    position={{ lat: bicycle_lat, lng: bicycle_lng }}
-                    onClick={() => handleMarkerClick({ id, bicycle_lat, bicycle_lng, reports })} />
+    const markers = useMemo(() => {
+        // Filter the bicycles based on the selected filter
+        let filteredBicycle = bicycle;
+        if (filter === 'disabled') {
+            filteredBicycle = bicycle.filter((bike) => bike.disabled);
+        } else if (filter === 'registered') {
+            filteredBicycle = bicycle.filter((bike) => bike.registered);
+        } else if (filter === 'reports') {
+            filteredBicycle = bicycle.filter((bike) => bike.reports > 0);
+        }
 
-            )),
-        [bicycle]
-    );
+        return filteredBicycle.map(({ id, bicycle_lat, bicycle_lng, reports }) => (
+            <MarkerF key={id} position={{ lat: bicycle_lat, lng: bicycle_lng }} onClick={() => handleMarkerClick({ id, bicycle_lat, bicycle_lng, reports })} />
+        ));
+    }, [bicycle, filter]);
 
     const bounds = {
         north: 1.493,
         south: 1.129,
         west: 103.557,
-        east: 104.131
+        east: 104.131,
     };
 
     useEffect(() => {
-        document.title = "EnviroGo - View Map"
+        document.title = 'EnviroGo - View Map';
         handleGetBicycle();
         handleGetLocation();
     }, []);
 
-
     return (
-        <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
+        <Container maxWidth="xl" sx={{ marginTop: '1rem' }}>
             <AdminPageTitle title="Bicycle Map" />
-            <Button startIcon={<FormatListNumberedIcon />} LinkComponent={Link} variant="contained" color="primary" sx={{ marginBottom: "1rem" }} to="/admin/bicycle/view">View Bicycle List</Button>
+            <Button startIcon={<FormatListNumberedIcon />} LinkComponent={Link} variant="contained" color="primary" sx={{ marginBottom: '1rem' }} to="/admin/bicycle/view">
+                View Bicycle List
+            </Button>
+
+            <div>
+                <Button onClick={() => setFilter('all')} variant={filter === 'all' ? 'contained' : 'outlined'} sx={{ marginRight: '0.5rem' }}>
+                    All
+                </Button>
+                <Button onClick={() => setFilter('disabled')} variant={filter === 'disabled' ? 'contained' : 'outlined'} sx={{ marginRight: '0.5rem' }}>
+                    Disabled
+                </Button>
+                <Button onClick={() => setFilter('registered')} variant={filter === 'registered' ? 'contained' : 'outlined'} sx={{ marginRight: '0.5rem' }}>
+                    Registered
+                </Button>
+                <Button onClick={() => setFilter('reports')} variant={filter === 'reports' ? 'contained' : 'outlined'} sx={{ marginRight: '0.5rem' }}>
+                    With Reports
+                </Button>
+            </div>
 
             {!isLoaded ? (
                 <h1>Loading...</h1>
@@ -128,22 +124,21 @@ function BicycleAdmin() {
                     mapContainerClassName="map-container"
                     center={center}
                     zoom={14}
-                    mapContainerStyle={{ width: "100%", marginBottom: "1rem" }}
+                    mapContainerStyle={{ width: '100%', marginBottom: '1rem' }}
                     options={{
                         restriction: {
                             latLngBounds: bounds,
-                            strictBounds: true
-                        }
+                            strictBounds: true,
+                        },
                     }}
                 >
                     {markers}
-                    {currentLocation && <MarkerF position={currentLocation} onClick={() => handleMarkerClick({ id: 0, bicycle_lat: currentLocation.lat, bicycle_lng: currentLocation.lng, reports: 0 })} />}
+                    {currentLocation && (
+                        <MarkerF position={currentLocation} onClick={() => handleMarkerClick({ id: 0, bicycle_lat: currentLocation.lat, bicycle_lng: currentLocation.lng, reports: 0 })} />
+                    )}
 
                     {selectedSelf && (
-                        <InfoWindowF
-                            position={{ lat: currentLocation.lat, lng: currentLocation.lng }}
-                            onCloseClick={handleInfoWindowClose}
-                        >
+                        <InfoWindowF position={{ lat: currentLocation.lat, lng: currentLocation.lng }} onCloseClick={handleInfoWindowClose}>
                             <div>
                                 <h3>Your Current Location</h3>
                                 <p>Latitude: {currentLocation.lat}</p>
@@ -153,10 +148,7 @@ function BicycleAdmin() {
                     )}
 
                     {selectedMarker && (
-                        <InfoWindowF
-                            position={{ lat: selectedMarker.bicycle_lat, lng: selectedMarker.bicycle_lng }}
-                            onCloseClick={handleInfoWindowClose}
-                        >
+                        <InfoWindowF position={{ lat: selectedMarker.bicycle_lat, lng: selectedMarker.bicycle_lng }} onCloseClick={handleInfoWindowClose}>
                             <div>
                                 <h3>Marker Information</h3>
                                 <p>Latitude: {selectedMarker.bicycle_lat}</p>
@@ -170,6 +162,6 @@ function BicycleAdmin() {
             )}
         </Container>
     );
-}
+};
 
-export default BicycleAdmin
+export default BicycleAdmin;
