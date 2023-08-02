@@ -205,6 +205,18 @@ function AdminNavList() {
                             <ListItemText primary={"View Tickets"} />
                         </ListItemButton>
                     </ListItem>
+                    <ListItem key={"ViewArticles"} disablePadding>
+                        <ListItemButton component={Link} to="/">
+                            <ListItemIcon><LabelIcon /></ListItemIcon>
+                            <ListItemText primary={"View Help Articles"} />
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem key={"CreateArticle"} disablePadding>
+                        <ListItemButton component={Link} to="/">
+                            <ListItemIcon><LabelIcon /></ListItemIcon>
+                            <ListItemText primary={"Create Help Article"} />
+                        </ListItemButton>
+                    </ListItem>
                     {/* Add more here for more sublist items */}
                 </List>
             </Collapse>
