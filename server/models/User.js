@@ -1,5 +1,4 @@
 const bcrypt = require("bcrypt");
-const { RideRequest } = require("./RideRequest");
 
 module.exports = (sequelize, DataTypes) => {
     // Account Types:
@@ -77,6 +76,45 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: false
         },
         driver_application_sent: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
+        },
+        accepted_routes: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0
+        },
+        completed_routes: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0
+        },
+        aborted_routes: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0
+        },
+        driven_distance: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0
+        },
+        total_earned: {
+            type: DataTypes.DOUBLE,
+            allowNull: false,
+            defaultValue: 0.0
+        },
+        current_route: {
+            type: DataTypes.JSON,
+            allowNull: false,
+            defaultValue: 0
+        },
+        rideDirections: {
+            type: DataTypes.TEXT('long') ,
+            allowNull: true,
+        },
+        on_duty: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false

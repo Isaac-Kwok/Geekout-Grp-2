@@ -7,6 +7,7 @@ import NotFound from '../errors/NotFound'
 import DriverRegister from './DriverRegister'
 import DriverDashboard from './DriverDashboard'
 import DriverRouting from './DriverRouting'
+import DriverPastRoutes from './DriverPastRoutes'
 
 
 function ProfileRoutes() {
@@ -29,6 +30,7 @@ function ProfileRoutes() {
                 <Route path="/register" element={<DriverRegister />} />
                 <Route path="/dashboard" element={<DriverDashboard />} />
                 <Route path="/routes" element={<DriverRouting />} />
+                <Route path="/pastRoutes" element={<DriverPastRoutes />} />
             </Routes>
         </>
     )
