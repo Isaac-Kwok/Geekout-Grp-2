@@ -4,6 +4,9 @@ import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import { Link } from 'react-router-dom';
 import '../bicycle.css';
 import http from "../http";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useSnackbar } from 'notistack';
 
 const libraries = ['geometry'];
 
@@ -23,6 +26,7 @@ function Bicycle() {
     const [selectedMarker, setSelectedMarker] = useState(null);
     const [directions, setDirections] = useState(null);
     const [mapLoaded, setMapLoaded] = useState(false);
+    const { enqueueSnackbar } = useSnackbar();
 
     // Function to reload the LoadScript
     const reloadLoadScript = () => {
@@ -93,7 +97,7 @@ function Bicycle() {
                 {
                     origin: currentLocation,
                     destination: { lat: marker.bicycle_lat, lng: marker.bicycle_lng },
-                    travelMode: 'DRIVING',
+                    travelMode: 'WALKING',
                 },
                 (response, status) => {
                     if (status === 'OK') {
@@ -131,26 +135,81 @@ function Bicycle() {
             point2
         );
 
+        return distance
+
+    };
+
+    const returnDistance = (distance) => {
         // Convert the distance from meters to kilometers
         if (distance < 1000) {
             return Math.ceil(distance) + "m"
         } else {
             return (Math.ceil(distance) / 1000) + "km"
         }
-        
     };
 
-    const markers = useMemo(
-        () =>
-            bicycle.map(({ id, bicycle_lat, bicycle_lng, reports }) => (
-                <MarkerF
-                    key={id}
-                    position={{ lat: bicycle_lat, lng: bicycle_lng }}
-                    onClick={() => handleMarkerClick({ id, bicycle_lat, bicycle_lng, reports })} />
+    const genKey = () => {
+        const min = 1000;
+        const max = 9999;
+        // Generate a random number between min and max (inclusive)
+        const randomPasskey = Math.floor(Math.random() * (max - min + 1)) + min;
+        return randomPasskey.toString(); // Convert the number to a string
+    }
+    const getPasskey = () => {
+        const passKey = genKey()
+        toast("Your passkey is: "+passKey);
 
-            )),
-        [bicycle]
-    ); 
+        const data = {
+            bicycle_lat: selectedMarker.bicycle_lat,
+            bicycle_lng: selectedMarker.bicycle_lng,
+            disabled: false, 
+            unlocked: true,
+        }
+
+        http.put("/bicycle/" + selectedMarker.id, data).then((res) => {
+            if (res.status === 200) {
+                enqueueSnackbar("Bicycle unlocked succesfully!", { variant: "success" });
+                navigate("/admin/bicycle/view")
+            } else {
+                enqueueSnackbar("Failed to unlock bicycle test", { variant: "error" });
+                setLoading(false);
+            }
+        }).catch((err) => {
+            enqueueSnackbar("Failed to unlock bicycle" + err.response.data.message, { variant: "error" });
+            setLoading(false);
+        })
+    };
+
+    const SmallRectangularComponent = () => {
+        if (!selectedMarker) {
+            return null; // If no marker is selected, return null to render nothing
+        }
+
+        const distance = calculateDistance(
+            selectedMarker.bicycle_lat,
+            selectedMarker.bicycle_lng,
+            currentLocation.lat,
+            currentLocation.lng
+        );
+
+        const proximity = 100;
+
+        return (
+            <div className="small-rectangular-component">
+                <div className="top-left">Find a Bike</div>
+                <div className="top-right">
+                    <button className="circular-button">Bike missing?</button>
+                </div>
+                <div className="bottom-left">$1.00/30min</div>
+                <div className="bottom-center">
+                    {distance > proximity ? 'Proceed to Bike to receive code' : <button className="circular-button" onClick={getPasskey}>Unlock</button>}
+                </div>
+            </div>
+        );
+    };
+
+    const currentLocationMarkerUrl = "../currentlocation.png"
+    const bikeMarkerUrl = "../bike.png"
 
     const renderMap = () => {
         return (
@@ -171,6 +230,7 @@ function Bicycle() {
                     <MarkerF
                         key={id}
                         position={{ lat: bicycle_lat, lng: bicycle_lng }}
+                        icon={bikeMarkerUrl}
                         onClick={() =>
                             handleMarkerClick({ id, bicycle_lat, bicycle_lng, reports })
                         }
@@ -181,6 +241,7 @@ function Bicycle() {
                 {currentLocation && (
                     <MarkerF
                         position={currentLocation}
+                        icon={currentLocationMarkerUrl}
                         onClick={() =>
                             handleMarkerClick({
                                 id: 0,
@@ -196,7 +257,7 @@ function Bicycle() {
                 {selectedMarker && (
                     <InfoWindowF
                         position={{
-                            lat: selectedMarker.bicycle_lat,
+                            lat: selectedMarker.bicycle_lat + 0.0001,
                             lng: selectedMarker.bicycle_lng,
                         }}
                         onCloseClick={handleInfoWindowClose}
@@ -204,12 +265,7 @@ function Bicycle() {
                         <div>
                             <p>
                                 Distance:{' '}
-                                {calculateDistance(
-                                    selectedMarker.bicycle_lat,
-                                    selectedMarker.bicycle_lng,
-                                    currentLocation.lat,
-                                    currentLocation.lng
-                                )}
+                                {returnDistance(calculateDistance(selectedMarker.bicycle_lat, selectedMarker.bicycle_lng, currentLocation.lat, currentLocation.lng))}
                                 <p></p>
                                 Reports: {selectedMarker.reports}
                             </p>
@@ -218,7 +274,7 @@ function Bicycle() {
                 )}
 
                 {/* Render Directions */}
-                {directions && <DirectionsRenderer directions={directions} />}
+                {directions && <DirectionsRenderer directions={directions} options={{ suppressMarkers: true }} />}
             </GoogleMap>
         );
     };
@@ -243,6 +299,8 @@ function Bicycle() {
             ) : (
                 <h1>Loading...</h1>
             )}
+            <SmallRectangularComponent></SmallRectangularComponent>
+            <ToastContainer />
         </Container>
     );
 }

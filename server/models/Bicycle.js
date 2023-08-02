@@ -25,7 +25,18 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN,
             allowNull: false
         },
+        unlocked: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false
+        }
     });
+
+    Bicycle.associate = (models) => {
+        Bicycle.belongsTo(models.User, {
+            foreignKey: "user_id",
+            onDelete: "CASCADE"
+        });
+    }
 
     return Bicycle;
 }

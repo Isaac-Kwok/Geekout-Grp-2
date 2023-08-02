@@ -39,13 +39,15 @@ function EditBicycle() {
             disabled: yup.boolean().optional(),
             reports: yup.number().integer().min(0).optional(),
             passkey: yup.string().nullable().optional(),
-            registered: yup.boolean().optional()
+            registered: yup.boolean().optional(),
+            unlocked: yup.boolean().optional()
         }),
         onSubmit: (data) => {
             data.disabled = true
             data.reports = 0
             data.passkey = null
             data.registered = false
+            data.unlocked = false
             http.put("/bicycle/" + id, data).then((res) => {
                 if (res.status === 200) {
                     enqueueSnackbar("Bicycle updated succesfully!", { variant: "success" });
