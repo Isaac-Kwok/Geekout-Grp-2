@@ -7,6 +7,8 @@ import http from "../http";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSnackbar } from 'notistack';
+import { useNavigate } from 'react-router-dom';
+import useUser from "../context/useUser";
 
 const libraries = ['geometry'];
 
@@ -27,6 +29,9 @@ function Bicycle() {
     const [directions, setDirections] = useState(null);
     const [mapLoaded, setMapLoaded] = useState(false);
     const { enqueueSnackbar } = useSnackbar();
+    const { user, refreshUser } = useUser();
+    const [ reloadComponent, setReloadComponent ] = useState(false);
+    const navigate = useNavigate();
 
     // Function to reload the LoadScript
     const reloadLoadScript = () => {
@@ -37,6 +42,10 @@ function Bicycle() {
             window.location.reload();
         }, 3000);
     };
+
+    const handleReloadComponent = () => {
+        setReloadComponent(true);
+    }
 
     const { isLoaded } = useLoadScript({
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_API_KEY,
@@ -148,43 +157,122 @@ function Bicycle() {
         }
     };
 
+    const getDateTime = () =>  {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0'); // Month is 0-based, so we add 1 and pad with '0'
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    }
+
     const genKey = () => {
         const min = 1000;
         const max = 9999;
         // Generate a random number between min and max (inclusive)
         const randomPasskey = Math.floor(Math.random() * (max - min + 1)) + min;
         return randomPasskey.toString(); // Convert the number to a string
-    }
+    };
+
     const getPasskey = () => {
         const passKey = genKey()
         toast("Your passkey is: "+passKey);
+        
+        const date = getDateTime()
 
         const data = {
             bicycle_lat: selectedMarker.bicycle_lat,
             bicycle_lng: selectedMarker.bicycle_lng,
             disabled: false, 
+            passkey: passKey,
+
+            // for demo purpose the bicycle unlocks instantly
+
             unlocked: true,
+            unlockedAt: date,
+            user_id: user.id
         }
 
         http.put("/bicycle/" + selectedMarker.id, data).then((res) => {
             if (res.status === 200) {
-                enqueueSnackbar("Bicycle unlocked succesfully!", { variant: "success" });
-                navigate("/admin/bicycle/view")
+                enqueueSnackbar("Bicycle key generated succesfully!", { variant: "success" });
             } else {
-                enqueueSnackbar("Failed to unlock bicycle test", { variant: "error" });
+                enqueueSnackbar("Failed to generate bicycle key", { variant: "error" });
                 setLoading(false);
             }
         }).catch((err) => {
-            enqueueSnackbar("Failed to unlock bicycle" + err.response.data.message, { variant: "error" });
+            enqueueSnackbar("Failed to getPasskey" + err.response.data.message, { variant: "error" });
             setLoading(false);
         })
     };
 
-    const SmallRectangularComponent = () => {
-        if (!selectedMarker) {
-            return null; // If no marker is selected, return null to render nothing
+    const reportBike = () => {
+        const id = selectedMarker.id
+        navigate("/bicycle/report/" + id)
+    };
+
+    // Function to calculate the time difference between two datetime strings
+    const getTimeDifference = (datetime1, datetime2) => {
+        const date1 = new Date(datetime1);
+        const date2 = new Date(datetime2);
+    
+        // Calculate the time difference in milliseconds
+        const timeDifferenceInMs = date2 - date1;
+    
+        // You can convert the time difference to other units if needed
+        // For example, to get the difference in seconds:
+        const timeDifferenceInSeconds = timeDifferenceInMs / 1000;
+    
+        // To get the difference in minutes:
+        const timeDifferenceInMinutes = timeDifferenceInMs / (1000 * 60);
+    
+        // To get the difference in hours:
+        const timeDifferenceInHours = timeDifferenceInMs / (1000 * 60 * 60);
+    
+        // To get the difference in days:
+        const timeDifferenceInDays = timeDifferenceInMs / (1000 * 60 * 60 * 24);
+    
+        // Return the time difference in the desired unit or the raw milliseconds
+        return timeDifferenceInMs;
+    };
+
+    const lockBike = () => {
+        const unlockedAt = selectedMarker.unlockedAt;
+        const currentTime = getDateTime();
+
+        const timeDifferenceInHours = getTimeDifference(unlockedAt, currentTime) / (1000 * 60 * 60);
+        console.log("Time Difference in Hours:", timeDifferenceInHours);
+
+        const price = Math.max(Math.round(timeDifferenceInHours / 2), 1)
+            enqueueSnackbar("$"+price+" has been credited from your wallet");
+
+        const data = {
+            bicycle_lat: selectedMarker.bicycle_lat,
+            bicycle_lng: selectedMarker.bicycle_lng,
+            disabled: false, 
+            passkey: null,
+            unlocked: false,
+            unlockedAt: null,
+            user_id: null
         }
 
+        http.put("/bicycle/" + selectedMarker.id, data).then((res) => {
+            if (res.status === 200) {
+                enqueueSnackbar("Bicycle locked succesfully!", { variant: "success" });
+            } else {
+                enqueueSnackbar("Failed to lock bicycle", { variant: "error" });
+                setLoading(false);
+            }
+        }).catch((err) => {
+            enqueueSnackbar("Failed to lock bicycle" + err.response.data.message, { variant: "error" });
+            setLoading(false);
+        })
+    };
+
+    const ComponentUnlock = () => {
         const distance = calculateDistance(
             selectedMarker.bicycle_lat,
             selectedMarker.bicycle_lng,
@@ -198,18 +286,48 @@ function Bicycle() {
             <div className="small-rectangular-component">
                 <div className="top-left">Find a Bike</div>
                 <div className="top-right">
-                    <button className="circular-button">Bike missing?</button>
+                    <button className="circular-button" onClick={reportBike}>Bike missing?</button>
                 </div>
                 <div className="bottom-left">$1.00/30min</div>
                 <div className="bottom-center">
-                    {distance > proximity ? 'Proceed to Bike to receive code' : <button className="circular-button" onClick={getPasskey}>Unlock</button>}
+                    {(distance > proximity) ? 'Proceed to Bike to receive code' : <button className="circular-button" onClick={getPasskey}>Unlock</button>}
                 </div>
             </div>
         );
     };
 
+    const ComponentLock = () => {
+        return (
+            <div className="small-rectangular-component">
+                <div className="top-right">
+                    <button className="circular-button" onClick={reportBike}>Bike missing?</button>
+                </div>
+                <div className="bottom-left">$1.00/30min</div>
+                <div className="bottom-center">
+                    <button className="circular-button" onClick={lockBike}>Lock</button>
+                </div>
+            </div>
+        );
+    }
+
     const currentLocationMarkerUrl = "../currentlocation.png"
     const bikeMarkerUrl = "../bike.png"
+
+    const renderComponent = () => {
+        if (!selectedMarker) {
+            return null; // If no marker is selected, return null to render nothing
+        }
+
+        if (selectedMarker.user_id == user.id) {
+            return (
+                <ComponentLock></ComponentLock>
+            )
+        } else {
+            return (
+                <ComponentUnlock></ComponentUnlock>
+            ) 
+        }
+    }
 
     const renderMap = () => {
         return (
@@ -226,13 +344,13 @@ function Bicycle() {
                 }}
             >
                 {/* Render Bicycle markers */}
-                {bicycle.map(({ id, bicycle_lat, bicycle_lng, reports }) => (
+                {bicycle.map(({ id, bicycle_lat, bicycle_lng, reports, disabled, passkey, registered, unlocked, unlockedAt, user_id }) => (
                     <MarkerF
                         key={id}
                         position={{ lat: bicycle_lat, lng: bicycle_lng }}
                         icon={bikeMarkerUrl}
                         onClick={() =>
-                            handleMarkerClick({ id, bicycle_lat, bicycle_lng, reports })
+                            handleMarkerClick({ id, bicycle_lat, bicycle_lng, reports, disabled, passkey, registered, unlocked, unlockedAt, user_id })
                         }
                     />
                 ))}
@@ -299,7 +417,7 @@ function Bicycle() {
             ) : (
                 <h1>Loading...</h1>
             )}
-            <SmallRectangularComponent></SmallRectangularComponent>
+            {renderComponent()}
             <ToastContainer />
         </Container>
     );

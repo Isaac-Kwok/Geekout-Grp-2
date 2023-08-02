@@ -37,6 +37,7 @@ function UserRoutes() {
             <Route path="/driver/*" element={<DriverRoutes />} />
             <Route path="/bicycle" element={<Bicycle />} />
             <Route path="/bicycle/report" element={<ReportBicycle />} />
+            <Route path="/bicycle/report/:id" element={<ReportBicycle />} />
             <Route path="/products/*" element={<ProductRoutes />} />
         </Routes>
     )

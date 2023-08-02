@@ -1,11 +1,22 @@
 import React from 'react';
 import '../bicycle.css';
+import { useParams } from 'react-router-dom';
 
 function ReportBicycle() {
+    const { id } = useParams();
+
+    const submitFault = () => {
+        if (id) {
+            console.log(id)
+        } else {
+            console.log("general")
+        }
+    }
+
     return (
         <div className="report-fault-page">
             <header>
-                <h1>Report a Fault</h1>
+                {id ? <h1>Report a Fault for Bike {id}</h1> : <h1>Report a Fault</h1>}
             </header>
             <main>
                 <div className="selection-box">
@@ -29,7 +40,7 @@ function ReportBicycle() {
                 </div>
             </main>
             <footer>
-                <button className="submit-button">Submit</button>
+                <button className="submit-button" onClick={submitFault}>Submit</button>
             </footer>
         </div>
     );
