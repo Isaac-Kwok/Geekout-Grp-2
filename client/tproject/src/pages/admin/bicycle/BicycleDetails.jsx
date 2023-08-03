@@ -34,8 +34,11 @@ const BicycleDetails = () => {
                 <AdminPageTitle title="Bicycle Details" backbutton />
                 <div>
                     <h2>Bicycle ID: {id}</h2>
+                    <hr />
                     <p>Bicycle Latitude: {bicycle.bicycle_lat}</p>
                     <p>Bicycle Longitude: {bicycle.bicycle_lng}</p>
+                    <hr />
+                    <h2>Usage Analytics</h2>
 
                     {/* Display more details of the bicycle here */}
                 </div>

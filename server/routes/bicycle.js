@@ -17,7 +17,9 @@ const bicycleSchema = yup.object().shape({
     disabled: yup.boolean(),
     reports: yup.number().integer().min(0),
     passkey: yup.string().nullable(),
-    registered: yup.boolean()
+    registered: yup.boolean(),
+    unlocked: yup.boolean(),
+    unlockedAt: yup.date()
 });
 
 // Create a new bicycle

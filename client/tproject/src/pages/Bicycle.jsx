@@ -255,7 +255,7 @@ function Bicycle() {
             disabled: false, 
             passkey: null,
             unlocked: false,
-            unlockedAt: null,
+            unlockedAt: 0,
             user_id: null
         }
 
