@@ -51,6 +51,7 @@ let theme = createTheme({
     },
     yellow: {
       main: "#faf2e9",
+      dark: "#c49451",
     },
   },
   typography: {
