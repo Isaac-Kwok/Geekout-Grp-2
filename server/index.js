@@ -5,6 +5,7 @@ const cors = require("cors");
 var MyInfoConnector = require("myinfo-connector-v4-nodejs");
 const fs = require("fs");
 const app = express();
+const http = require('http')
 
 const db = require("./models/index.js")
 require("dotenv").config()
@@ -233,8 +234,8 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke!')
 })
 
-app.get('*', function(req, res){
-  res.status(404).send({message: 'Endpoint not implemented'});
+app.get('*', function (req, res) {
+  res.status(404).send({ message: 'Endpoint not implemented' });
 });
 
 

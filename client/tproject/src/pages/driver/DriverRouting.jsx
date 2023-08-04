@@ -8,6 +8,7 @@ import http from '../../http'
 import useUser from '../../context/useUser';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
+import { CatchingPokemonSharp } from '@mui/icons-material';
 
 
 
@@ -32,7 +33,7 @@ function DriverRouting() {
   const [destination, setdestination] = useState('Singapore')
   const [open, setOpen] = useState(false);
   const { user, refreshUser } = useUser();
-
+  const [geolocationFetched, setGeolocationFetched] = useState(false);
   const originRef = useRef({})
   const destinationRef = useRef({})
   const isDataFetched = useRef(false); // useRef to track whether data has been fetched
@@ -107,31 +108,26 @@ function DriverRouting() {
     // Iterate through each group of rides with the same pickUp location
     for (const rideGroup of groupedRides) {
       const pickUpLocation = rideGroup[0].pickUp;
-      const destinationList = [];
-      const wayPoints = [
-        {
-          location: pickUpLocation,
-          stopover: true,
-        },
-      ]; // Create a new waypoints array for each group
+      const destinationList = [pickUpLocation];
+      const wayPoints = []; // Create a new waypoints array for each group
 
       // Populate the waypoints array for the current group
       for (const ride of rideGroup) {
-        const wayPoint = {
-          location: ride.destination,
-          stopover: true,
-        };
-        wayPoints.push(wayPoint);
         destinationList.push(ride.destination);
       }
 
       let result = await decisionMatrix(pickUpLocation, destinationList);
-      console.log('res', result);
+      result.forEach(location => {
+        const wayPoint = {
+          location: location,
+          stopover: true,
+        };
+        wayPoints.push(wayPoint);
+      });
+      wayPoints.pop()
 
       // Get the destination from the last waypoint
 
-      // Remove the last waypoint
-      wayPoints.pop(result);
 
       // Extract the names from the rides in the group
       const names = rideGroup.map((ride) => ride.name);
@@ -144,7 +140,8 @@ function DriverRouting() {
         pickUp: pickUpLocation,
         wayPoints: wayPoints,
         names: names,
-        destination: result, // Add the destination attribute
+        destinationList: result,
+        destination: result[result.length - 1], // Add the destination attribute
         rideIds: rideIds, // Add the rideIds attribute as a string
       };
 
@@ -163,104 +160,115 @@ function DriverRouting() {
 
 
   async function showPosition(position) {
-    setlatitude(position.coords.latitude)
-    setlongtitude(position.coords.longitude)
-    googleMapsReverseGeocoder.get("json?latlng=" + position.coords.latitude + "," + position.coords.longitude + "&key=" + import.meta.env.VITE_DRIVER_GOOGLE_API_KEY)
+    setlatitude(position.coords.latitude);
+    setlongtitude(position.coords.longitude);
+
+    googleMapsReverseGeocoder
+      .get(
+        'json?latlng=' +
+        position.coords.latitude +
+        ',' +
+        position.coords.longitude +
+        '&key=' +
+        import.meta.env.VITE_DRIVER_GOOGLE_API_KEY
+      )
       .then((res) => {
         if (res.status === 200) {
-          originRef.current.value = res.data.results[1].formatted_address
-          console.log('address', originRef.current.value)
+          originRef.current.value = res.data.results[0].formatted_address;
+          console.log('address', originRef.current.value);
+          setGeolocationFetched(true); // Mark that geolocation data has been fetched
         } else {
-          console.log("Address retrieval failed", res.status)
+          console.log('Address retrieval failed', res.status);
         }
-      })
+      });
   }
   const decisionMatrix = async (origin, destinations) => {
-    const convertedDestinations = destinations.join('|');
+    const newObj = {
+      origin: origin,
+      destinations: destinations
+    };
 
-    let result = await googleMapsDecisionMatrix
-      .get("json?origins=" + origin + "&destinations=" + convertedDestinations + "&key=" + import.meta.env.VITE_DRIVER_GOOGLE_API_KEY)
-      .then((res) => {
-        if (res.status === 200) {
-          console.log('decision matrix data:', res.data);
-          const output = findLargestDistanceDestination(res.data)
-          console.log('fd:', output)
-          setdestination(output)
-          console.log('dd', destination)
-          return output
-        } else {
-          console.log("decision matrix failed", res.status);
-        }
-      })
-      .catch((error) => {
-        console.error('Error in decisionMatrix:', error);
-        // Handle the error here, e.g., display an error message or take appropriate action
-      });
-    return result
-
+    try {
+      const res = await http.post("/driver/getDistanceMatrix", newObj);
+      if (res.status === 200) {
+        const result = orderDestinationsByDistance(res.data);
+        console.log('res data:', result);
+        return result; // Add the return statement here
+      } else {
+        console.log("Failed to get Distance matrix:", res.status);
+      }
+    } catch (err) {
+      alert("ERROR:" + JSON.stringify(err.responseJSON.error));
+    }
   };
 
-  function findLargestDistanceDestination(data) {
-    if (!data || !data.rows || data.rows.length === 0) {
-      return null;
-    }
 
-    // Get the first row of elements
-    const elements = data.rows[0].elements;
+  function orderDestinationsByDistance(data) {
+    // Extract the distance values and destination addresses from the JSON object
+    const distances = data.rows[0].elements.map((element) => element.distance.value);
+    const destinations = data.destination_addresses;
 
-    // Find the index of the element with the largest distance value
-    let largestDistanceIndex = 0;
-    for (let i = 1; i < elements.length; i++) {
-      if (elements[i].distance.value > elements[largestDistanceIndex].distance.value) {
-        largestDistanceIndex = i;
-      }
-    }
+    // Create an array of objects with distance and destination pairs
+    const distanceDestinationPairs = distances.map((distance, index) => ({
+      distance: distance,
+      destination: destinations[index],
+    }));
 
-    // Get the destination with the largest distance value
-    const largestDistanceDestination = data.destination_addresses[largestDistanceIndex];
-    return largestDistanceDestination;
+    // Sort the array based on distance values in ascending order
+    distanceDestinationPairs.sort((a, b) => a.distance - b.distance);
+
+    // Extract the sorted destination addresses
+    const sortedDestinations = distanceDestinationPairs.map((pair) => pair.destination);
+
+    return sortedDestinations;
   }
 
 
 
   const calculateRoute = async () => {
     try {
-      if (!originRef.current.value || !destinationRef.current.value) {
-        return;
-      } else {
+      // eslint-disable-next-line no-undef
+      const directionsService = new google.maps.DirectionsService();
+      const results = await directionsService.route({
+        origin: originRef.current.value,
+        destination: destinationRef.current.value,
+        waypoints: [{
+          location: 'wisteria mall singapore',
+          stopover: true,
+        },
+        {
+          location: 'Ang Mo kio hub singapore',
+          stopover: true,
+        }],
+
+        optimizeWaypoints: true,
+        provideRouteAlternatives: true,
         // eslint-disable-next-line no-undef
-        const directionsService = new google.maps.DirectionsService();
-        const results = await directionsService.route({
-          origin: originRef.current.value,
-          destination: destinationRef.current.value,
-          waypoints: [],
-          optimizeWaypoints: true,
-          // eslint-disable-next-line no-undef
-          travelMode: google.maps.TravelMode.DRIVING,
-        });
+        travelMode: google.maps.TravelMode.DRIVING,
+      });
 
-        // Calculate total distance and duration
-        let totalDistance = 0;
-        let totalDuration = 0;
+      // Calculate total distance and duration
+      let totalDistance = 0;
+      let totalDuration = 0;
 
-        for (const leg of results.routes[0].legs) {
-          totalDistance += leg.distance.value;
-          totalDuration += leg.duration.value;
-        }
-
-        // Convert totalDistance and totalDuration to human-readable format if needed
-        const formattedTotalDistance = `${totalDistance / 1000} km`;
-        const formattedTotalDuration = `${Math.floor(totalDuration / 60)} mins`;
-
-        console.log('total distacne:', totalDistance)
-
-        setDirectionsResponse(results);
-        setDistance(formattedTotalDistance);
-        setDuration(formattedTotalDuration);
-        setprofit((((totalDistance / 1000) * 2) * 0.65).toFixed(2))
-
-        console.log('total distacne:', distance)
+      for (const leg of results.routes[0].legs) {
+        totalDistance += leg.distance.value;
+        totalDuration += leg.duration.value;
       }
+
+      // Convert totalDistance and totalDuration to human-readable format if needed
+      const formattedTotalDistance = `${totalDistance / 1000} km`;
+      const formattedTotalDuration = `${Math.floor(totalDuration / 60)} mins`;
+
+      console.log('total distacne:', totalDistance)
+
+      setDirectionsResponse(results);
+      setDistance(formattedTotalDistance);
+      setDuration(formattedTotalDuration);
+      setprofit((((totalDistance / 1000) * 2) * 0.65).toFixed(2))
+
+      console.log('total distacne:', distance)
+
     } catch (error) {
       console.error('Error calculating route:', error);
       // Handle the error here, e.g., display an error message or take appropriate action
@@ -270,16 +278,16 @@ function DriverRouting() {
 
 
 
-  const configureDestination = async (origin, waypoints, destination) => {
+  const configureDestination = async (waypoints, destination) => {
     try {
-
+      console.log(waypoints)
+      console.log(destination)
       // eslint-disable-next-line no-undef
       const directionsService = new google.maps.DirectionsService();
       const results = await directionsService.route({
-        origin: origin,
+        origin: originRef.current.value,
         destination: destination,
         waypoints: waypoints,
-        optimizeWaypoints: true,
         // eslint-disable-next-line no-undef
         travelMode: google.maps.TravelMode.DRIVING,
       });
@@ -321,9 +329,6 @@ function DriverRouting() {
     setDirectionsResponse(null)
     setDistance('')
     setDuration('')
-    if (originRef.current.value) {
-      originRef.current.value = ''
-    }
     if (destinationRef.current.value) {
       destinationRef.current.value = ''
     }
@@ -335,14 +340,12 @@ function DriverRouting() {
       // eslint-disable-next-line no-undef
       const directionsService = new google.maps.DirectionsService();
       const results = await directionsService.route({
-        origin: originalObj.pickUp,
+        origin: originRef.current.value,
         destination: destination,
         waypoints: wayPoints,
-        optimizeWaypoints: true,
         // eslint-disable-next-line no-undef
         travelMode: google.maps.TravelMode.DRIVING,
       });
-      console.log('results:daf', results)
 
       // Calculate total distance and duration
       let totalDistance = 0;
@@ -358,12 +361,15 @@ function DriverRouting() {
       const formattedTotalDuration = `${Math.floor(totalDuration / 60)} mins`;
 
       const newObj = { ...originalObj };
-
+      console.log('test', newObj)
       // Convert wayPoints array to a string
       newObj.wayPoints = newObj.wayPoints
         .map(wayPoint => `${wayPoint.location}`)
         .join(', ');
 
+      newObj.destinationList = newObj.destinationList
+        .map(destination => `${destination}`)
+        .join(',');
       // Convert names array to a string
       newObj.names = newObj.names.map(name => (name !== null ? name.toString() : 'null')).join(', ');
 
@@ -473,7 +479,6 @@ function DriverRouting() {
     navigate('/driver/routes')
   }
 
-
   useEffect(() => {
     refreshUser()
     console.log('user', user)
@@ -488,12 +493,10 @@ function DriverRouting() {
     console.log('routes:', visibleRoutes)
   }, [renderCount]);
 
-
-
   return (
     <>
-      {!isLoaded && <div>Loading...</div>}
-      {isLoaded && user?.on_duty === false &&
+      {!isLoaded && !geolocationFetched && <div>Loading...</div>}
+      {isLoaded && geolocationFetched && user?.on_duty === false &&
         <Box sx={{
           border: 'solid, black',
           display: 'flex',
@@ -569,6 +572,7 @@ function DriverRouting() {
                         margin="normal" autoComplete="off"
                         label="Current Location"
                         inputRef={originRef}
+                        defaultValue={originRef.current?.value}
                         InputLabelProps={{ shrink: true }}
                       />
                     </Autocomplete>
@@ -612,21 +616,19 @@ function DriverRouting() {
                           <b>Riders:</b> {routeObj.names.join(', ')}
                         </Typography>
                         <Typography variant="body1" gutterBottom>
-                          <b>Waypoints:</b>
-                          {routeObj.wayPoints.map((wayPoint, i) => (
+                          <b>Destinations:</b>
+                          {routeObj.destinationList.map((destination, i) => (
                             <li key={i}>
-                              {wayPoint.location}
+                              {destination}
                             </li>
                           ))}
                         </Typography>
-                        <Typography variant="body1" gutterBottom>
-                          <b>Destination:</b> {routeObj.destination}
-                        </Typography>
+
 
                         <Grid container spacing={0} sx={{ marginTop: 1 }}>
                           <Grid item xs={4} >
                             <Button
-                              variant='contained' onClick={() => configureDestination(routeObj.pickUp, routeObj.wayPoints, routeObj.destination)} >
+                              variant='contained' onClick={() => configureDestination(routeObj.wayPoints, routeObj.destination)} >
                               Direct
                             </Button>
                           </Grid>
@@ -656,7 +658,7 @@ function DriverRouting() {
           </Container>
         </Box>
       }
-      {isLoaded && user?.on_duty === true &&
+      {isLoaded && geolocationFetched && user?.on_duty === true &&
         <Box sx={{
           border: 'solid, black',
           display: 'flex',
@@ -702,10 +704,7 @@ function DriverRouting() {
                       <b>Riders:</b> {user.current_route.names}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
-                      <b>Waypoints:</b> {user.current_route.wayPoints}
-                    </Typography>
-                    <Typography variant="body1" gutterBottom>
-                      <b>Destination:</b> {user.current_route.destination}
+                      <b>Destinations:</b> {user.current_route.destinationList}
                     </Typography>
                     <hr />
                     <Grid container spacing={2}>

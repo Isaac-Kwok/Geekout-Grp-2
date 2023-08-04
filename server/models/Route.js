@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
+        destinationList: {
+            type: DataTypes.JSON,
+            allowNull: false
+        },
         rideIds: {
             type: DataTypes.STRING,
             allowNull: false

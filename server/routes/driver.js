@@ -3,6 +3,7 @@ const yup = require("yup")
 const { DriverApplication, Sequelize, User, Route, RideRequest } = require("../models")
 const router = express.Router()
 require('dotenv').config();
+const axios = require('axios');
 
 const { upload } = require('../middleware/upload');
 
@@ -224,4 +225,24 @@ router.delete("/ride/:id", async (req, res) => {
         res.status(400).json({ message: "Failed to delete ride request." });
     }
 });
+
+router.post('/getDistanceMatrix', async (req, res) => {
+    try {
+      const origin = req.body.origin;
+      const destinations = req.body.destinations;
+      const apiKey = process.env.VITE_DRIVER_GOOGLE_API_KEY; 
+  
+      const convertedDestinations = destinations.join('|');
+      const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(
+        origin
+      )}&destinations=${encodeURIComponent(convertedDestinations)}&key=${apiKey}`;
+  
+      const response = await axios.get(url);
+  
+      res.json(response.data);
+    } catch (error) {
+      res.status(500).json({ error: 'Error fetching distance matrix data' });
+    }
+  });
+
 module.exports = router;
