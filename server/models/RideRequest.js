@@ -1,6 +1,3 @@
-const { Sequelize } = require(".");
-const { User } = require("./User");
-
 module.exports = (sequelize, DataTypes) => {
   const RideRequest = sequelize.define("RideRequest", {
     requestId: {

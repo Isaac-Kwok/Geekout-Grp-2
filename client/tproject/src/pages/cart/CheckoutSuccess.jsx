@@ -22,7 +22,7 @@ const CheckoutSuccess = () => {
             <Typography variant="h6" component="div" gutterBottom>
                 A receipt will be sent to your e-mail shortly.
             </Typography>
-            <Button variant="outlined" color="primary" component={Link} to="/order-history">
+            <Button variant="outlined" color="primary" component={Link} to="/profile/orders">
                 View Order History
             </Button>
         </Box>

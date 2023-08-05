@@ -8,6 +8,7 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import KeyIcon from '@mui/icons-material/Key';
 import HistoryIcon from '@mui/icons-material/History';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import CloseIcon from '@mui/icons-material/Close';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import PublicIcon from '@mui/icons-material/Public';
@@ -22,6 +23,9 @@ import ViewTransactionHistory from './ViewTransactionHistory';
 import ViewTransactionHistoryDetails from './ViewTransactionHistoryDetails';
 import ViewDriverInformation from './ViewDriverInformation';
 import EditProfile from './EditProfile';
+import ViewOrderHistory from './ViewOrderHistory';
+import ViewSingleOrder from './ViewSingleOrder';
+import ViewRefunds from './ViewRefund';
 import http from '../../http'
 
 export const ProfileContext = createContext(null)
@@ -163,6 +167,12 @@ function ProfileRoutes() {
                                         <ListItemText primary={"Transaction History"} />
                                     </ListItemButton>
                                 </ListItem>
+                                <ListItem key={"Orders History"} disablePadding>
+                                    <ListItemButton component={Link} to="/profile/orders" selected={(location.pathname.includes("/profile/orders"))}>
+                                        <ListItemIcon><ReceiptLongIcon /></ListItemIcon>
+                                        <ListItemText primary={"Orders History"} />
+                                    </ListItemButton>
+                                </ListItem>
                             </List>
                         </Card>
                     </Grid>
@@ -177,6 +187,9 @@ function ProfileRoutes() {
                                 <Route path="/history" element={<ViewTransactionHistory />} />
                                 <Route path="/driverInformation" element={<ViewDriverInformation />} />
                                 <Route path="/history/:id" element={<ViewTransactionHistoryDetails />} />
+                                <Route path="/orders" element={<ViewOrderHistory />} />
+                                <Route path="/orders/:id" element={<ViewSingleOrder />} />
+                                <Route path="/refunds/:id" element={<ViewRefunds />} />
                             </Routes>
                         </ProfileContext.Provider>
 

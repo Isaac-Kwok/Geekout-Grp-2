@@ -207,6 +207,13 @@ const adminDriverRoutes = require('./routes/admin/driver.js')
 const productsRoutes = require('./routes/products.js')
 const adminLocationRoutes = require('./routes/admin/locations.js')
 const fileRoute = require('./routes/file.js');
+const cartRoutes = require('./routes/cart.js');
+const adminOrdersRoutes = require('./routes/admin/orders.js');
+const orderRoutes = require('./routes/orders.js');
+const wishlistRoutes = require('./routes/wishlist.js');
+const adminRefundRoutes = require('./routes/admin/refunds.js');
+const refundRoutes = require('./routes/refunds.js');
+
 app.use("/file", fileRoute);
 
 app.use(express.urlencoded({ extended: false }));
@@ -225,6 +232,12 @@ app.use('/bicycle', bicycleRoutes)
 app.use("/admin/driver", adminDriverRoutes)
 app.use("/products", productsRoutes)
 app.use("/admin/locations", adminLocationRoutes)
+app.use("/cart", cartRoutes)
+app.use("/admin/orders", adminOrdersRoutes)
+app.use("/orders", orderRoutes)
+app.use("/wishlist", wishlistRoutes)
+app.use("/admin/refunds", adminRefundRoutes)
+app.use("/refunds", refundRoutes)
 
 app.use((err, req, res, next) => {
   console.error(err.stack)

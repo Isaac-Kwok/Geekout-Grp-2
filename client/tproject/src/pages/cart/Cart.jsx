@@ -8,9 +8,11 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { useSnackbar } from 'notistack';
 import { CartContext } from './CartRoutes';
+import { UserContext } from '../../index';
 
 
 function ViewCart() {
+    const { user } = useContext(UserContext);
     const [items, setItems] = useState([]);
     const { selectedItems, setSelectedItems } = useContext(CartContext);
     const [loading, setLoading] = useState(true);
@@ -28,34 +30,49 @@ function ViewCart() {
                         ...item,
                         product_name: item.Product.product_name,
                         product_picture: item.Product.product_picture,
-                        product_price: item.Product.product_price
+                        product_price: item.Product.product_price,
+                        product_sale: item.Product.product_sale,   
+                        product_discounted_percent: item.Product.product_discounted_percent   
                     }
                 });
                 setItems(itemsData);
                 setLoading(false);
+                console.log('Cart items fetched: ', itemsData);
             })
             .catch((error) => {
                 console.error('Error fetching cart items:', error);
             });
     }
 
+
     const handleCheckboxChange = (event, item) => {
-        if (event.target.checked) {
-            setSelectedItems([...selectedItems, item.id]);
+        const isChecked = event.target.checked;  // Store the check status here
+        if (isChecked) {
+            setSelectedItems(prevItems => {
+                const newItems = [...prevItems, item.id];
+                console.log('New selected items after addition: ', newItems);
+                return newItems;
+            });
         } else {
-            setSelectedItems(selectedItems.filter(i => i !== item.id));
+            setSelectedItems(prevItems => {
+                const newItems = prevItems.filter(i => i !== item.id);
+                console.log('New selected items after removal: ', newItems);
+                return newItems;
+            });
         }
     }
+
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
             const newSelectedItems = items.map((item) => item.id);
             setSelectedItems(newSelectedItems);
-            return;
+            console.log('All items selected: ', newSelectedItems);
+        } else {
+            setSelectedItems([]);
+            console.log('All items deselected');
         }
-        setSelectedItems([]);
     };
-
     const isSelected = (id) => selectedItems.indexOf(id) !== -1;
 
     const handleConfirmRemoveItem = () => {
@@ -112,14 +129,22 @@ function ViewCart() {
     }, [])
 
     const getSubTotalPrice = () => {
-        return items.reduce((sum, item) => {
+        const total = items.reduce((sum, item) => {
             if (selectedItems.includes(item.id)) {
-                return sum + (item.product_price * item.quantity);
-            } else {
-                return sum;
-            }
+                let price = item.product_price;
+                if (item.product_sale) {
+                    price = item.product_price * (1 - item.product_discounted_percent / 100);
+                }
+                return sum + (price * item.quantity);
+            } 
+            return sum;
         }, 0);
+    
+        // Ensure the result is a number, then convert it to a fixed decimal string.
+        return parseFloat(total).toFixed(2);
     }
+    
+    
 
     const getGST = () => {
         var sumOfItems = getSubTotalPrice();
@@ -127,13 +152,40 @@ function ViewCart() {
     }
 
     const getTotalPrice = () => {
-        var sumOfItems = getSubTotalPrice();
-        return (sumOfItems + parseFloat(getGST())).toFixed(2);
+        // Convert the result of getSubTotalPrice into a number using parseFloat
+        var sumOfItems = parseFloat(getSubTotalPrice());
+    
+        // Now both sumOfItems and parseFloat(getGST()) are numbers, so this will be a numeric addition
+        var total = sumOfItems + parseFloat(getGST());
+    
+        // Convert the result into a string with 2 decimal points
+        return total.toFixed(2);
     }
+    
+
+
+    const clearCart = () => {
+        try {
+            http.delete('/cart')
+                .then((response) => {
+                    if (response.status === 200) {
+                        handleGetCartItems();
+                    }
+                })
+                .catch((error) => {
+                    enqueueSnackbar("Error clearing cart", { variant: "error" });
+                    console.error('Error clearing cart:', error);
+                });
+        } catch (error) {
+            console.error('Unexpected error:', error);
+        }
+    }
+
 
     return (
         <Container maxWidth="xl" sx={{ marginY: "1rem", minWidth: 0 }}>
             <Typography variant="h3" fontWeight={700} sx={{ marginY: ["1rem", "1rem", "2rem"], fontSize: ["2rem", "2rem", "3rem"] }}>Your Cart</Typography>
+            {items.length > 0 && (<><Button onClick={clearCart}>Clear Cart</Button></>)}
             <Grid container spacing={2}>
                 <Grid item xs={9}>
                     <TableContainer component={Paper}>
@@ -186,7 +238,11 @@ function ViewCart() {
                                                                 alt={item.product_name}
                                                             />
                                                         </TableCell>
-                                                        <TableCell align="center">{item.product_price}</TableCell>
+                                                        <TableCell align="center">
+                                                            {item.product_sale ?
+                                                                <><del>{parseFloat(item.product_price).toFixed(2)}</del> <span style={{ color: 'red' }}>{(parseFloat(item.product_price) * (1 - item.product_discounted_percent / 100)).toFixed(2)}</span></>
+                                                                : parseFloat(item.product_price).toFixed(2)}
+                                                        </TableCell>
                                                         <TableCell align="center">
                                                             <IconButton aria-label="minus" onClick={() => handleDecrementQuantity(item.id)}>
                                                                 <RemoveIcon />
@@ -196,7 +252,13 @@ function ViewCart() {
                                                                 <AddIcon />
                                                             </IconButton>
                                                         </TableCell>
-                                                        <TableCell align="center">{item.product_price * item.quantity}</TableCell>
+                                                        <TableCell align="center">
+                                                            {item.product_sale ?
+                                                                (item.product_price * (1 - item.product_discounted_percent / 100) * item.quantity).toFixed(2)
+                                                                : (item.product_price * item.quantity).toFixed(2)
+                                                            }
+                                                        </TableCell>
+
                                                         <TableCell align="center">
                                                             <IconButton aria-label="delete" onClick={() => handleRemoveItem(item.id)}>
                                                                 <DeleteIcon />
@@ -213,7 +275,7 @@ function ViewCart() {
                                     <Table>
                                         <TableHead>
                                             <TableRow>
-                                                <TableCell colSpan={7} style={{textAlign: 'center', justifyContent: 'center', alignItems:'center'}}>
+                                                <TableCell colSpan={7} style={{ textAlign: 'center', justifyContent: 'center', alignItems: 'center' }}>
                                                     <Typography variant="h6">
                                                         Your cart is empty
                                                     </Typography>
@@ -241,14 +303,7 @@ function ViewCart() {
                                 <ListItemText primary="GST (8%)" />
                                 <Typography variant="h6">${getGST()}</Typography>
                             </ListItem>
-                            <ListItem>
-                                <ListItemText primary="Delivery Fee" />
-                                <Typography variant="h6">$0</Typography>
-                            </ListItem>
-                            <ListItem>
-                                <ListItemText primary="Coupon" />
-                                <Typography variant="h6">$0</Typography>
-                            </ListItem>
+
                             <Divider />
                             <ListItem>
                                 <ListItemText primary="Total" />

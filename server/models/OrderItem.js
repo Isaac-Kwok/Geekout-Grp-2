@@ -10,6 +10,16 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: 0.00,
         },
+        discounted_total_price: {
+            type: DataTypes.DECIMAL(10, 2),
+            allowNull: false,
+            defaultValue: 0.00,
+        },
+        discounted : {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
+        },
     });
 
     // Define associations for OrderItem
@@ -19,7 +29,6 @@ module.exports = (sequelize, DataTypes) => {
         });
         OrderItem.belongsTo(models.Product, {
             foreignKey: "product_id",
-            onDelete: "CASCADE"
         });
     };
 

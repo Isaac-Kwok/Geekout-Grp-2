@@ -14,7 +14,6 @@ router.get('/', validateToken, async (req, res) => {
             include: [
                 {
                   model: Product,
-                  attributes: ["id","product_name", "product_price", "product_stock", "product_picture", "product_status"],
                 },
               ],
             where: { user_id: userId },
@@ -128,24 +127,57 @@ router.get("/productImage/:filename", (req, res) => {
     });
 })
 
-//Remove multiple items from cart
+// Remove multiple items from cart
 router.post("/removeItems", validateToken, async (req, res) => {
     const { itemsToRemove } = req.body; // expect itemsToRemove to be an array of ids
     const userId = req.user.id;
 
     try {
+        // Find the cart items first before deleting
+        const itemsInCart = await Cart.findAll({ where: { id: itemsToRemove, user_id: userId } });
+
+        // Decrement quantity in Product for each cart item
+        for(let item of itemsInCart){
+            const product = await Product.findByPk(item.product_id);
+            if(product && product.product_stock > 0) {
+                let newQuantity = product.product_stock - item.quantity;
+                if(newQuantity < 0) newQuantity = 0; // prevent quantity from going below zero
+                await Product.update({ product_stock: newQuantity }, { where: { id: product.id } });
+            }
+        }
+
+        // Delete cart items after adjusting product quantity
         await Cart.destroy({ where: { id: itemsToRemove, user_id: userId } });
+
         return res.json({ message: "Items removed from cart" });
     } catch (error) {
-        console.error("Error removing items from cart:", error);
+        console.error("Error removing item from cart:", error);
         return res.status(500).json({ message: 'Internal server error' });
     }
-})
+});
+
+// Remove all items from cart
+router.delete("/", validateToken, async (req, res) => {
+    const userId = req.user.id;
+
+    try {
+        // Find and delete all cart items associated with the user
+        await Cart.destroy({ where: { user_id: userId } });
+
+        return res.json({ message: "All items removed from cart" });
+    } catch (error) {
+        console.error("Error removing all items from cart:", error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 
 // Create new order
 router.post('/checkout/confirm', async (req, res) => {
     const { order, orderItems } = req.body;
     
+    console.log('Request body:', req.body); // Prints the incoming request body
+
     try {
         // Create order
         const newOrder = await Order.create(order);
@@ -157,11 +189,12 @@ router.post('/checkout/confirm', async (req, res) => {
 
         res.status(201).json({ orderId: newOrder.id, orderItems: newOrderItems });
     } catch (error) {
-        console.error(error);
+        console.error('Error:', error); // Prints any errors that occur
         res.status(500).send('An error occurred while creating the order.');
     }
 });
 
-module.exports = router;
 
-module.exports = router
+
+
+module.exports = router;

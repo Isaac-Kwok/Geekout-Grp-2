@@ -16,6 +16,7 @@ import CartRoutes from './cart/CartRoutes'
 import CreateRideRequest from './rider/CreateRideRequest'
 import EditRideRequests from './rider/EditRideRequests'
 import ViewRideRequests from './rider/ViewRideRequests'
+import Wishlist from './wishlist/ViewWishlist'
 
 import { UserContext } from '..'
 
@@ -44,6 +45,7 @@ function UserRoutes() {
             <Route path="/riderequests/create" element={<CreateRideRequest />} />
             <Route path="/riderequests/myrequests/" element={<ViewRideRequests />} />
             <Route path="/riderequests/update" element={<EditRideRequests />} />
+            <Route path="/wishlist" element={<Wishlist/>} />
         </Routes>
     )
 }

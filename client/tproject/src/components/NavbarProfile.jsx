@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom"
 import ProfilePicture from "./ProfilePicture";
 import { UserContext } from "..";
 
+import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -62,6 +63,12 @@ export function NavbarProfile() {
                         <ListItemButton component={Link} to="/profile" onClick={() => setIsPopoverOpen(false)}>
                             <ListItemIcon><PersonIcon /></ListItemIcon>
                             <ListItemText primary={"My Profile"} />
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem key={"Wishlist"} disablePadding>
+                        <ListItemButton component={Link} to="/wishlist" onClick={() => setIsPopoverOpen(false)}>
+                            <ListItemIcon><FavoriteBorderOutlinedIcon /></ListItemIcon>
+                            <ListItemText primary={"Wishlist"} />
                         </ListItemButton>
                     </ListItem>
                     <ListItem key={"Cart"} disablePadding>

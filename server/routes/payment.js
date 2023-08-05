@@ -48,7 +48,7 @@ router.post("/topup", validateToken, async (req, res) => {
         await schema.validate(req.body, { abortEarly: false })
         const { amount } = req.body
         const paymentIntent = await stripe.paymentIntents.create({
-            amount: amount * 100,
+            amount: Math.round(amount * 100), // changed by samuel so that his checkout page can work
             currency: "sgd",
             automatic_payment_methods: {enabled: true},
         })
