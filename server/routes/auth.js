@@ -204,9 +204,9 @@ router.post("/facebook", async (req, res) => {
             return
         }
 
-        // Check if user has google account linked
-        if (!user.is_google_auth_enabled) {
-            res.status(401).json({ message: "Account is not linked to Google." })
+        // Check if user has facebook account linked
+        if (!user.is_fb_auth_enabled) {
+            res.status(401).json({ message: "Account is not linked to Facebook." })
             return
         }
 

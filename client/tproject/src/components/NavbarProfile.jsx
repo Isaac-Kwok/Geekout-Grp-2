@@ -10,6 +10,7 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import PersonIcon from '@mui/icons-material/Person';
+import SupportIcon from '@mui/icons-material/Support';
 import { enqueueSnackbar } from "notistack";
 
 export function NavbarProfile() {
@@ -98,6 +99,12 @@ export function NavbarProfile() {
                             <ListItemText primary={"Admin Panel"} />
                         </ListItemButton>
                     </ListItem> }
+                    <ListItem key={"Support"} disablePadding>
+                        <ListItemButton component={Link} to="/support" onClick={() => setIsPopoverOpen(false)}>
+                            <ListItemIcon><SupportIcon /></ListItemIcon>
+                            <ListItemText primary={"Support"} />
+                        </ListItemButton>
+                    </ListItem>
                     <ListItem key={"Logout"} disablePadding>
                         <ListItemButton onClick={() => handleLogout()}>
                             <ListItemIcon><LogoutIcon /></ListItemIcon>

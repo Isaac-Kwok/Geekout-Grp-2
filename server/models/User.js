@@ -11,7 +11,6 @@ module.exports = (sequelize, DataTypes) => {
         email: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: true
         },
         name: {
             type: DataTypes.STRING,
@@ -119,6 +118,8 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: false
         },
+    }, {
+        indexes: [{ unique: true, fields: ["email"] }]
     });
 
     User.associate = (models) => {
@@ -134,6 +135,21 @@ module.exports = (sequelize, DataTypes) => {
 
         User.hasMany(models.RideRequest, {
             foreignKey: "userId",
+            onDelete: "CASCADE",
+        });
+
+        User.hasMany(models.Ticket, {
+            foreignKey: "user_id",
+            onDelete: "CASCADE",
+        });
+
+        User.hasMany(models.Message, {
+            foreignKey: "user_id",
+            onDelete: "CASCADE",
+        });
+
+        User.hasMany(models.Article, {
+            foreignKey: "user_id",
             onDelete: "CASCADE",
         });
     };

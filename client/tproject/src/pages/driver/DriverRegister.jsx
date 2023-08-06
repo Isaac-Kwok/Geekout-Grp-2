@@ -320,7 +320,6 @@ function DriverRegister() {
     }, [])
     return (
         <Box sx={{
-            border: 'solid, black',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center'
