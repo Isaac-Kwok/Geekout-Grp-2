@@ -48,7 +48,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({ limit: "100mb", extended: true }));
 app.use(function (err, req, res, next) {
   console.error(err.stack);
-  res.status(500).send("Something broke! Check console for details");
+  res.status(500).send({"message":"Something broke! Check console for details"});
 })
 
 // Main Route (Status check)
@@ -208,6 +208,8 @@ const productsRoutes = require('./routes/products')
 const adminLocationRoutes = require('./routes/admin/locations')
 const fileRoute = require('./routes/file');
 const rideRequestsRoutes = require("./routes/rideRequests");
+const adminSupportRoutes = require("./routes/admin/support");
+const supportRoutes = require("./routes/support");
 app.use("/file", fileRoute);
 
 app.use(express.urlencoded({ extended: false }));
@@ -227,6 +229,9 @@ app.use("/admin/driver", adminDriverRoutes)
 app.use("/products", productsRoutes)
 app.use("/admin/locations", adminLocationRoutes)
 app.use("/riderequests", rideRequestsRoutes);
+app.use("/admin/support", adminSupportRoutes);
+app.use("/support", supportRoutes);
+
 
 app.use((err, req, res, next) => {
   console.error(err.stack)

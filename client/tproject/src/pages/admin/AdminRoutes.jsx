@@ -19,6 +19,11 @@ import BicycleAdmin from './bicycle/BicycleAdmin'
 import ViewBicycle from './bicycle/ViewBicycle'
 import AddBicycle from './bicycle/AddBicycle'
 import EditBicycle from './bicycle/EditBicycle'
+import CreateArticle from './support/CreateArticle'
+import ViewHelpArticles from './support/ViewHelpArticles'
+import EditHelpArticle from './support/EditHelpArticle'
+import ViewTickets from './support/ViewTickets'
+import ViewTicket from './support/ViewTicket'
 
 // Driver 
 
@@ -75,6 +80,14 @@ function AdminRoutes() {
                 <Route path="/driver/viewDriverApplications" element={<ViewDriverApplications />} />
                 <Route path="/driver/EditDriverApplication/:id" element={<EditDriverApplication />} />
                 <Route path="/driver/viewDrivers" element={<ViewDrivers />} />
+
+                {/* Support Paths */}
+                <Route path="/support/article/create" element={<CreateArticle />} />
+                <Route path="/support/article/" element={<ViewHelpArticles />} />
+                <Route path="/support/article/:id" element={<EditHelpArticle />} />
+                <Route path="/support/ticket" element={<ViewTickets />} />
+                <Route path="/support/ticket/:id" element={<ViewTicket />} />
+
             </Routes>
 
         </Box>
