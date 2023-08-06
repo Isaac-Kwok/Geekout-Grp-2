@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { DialogContent, Grid, Paper, Divider, Container, Typography, CircularProgress, List, ListItem, ListItemText, Button } from '@mui/material';
+import { DialogContent, Grid, Paper, Divider, Container, Typography, CircularProgress, List, ListItem, ListItemText, Button, Card, CardContent } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { CartContext } from './CartRoutes';
 import { UserContext } from '../../index';
@@ -11,6 +11,8 @@ import http from "../../http";
 import { validateUser } from '../../functions/user';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import PageTitle from '../../components/PageTitle';
+import CardTitle from '../../components/CardTitle';
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
@@ -38,8 +40,8 @@ const Checkout = () => {
                             product_name: item.Product.product_name,
                             product_picture: item.Product.product_picture,
                             product_price: item.Product.product_price,
-                            product_sale: item.Product.product_sale,   
-                            product_discounted_percent: item.Product.product_discounted_percent 
+                            product_sale: item.Product.product_sale,
+                            product_discounted_percent: item.Product.product_discounted_percent
                         };
                     });
                     setItems(itemsData);
@@ -81,7 +83,7 @@ const Checkout = () => {
                 });
         }
     }, []);
-    
+
 
     useEffect(() => {
         // Store selectedItems and total to localStorage when component is rendered
@@ -193,21 +195,24 @@ const Checkout = () => {
 
     return (
         <Container maxWidth="xl" sx={{ marginY: "1rem", minWidth: 0 }}>
-            <Typography variant="h3" fontWeight={700} sx={{ marginY: ["1rem", "1rem", "2rem"], fontSize: ["2rem", "2rem", "3rem"] }}>Checkout</Typography>
-            <Button LinkComponent={Link} variant="contained" color="primary" sx={{ marginBottom: "1rem" }} startIcon={<ArrowBackIcon />} to="/cart" onClick={backToCart}>Back</Button>
-            <Grid container spacing={2}>
-                <Grid item xs={9}>
-                    <Paper elevation={2} sx={{ padding: 2 }}>
+            <PageTitle title="Checkout" subtitle="Review Purchase" />
+            <Button LinkComponent={Link} variant="outlined" color="primary" sx={{ marginBottom: "1rem" }} startIcon={<ArrowBackIcon />} to="/cart" onClick={backToCart}>Back</Button>
+            <Grid container spacing={2} flexDirection={{xs: "row-reverse", md: "row"}}>
+                <Grid item xs={12} md={9}>
+                    <Card>
                         <Elements stripe={stripePromise} options={{ clientSecret: clientSecret }}>
                             <CheckoutPaymentForm handleClose={handleClose} />
                         </Elements>
-                    </Paper>
+                    </Card>
                 </Grid>
-                <Grid item xs={3}>
-                    <Paper elevation={2} sx={{ padding: 2 }}>
-                        <Typography variant="h6" gutterBottom>
-                            Payment Summary
-                        </Typography>
+                <Grid item xs={12} md={3}>
+                    <Card>
+                        <CardContent>
+                            <Typography variant="h6" gutterBottom>
+                                Payment Summary
+                            </Typography>
+                        </CardContent>
+
                         <List>
                             <ListItem>
                                 <ListItemText primary="Subtotal" />
@@ -217,12 +222,13 @@ const Checkout = () => {
                                 <ListItemText primary="GST (8%)" />
                                 <Typography variant="h6">${getGST()}</Typography>
                             </ListItem>
+                            <Divider />
                             <ListItem>
                                 <ListItemText primary="Total" />
                                 <Typography variant="h6">${getTotalPrice()}</Typography>
                             </ListItem>
                         </List>
-                    </Paper>
+                    </Card>
                 </Grid>
             </Grid>
         </Container>

@@ -1,12 +1,7 @@
 import React, { useEffect, useState, useContext, useMemo } from 'react'
-import { Box, Accordion, AccordionSummary, AccordionDetails, Paper, FormControlLabel, FormGroup, Container, Grid, List, ListItem, ListItemText, Checkbox, Typography, Card, CardContent, CardMedia, CardActions, Chip, Button, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions } from '@mui/material'
-import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
-import { Link } from 'react-router-dom';
+import { Box, Accordion, AccordionSummary, AccordionDetails, Paper, FormControlLabel, FormGroup, Container, Grid, Checkbox, Typography, Card, CardContent, CardMedia, CardActions, Chip, Button } from '@mui/material'
 import { useNavigate } from 'react-router-dom';
-import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
 import http from "../../http";
-import LoadingSkeleton from '../../components/LoadingSkeleton';
-import CloseIcon from '@mui/icons-material/Close';
 import { ProductContext } from './ProductRoutes'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import IconButton from '@mui/material/IconButton';
@@ -16,7 +11,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { styled } from '@mui/system';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-
+import PageTitle from '../../components/PageTitle';
 
 
 
@@ -79,7 +74,7 @@ function ProductCard({ product }) {
 
 
     return (
-        <Card sx={{ maxWidth: 345, margin: 2, position: 'relative' }} elevation={3}>
+        <Card sx={{ position: 'relative' }} elevation={3}>
             {product.product_sale && (
                 <Chip
                     label="On Sale"
@@ -270,7 +265,7 @@ function ViewProducts() {
     return (
         <>
             <Container maxWidth="xl" sx={{ marginY: "1rem", minWidth: 0 }}>
-                <Typography variant="h3" fontWeight={700} sx={{ marginY: ["1rem", "1rem", "2rem"], fontSize: ["2rem", "2rem", "3rem"] }}>View Product</Typography>
+                <PageTitle title="Shop" subtitle="Browse Products" />
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={6} md={3}>
                         <Paper elevation={3} sx={{ padding: "1rem" }}>

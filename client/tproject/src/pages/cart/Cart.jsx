@@ -1,11 +1,15 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { List, ListItem, Divider, ListItemText, Grid, Box, CardMedia, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Checkbox, Paper, IconButton, Container, Typography, Button } from '@mui/material';
+import { List, ListItem, Divider, ListItemText, Grid, Box, CardMedia, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Checkbox, Paper, IconButton, Container, Typography, Button, CardContent, Card, CardActions } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { validateUser } from '../../functions/user'
 import http from "../../http";
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
+import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
+import PageTitle from '../../components/PageTitle';
+import CardTitle from '../../components/CardTitle';
 import { useSnackbar } from 'notistack';
 import { CartContext } from './CartRoutes';
 import { UserContext } from '../../index';
@@ -31,8 +35,8 @@ function ViewCart() {
                         product_name: item.Product.product_name,
                         product_picture: item.Product.product_picture,
                         product_price: item.Product.product_price,
-                        product_sale: item.Product.product_sale,   
-                        product_discounted_percent: item.Product.product_discounted_percent   
+                        product_sale: item.Product.product_sale,
+                        product_discounted_percent: item.Product.product_discounted_percent
                     }
                 });
                 setItems(itemsData);
@@ -136,15 +140,15 @@ function ViewCart() {
                     price = item.product_price * (1 - item.product_discounted_percent / 100);
                 }
                 return sum + (price * item.quantity);
-            } 
+            }
             return sum;
         }, 0);
-    
+
         // Ensure the result is a number, then convert it to a fixed decimal string.
         return parseFloat(total).toFixed(2);
     }
-    
-    
+
+
 
     const getGST = () => {
         var sumOfItems = getSubTotalPrice();
@@ -154,14 +158,14 @@ function ViewCart() {
     const getTotalPrice = () => {
         // Convert the result of getSubTotalPrice into a number using parseFloat
         var sumOfItems = parseFloat(getSubTotalPrice());
-    
+
         // Now both sumOfItems and parseFloat(getGST()) are numbers, so this will be a numeric addition
         var total = sumOfItems + parseFloat(getGST());
-    
+
         // Convert the result into a string with 2 decimal points
         return total.toFixed(2);
     }
-    
+
 
 
     const clearCart = () => {
@@ -184,10 +188,10 @@ function ViewCart() {
 
     return (
         <Container maxWidth="xl" sx={{ marginY: "1rem", minWidth: 0 }}>
-            <Typography variant="h3" fontWeight={700} sx={{ marginY: ["1rem", "1rem", "2rem"], fontSize: ["2rem", "2rem", "3rem"] }}>Your Cart</Typography>
+            <PageTitle title="Your Cart" subtitle="Review Items" />
             {items.length > 0 && (<><Button onClick={clearCart}>Clear Cart</Button></>)}
-            <Grid container spacing={2}>
-                <Grid item xs={9}>
+            <Grid container spacing={2} flexDirection={{xs: "row-reverse", md: "row"}}>
+                <Grid item xs={12} md={9}>
                     <TableContainer component={Paper}>
                         {items.length > 0 ?
                             (
@@ -289,11 +293,11 @@ function ViewCart() {
                     </TableContainer>
                 </Grid>
 
-                <Grid item xs={3}>
-                    <Paper elevation={2} sx={{ padding: 2 }}>
-                        <Typography variant="h6" gutterBottom>
-                            Payment Summary
-                        </Typography>
+                <Grid item xs={12} md={3}>
+                    <Card>
+                        <CardContent>
+                            <CardTitle title="Order Summary" icon={<RequestQuoteIcon />} />
+                        </CardContent>
                         <List>
                             <ListItem>
                                 <ListItemText primary="Subtotal" />
@@ -303,14 +307,17 @@ function ViewCart() {
                                 <ListItemText primary="GST (8%)" />
                                 <Typography variant="h6">${getGST()}</Typography>
                             </ListItem>
-
                             <Divider />
                             <ListItem>
                                 <ListItemText primary="Total" />
                                 <Typography variant="h6">${getTotalPrice()}</Typography>
                             </ListItem>
+                        </List>
+                        <CardActions>
                             <Button
+                            startIcon={<ShoppingCartCheckoutIcon />}
                                 variant="contained"
+                                fullWidth
                                 onClick={() => {
                                     if (selectedItems.length === 0) {
                                         enqueueSnackbar('No items selected!', { variant: 'error' });
@@ -321,8 +328,8 @@ function ViewCart() {
                             >
                                 Checkout
                             </Button>
-                        </List>
-                    </Paper>
+                        </CardActions>
+                    </Card>
                 </Grid>
             </Grid>
             <Dialog

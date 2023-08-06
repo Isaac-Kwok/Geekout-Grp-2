@@ -6,6 +6,7 @@ import http from "../../http";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useSnackbar } from 'notistack';
 import { UserContext } from '../../index';
+import PageTitle from '../../components/PageTitle';
 
 
 function ViewWishlist() {
@@ -79,7 +80,7 @@ function ViewWishlist() {
 
     return (
         <Container maxWidth="xl" sx={{ marginY: "1rem", minWidth: 0 }}>
-            <Typography variant="h3" fontWeight={700} sx={{ marginY: ["1rem", "1rem", "2rem"], fontSize: ["2rem", "2rem", "3rem"] }}>Your Wishlist</Typography>
+            <PageTitle title="Your Wishlist" subtitle="View Items" />
             {items.length > 0 && (<><Button onClick={clearWishlist}>Clear Wishlist</Button></>)}
             {items.length == 0 && (<><Button onClick={() => navigate('/products')}>Go to Products</Button></>)}
             <Grid container spacing={2}>
