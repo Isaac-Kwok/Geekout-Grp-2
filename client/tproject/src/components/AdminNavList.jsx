@@ -12,6 +12,9 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import LabelIcon from '@mui/icons-material/Label';
+import NoteAddIcon from '@mui/icons-material/NoteAdd';
+import LiveHelpIcon from '@mui/icons-material/LiveHelp';
+import ArticleIcon from '@mui/icons-material/Article';
 
 
 function AdminNavList() {
@@ -200,20 +203,20 @@ function AdminNavList() {
             <Collapse in={supportOpen} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
                     <ListItem key={"ViewTickets"} disablePadding>
-                        <ListItemButton component={Link} to="/">
-                            <ListItemIcon><LabelIcon /></ListItemIcon>
+                        <ListItemButton component={Link} to="/admin/support/ticket">
+                            <ListItemIcon><LiveHelpIcon/></ListItemIcon>
                             <ListItemText primary={"View Tickets"} />
                         </ListItemButton>
                     </ListItem>
                     <ListItem key={"ViewArticles"} disablePadding>
-                        <ListItemButton component={Link} to="/">
-                            <ListItemIcon><LabelIcon /></ListItemIcon>
+                        <ListItemButton component={Link} to="/admin/support/article">
+                            <ListItemIcon><ArticleIcon/></ListItemIcon>
                             <ListItemText primary={"View Help Articles"} />
                         </ListItemButton>
                     </ListItem>
                     <ListItem key={"CreateArticle"} disablePadding>
-                        <ListItemButton component={Link} to="/">
-                            <ListItemIcon><LabelIcon /></ListItemIcon>
+                        <ListItemButton component={Link} to="/admin/support/article/create">
+                            <ListItemIcon><NoteAddIcon/></ListItemIcon>
                             <ListItemText primary={"Create Help Article"} />
                         </ListItemButton>
                     </ListItem>

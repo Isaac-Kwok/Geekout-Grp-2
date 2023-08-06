@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Container, Card, CardContent, Box, Checkbox, TextField, Grid, IconButton, FormControlLabel, Typography } from '@mui/material'
+import { Card, CardContent, Typography } from '@mui/material'
 import Dropzone from "react-dropzone";
 import { useSnackbar } from 'notistack';
 
@@ -62,8 +62,8 @@ function ImageUploader(props) {
                                 <Typography variant="body">Click or drag file here...</Typography>
                             </>
                         }
-                        {file && <img src={URL.createObjectURL(file)} alt="article header" style={{ width: "100%", height: "500px", marginTop: "1rem", objectFit: "contain" }} />}
-                        {(existingFile && !file) && <img src={existingFile} alt="article header" style={{ width: "100%", height: "500px", marginTop: "1rem", objectFit: "contain" }} />}
+                        {file && <img src={URL.createObjectURL(file)} alt={props.label + " preview"} style={{ width: "100%", height: "500px", marginTop: "1rem", objectFit: "contain" }} />}
+                        {(existingFile && !file) && <img src={existingFile} alt={props.label + " preview"} style={{ width: "100%", height: "500px", marginTop: "1rem", objectFit: "contain" }} />}
                     </CardContent>
                 </Card>
             )}
