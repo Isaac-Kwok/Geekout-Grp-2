@@ -3,7 +3,7 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText, B
 import { LoadingButton } from '@mui/lab'
 import * as yup from 'yup'
 import { useFormik } from 'formik'
-import { loadStripe } from "@stripe/stripe-js";
+import { loadStripe } from "@stripe/stripe-js/pure";
 import { Elements } from "@stripe/react-stripe-js"
 import { useSnackbar } from 'notistack'
 import http from '../http'

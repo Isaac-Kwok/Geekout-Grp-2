@@ -1,4 +1,5 @@
 import { Box, Button, Container, Card, CardContent, CardActions, Stack, Typography, TextField, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, Grid, Divider } from "@mui/material"
+import { useGoogleLogin } from "@react-oauth/google";
 import CardTitle from "../components/CardTitle";
 import LoadingButton from '@mui/lab/LoadingButton';
 import LoginIcon from '@mui/icons-material/Login';
@@ -17,6 +18,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import http from "../http";
 import { UserContext } from "..";
+import axios from "axios";
 
 function Login() {
     const [loading, setLoading] = useState(false);
@@ -24,6 +26,10 @@ function Login() {
     const [resetPasswordDialog, setResetPasswordDialog] = useState(false);
     const [resendDialog, setResendDialog] = useState(false);
     const [resendLoading, setResendLoading] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [accessToken, setAccessToken] = useState("");
+    const [otpDialog, setOtpDialog] = useState(false);
     const { setUser } = useContext(UserContext);
     const { enqueueSnackbar } = useSnackbar();
     const navigate = useNavigate();
@@ -48,6 +54,39 @@ function Login() {
         setResendDialog(false);
     }
 
+    const handleOtpDialogClose = () => {
+        setAccessToken(null);
+        setOtpDialog(false);
+    }
+
+    const googleAuth = useGoogleLogin({
+        onSuccess: async (res) => {
+            setLoading(true);
+            http.post("/auth/google", { token: res.access_token }).then((res) => {
+                if (res.status === 200) {
+                    enqueueSnackbar("Login successful. Welcome back!", { variant: "success" });
+                    // Store token in local storage
+                    localStorage.setItem("token", res.data.token);
+                    // Set user context
+                    setUser(res.data.user);
+                    navigate("/")
+                } else {
+                    enqueueSnackbar("Login failed! " + err.response.data.message, { variant: "error" });
+                    setLoading(false);
+                }
+            }).catch((err) => {
+                if (err.response.status === 409) {
+                    setAccessToken(res.access_token);
+                    setOtpDialog(true);
+                    setLoading(false);
+                } else {
+                    enqueueSnackbar("Login failed! " + err.response.data.message, { variant: "error" });
+                    setLoading(false);
+                }
+            })
+        },
+    });
+
     const formik = useFormik({
         initialValues: {
             email: "",
@@ -63,7 +102,7 @@ function Login() {
             data.password = data.password.trim();
             http.post("/auth", data).then((res) => {
                 if (res.status === 200) {
-                    enqueueSnackbar("Login successful!", { variant: "success" });
+                    enqueueSnackbar("Login successful. Welcome back!", { variant: "success" });
                     // Store token in local storage
                     localStorage.setItem("token", res.data.token);
                     // Set user context
@@ -74,8 +113,15 @@ function Login() {
                     setLoading(false);
                 }
             }).catch((err) => {
-                enqueueSnackbar("Login failed! " + err.response.data.message, { variant: "error" });
-                setLoading(false);
+                if (err.response.status === 409) {
+                    setEmail(data.email);
+                    setPassword(data.password);
+                    setOtpDialog(true);
+                    setLoading(false);
+                } else {
+                    enqueueSnackbar("Login failed! " + err.response.data.message, { variant: "error" });
+                    setLoading(false);
+                }
             })
         }
 
@@ -133,6 +179,40 @@ function Login() {
         }
     })
 
+    const otpFormik = useFormik({
+        initialValues: {
+            code: "",
+        },
+        validationSchema: Yup.object({
+            code: Yup.string().required("OTP code is required").min(6, "OTP code must be at least 6 characters").max(15, "OTP code cannot be longer than 15 characters"),
+        }),
+        onSubmit: (data) => {
+            setLoading(true);
+            if (accessToken) {
+                data.token = accessToken;
+            } else {
+                data.email = email;
+                data.password = password;
+            }
+            http.post(accessToken ? "/auth/google" : "/auth", data).then((res) => {
+                if (res.status === 200) {
+                    enqueueSnackbar("Login successful. Welcome back!", { variant: "success" });
+                    // Store token in local storage
+                    localStorage.setItem("token", res.data.token);
+                    // Set user context
+                    setUser(res.data.user);
+                    navigate("/")
+                } else {
+                    enqueueSnackbar("Login failed! Check your e-mail and password.", { variant: "error" });
+                    setLoading(false);
+                }
+            }).catch((err) => {
+                enqueueSnackbar("Login failed! " + err.response.data.message, { variant: "error" });
+                setLoading(false);
+            })
+        }
+    })
+
     return (
         <>
             <Container maxWidth="xl" sx={{ marginY: "1rem" }}>
@@ -181,7 +261,7 @@ function Login() {
                             <Divider />
                             <CardContent>
                                 <Stack spacing={1}>
-                                    <Button variant="outlined" color="primary" startIcon={<GoogleIcon />} fullWidth>Login with Google</Button>
+                                    <Button variant="outlined" color="primary" startIcon={<GoogleIcon />} fullWidth onClick={googleAuth}>Login with Google</Button>
                                     <Button variant="outlined" color="primary" startIcon={<FacebookIcon />} fullWidth>Login with Facebook</Button>
                                 </Stack>
                             </CardContent>
@@ -263,6 +343,34 @@ function Login() {
                     <DialogActions>
                         <Button onClick={handleResendDialogClose} startIcon={<CloseIcon />}>Cancel</Button>
                         <LoadingButton type="submit" loadingPosition="start" loading={resendLoading} variant="text" color="primary" startIcon={<RefreshIcon />}>Resend E-mail</LoadingButton>
+                    </DialogActions>
+                </Box>
+            </Dialog>
+            <Dialog open={otpDialog} onClose={handleOtpDialogClose}>
+                <DialogTitle>Two-Factor Authentication</DialogTitle>
+                <Box component="form" onSubmit={otpFormik.handleSubmit}>
+                    <DialogContent sx={{ paddingTop: 0 }}>
+                        <DialogContentText>
+                            Please enter the 6-digit code from your authenticator app below. if you have lost access to your authenticator app, please enter the backup code.
+                        </DialogContentText>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="code"
+                            label="6-digit Code or Backup Code"
+                            type="text"
+                            name="code"
+                            fullWidth
+                            variant="standard"
+                            value={otpFormik.values.code}
+                            onChange={otpFormik.handleChange}
+                            error={otpFormik.touched.code && Boolean(otpFormik.errors.code)}
+                            helperText={otpFormik.touched.code && otpFormik.errors.code}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleOtpDialogClose} startIcon={<CloseIcon />}>Cancel</Button>
+                        <LoadingButton type="submit" loadingPosition="start" loading={loading} variant="text" color="primary" startIcon={<LockResetIcon />}>Verify</LoadingButton>
                     </DialogActions>
                 </Box>
             </Dialog>

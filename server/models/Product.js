@@ -9,16 +9,20 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
+        product_sub_category: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        pass_category_status: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false
+        },
         product_stock:{
             type: DataTypes.TINYINT,
             allowNull: false,
             defaultValue:0
         },
         product_picture: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        product_picture_type: {
             type: DataTypes.STRING,
             allowNull: true
         },

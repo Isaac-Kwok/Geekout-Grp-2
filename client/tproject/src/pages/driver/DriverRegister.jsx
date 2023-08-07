@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { Box, Typography, TextField, Button, Container, Grid, Stepper, Step, StepLabel, Card, CardContent } from '@mui/material';
+import { Box, Typography, TextField, Button, Container, Grid, Stepper, Step, StepLabel, Card, CardContent, Divider } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import http from '../../http'
 import { useSnackbar } from 'notistack';
 import PageTitle from '../../components/PageTitle';
+import useUser from '../../context/useUser';
 
 function DriverRegister() {
 
@@ -24,6 +25,134 @@ function DriverRegister() {
     const { enqueueSnackbar } = useSnackbar();
     const [activeStep, setActiveStep] = useState(0);
     const [formData, setFormData] = useState({});
+    const { refreshUser } = useUser();
+
+    // define consts for singpass API
+    const [authApiUrl, setAuthApiUrl] = useState('https://test.api.myinfo.gov.sg/com/v4/authorize'); // URL for authorize API
+    const [clientId, setClientId] = useState(); // your app_id/client_id provided to you during onboarding
+    const [redirectUrl, setRedirectUrl] = useState(); // callback url for your application
+    const [purpose_id, setPurpose_id] = useState(); // The purpose of your data retrieval
+    const [scope, setScope] = useState(); // the attributes you are retrieving for your application to fill the form
+    const [method, setMethod] = useState("S256");
+    const [clientAssertionType, setClientAssertionType] = useState("urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
+
+    // Singpass API functions
+    // ---START---AUTH API---
+    const callAuthorizeApi = (e) => {
+        //Call backend server to generate code challenge 
+        // $.ajax({
+        //     url: "/generateCodeChallenge",
+        //     data: {},
+        //     type: "POST",
+        //     success: function (result) {
+        //         //Redirect to authorize url after generating code challenge
+        //         var authorizeUrl = authApiUrl + "?client_id=" + clientId +
+        //             "&scope=" + scope +
+        //             "&purpose_id=" + purpose_id +
+        //             "&code_challenge=" + result +
+        //             "&code_challenge_method=" + method +
+        //             "&redirect_uri=" + redirectUrl;
+
+        //         window.location = authorizeUrl;
+        //     },
+        //     error: function (result) {
+        //         alert("ERROR:" + JSON.stringify(result.responseJSON.error));
+        //     }
+        // });
+        http.post("/generateCodeChallenge")
+            .then((res) => {
+                if (res.status === 200) {
+                    console.log("code challenge result:", res.data);
+                    var authorizeUrl = authApiUrl + "?client_id=" + clientId +
+                        "&scope=" + scope +
+                        "&purpose_id=" + purpose_id +
+                        "&code_challenge=" + res.data +
+                        "&code_challenge_method=" + method +
+                        "&redirect_uri=" + redirectUrl;
+                    console.log('first', authApiUrl)
+                    console.log('url', authorizeUrl);
+                    window.location = authorizeUrl;
+                } else {
+                    console.log("code generation failed with status:", res.status);
+                }
+            })
+            .catch((err) => {
+                alert("ERROR:" + JSON.stringify(err.responseJSON.error));
+            })
+    }
+    // ---END---AUTH API---
+
+
+    // ---START---CALL SERVER API - calling server side APIs (token & person) to get the person data for prefilling form
+    function callServerAPIs() {
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const authCode = urlParams.get('code')
+        // console.log("Auth Code:",authCode);
+
+        // invoke AJAX call from frontend client side to your backend server side
+        // $.ajax({
+        //     url: "/getPersonData",
+        //     data: {
+        //         authCode: authCode,
+        //         codeVerifier: window.sessionStorage.getItem("codeVerifier")
+        //     },
+        //     type: "POST", // post to server side
+        //     success: function (result) {
+        //         // console.log("result",result);
+        //         prefillForm(result);
+        //     },
+        //     error: function (result) {
+        //         alert("ERROR:" + JSON.stringify(result.responseJSON.error));
+        //     }
+        // });
+        let data = {
+            authCode: authCode,
+            codeVerifier: window.sessionStorage.getItem("codeVerifier")
+        }
+        console.log('data sent: ', data)
+        http.post("/getPersonData", data)
+            .then((res) => {
+                if (res.status === 200) {
+                    console.log("person result:", res.data);
+                    fillUpForm(res.data);
+
+                } else {
+                    console.log("Person retrieval data failure:", res.status);
+                }
+            })
+            .catch((err) => {
+                alert("ERROR:" + JSON.stringify(err.responseJSON.error));
+            })
+    }
+    // ---END---CALL SERVER API - calling server side APIs (token & person) to get the person data for prefilling form
+
+    function fillUpForm(person) {
+        console.log('operating')
+        var dob = new Date(person.dob.value);
+        //calculate month difference from current date in time  
+        var month_diff = Date.now() - dob.getTime();
+
+        //convert the calculated difference in date format  
+        var age_dt = new Date(month_diff);
+
+        //extract year from date      
+        var year = age_dt.getUTCFullYear();
+
+        //now calculate the age of the user  
+        var age = Math.abs(year - 1970);
+
+        formik.setValues({
+            driver_nric_name: person.name.value,
+            driver_nric_number: person.uinfin.value,
+            driver_age: age,
+            driver_postalcode: person.regadd.postal.value
+        });
+        formik2.setValues({
+            driver_nationality: person.nationality.desc,
+            driver_sex: person.sex.code
+        });
+    }
 
     function handleChangeFace(e) {
         setFaceFile(URL.createObjectURL(e.target.files[0]));
@@ -66,7 +195,7 @@ function DriverRegister() {
 
                 console.log("filedata:", res.data);
                 temp_array.push(res.data.filename);
-        
+
             }
 
         }
@@ -111,11 +240,15 @@ function DriverRegister() {
     });
     const formik2 = useFormik({
         initialValues: {
+            driver_nationality: "",
+            driver_sex: "",
             driver_car_model: "",
             driver_car_license_plate: ""
 
         },
         validationSchema: yup.object().shape({
+            driver_nationality: yup.string().trim().required("Driver Nationality is a required field"),
+            driver_sex: yup.string().trim().required("Sex is a required field"),
             driver_car_model: yup.string().trim().required("Car model is a required field"),
             driver_car_license_plate: yup.string().trim().required("Car License plate is a required field"),
         }),
@@ -124,7 +257,9 @@ function DriverRegister() {
             data.driver_nric_number = formData.driver_nric_number;
             data.driver_postalcode = parseInt(formData.driver_postalcode);
             data.driver_age = parseInt(formData.driver_age);
-            data.driver_question = formData.driver_question;
+            data.driver_question = formData.driver_question.trim();
+            data.driver_nationality = data.driver_nationality.trim();
+            data.driver_sex = data.driver_sex.trim();
             data.driver_car_license_plate = data.driver_car_license_plate.trim();
             data.driver_car_model = data.driver_car_model.trim();
 
@@ -141,6 +276,7 @@ function DriverRegister() {
                     .then((res) => {
                         console.log(res.data);
                         enqueueSnackbar('Driver Application Submitted!', { variant: 'success' });
+                        refreshUser();
                         navigate('/')
                     });
             }
@@ -151,8 +287,36 @@ function DriverRegister() {
         }
     });
     useEffect(() => {
-        console.log("faceFile", faceFile)
-        console.log("Upload", faceFileUpload)
+
+        // Singpass API to define the consts set earlier
+        http.get("/getEnv")
+            .then((res) => {
+                if (res.status === 200) {
+                    console.log("Result:", res.data);
+                    setClientId(res.data.clientId);
+                    setRedirectUrl(res.data.redirectUrl);
+                    setScope(res.data.scope);
+                    setPurpose_id(res.data.purpose_id);
+                    setAuthApiUrl(res.data.authApiUrl);
+                    setEnvironment(res.data.environment);
+
+                } else {
+                    console.log("env retrieval failed", res.status);
+                }
+            })
+            .catch((err) => {
+                alert("ERROR:" + JSON.stringify(err.responseJSON.error));
+            });
+        // ---START---CALLBACK HANDLER (AUTH CODE)
+        if (window.location.href.indexOf("?code") > -1) {
+            console.log('test')
+            callServerAPIs(); // call the backend server APIs
+        } else if (window.location.href.indexOf("callback") > -1) {
+            alert("ERROR:" + JSON.stringify("Missing Auth Code"));
+        }
+        // ---END---CALLBACK HANDLER
+        console.log(formik.values)
+        console.log(formik2.values)
     }, [])
     return (
         <Box sx={{
@@ -177,7 +341,19 @@ function DriverRegister() {
                                 {activeStep === 0 && (
                                     <>
                                         <Typography variant="h6">Tell us about yourself</Typography>
-                                        <Box component="form" sx={{ maxWidth: '500px' }} onSubmit={formik.handleSubmit}>
+                                        <Card sx={{ border: 0.5, bgcolor: '#def0f1', maxWidth: '600px', marginTop: 1 }}>
+                                            <CardContent>
+                                                <h3 style={{margin: 0}}>Faster form filling with MyInfo.</h3>
+                                                <Typography mt={0} mb={"1rem"}>
+                                                    MyInfo is a platform that retrieves your personal data from participating government agencies, making your application more convenient.
+                                                </Typography>
+                                                <Button variant='contained' color="primary" 
+                                                    onClick={callAuthorizeApi}>
+                                                    Retrieve MyInfo
+                                                </Button>
+                                            </CardContent>
+                                        </Card>
+                                        <Box component="form" sx={{ maxWidth: '600px' }} onSubmit={formik.handleSubmit}>
                                             <TextField
                                                 fullWidth margin="normal" autoComplete="off"
                                                 label="NRIC Name"
@@ -248,7 +424,31 @@ function DriverRegister() {
                                 {activeStep === 1 && (
                                     <>
                                         <Typography variant="h6">Driver details</Typography>
-                                        <Box component="form" sx={{ maxWidth: '500px' }} onSubmit={formik2.handleSubmit}>
+                                        <Box component="form" sx={{ maxWidth: '600px' }} onSubmit={formik2.handleSubmit}>
+                                            <Grid container spacing={2} sx={{ mb: 1, mt: 1 }}>
+                                                <Grid item xs={6}>
+                                                    <TextField
+                                                        fullWidth margin="normal" autoComplete="off"
+                                                        label="Nationality"
+                                                        name="driver_nationality"
+                                                        value={formik2.values.driver_nationality}
+                                                        onChange={formik2.handleChange}
+                                                        error={formik2.touched.driver_nationality && Boolean(formik2.errors.driver_nationality)}
+                                                        helperText={formik2.touched.driver_nationality && formik2.errors.driver_nationality}
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={6}>
+                                                    <TextField
+                                                        fullWidth margin="normal" autoComplete="off"
+                                                        label="Sex"
+                                                        name="driver_sex"
+                                                        value={formik2.values.driver_sex}
+                                                        onChange={formik2.handleChange}
+                                                        error={formik2.touched.driver_sex && Boolean(formik2.errors.driver_sex)}
+                                                        helperText={formik2.touched.driver_sex && formik2.errors.driver_sex}
+                                                    />
+                                                </Grid>
+                                            </Grid>
                                             <TextField
                                                 fullWidth margin="normal" autoComplete="off"
                                                 label="Car model"

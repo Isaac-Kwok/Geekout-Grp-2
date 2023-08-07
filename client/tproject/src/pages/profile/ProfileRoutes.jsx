@@ -6,9 +6,8 @@ import PersonIcon from '@mui/icons-material/Person';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import KeyIcon from '@mui/icons-material/Key';
 import HistoryIcon from '@mui/icons-material/History';
-
+import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import { useSnackbar } from 'notistack'
-import Test from '../Test'
 import { UserContext } from '../..'
 import { validateUser } from '../../functions/user'
 import NotFound from '../errors/NotFound'
@@ -17,6 +16,8 @@ import ViewWallet from './ViewWallet'
 import ViewLogins from './ViewLogins';
 import ViewTransactionHistory from './ViewTransactionHistory';
 import ViewTransactionHistoryDetails from './ViewTransactionHistoryDetails';
+import ViewDriverInformation from './ViewDriverInformation';
+import EditProfile from './EditProfile';
 import http from '../../http'
 
 export const ProfileContext = createContext(null)
@@ -24,6 +25,7 @@ function ProfileRoutes() {
     const { user } = useContext(UserContext);
     const location = useLocation()
     const [profile, setProfile] = useState({
+        id: 1,
         name: "",
         email: "",
         phone_number: "",
@@ -48,6 +50,7 @@ function ProfileRoutes() {
         http.get("/user").then(res => {
             setProfile(res.data)
         })
+        
     }, [])
 
     return (
@@ -65,9 +68,15 @@ function ProfileRoutes() {
                         <Card>
                             <List>
                                 <ListItem key={"Account Overview"} disablePadding>
-                                    <ListItemButton component={Link} to="/profile" selected={(location.pathname == "/profile")}>
+                                    <ListItemButton component={Link} to="/profile" selected={(location.pathname == "/profile" || location.pathname.includes("/profile/edit"))}>
                                         <ListItemIcon><PersonIcon /></ListItemIcon>
                                         <ListItemText primary={"Account Overview"} />
+                                    </ListItemButton>
+                                </ListItem>
+                                <ListItem key={"Driver Information"} disablePadding>
+                                    <ListItemButton component={Link} to="/profile/driverInformation" selected={(location.pathname == "/profile/driverInformation")}>
+                                        <ListItemIcon><DriveEtaIcon /></ListItemIcon>
+                                        <ListItemText primary={"Driver Information"} />
                                     </ListItemButton>
                                 </ListItem>
                                 <ListItem key={"Wallet"} disablePadding>
@@ -96,9 +105,11 @@ function ProfileRoutes() {
                             <Routes>
                                 <Route path="*" element={<NotFound />} />
                                 <Route path="/" element={<ViewProfile />} />
+                                <Route path="/edit" element={<EditProfile />} />
                                 <Route path="/wallet" element={<ViewWallet />} />
                                 <Route path="/logins" element={<ViewLogins />} />
                                 <Route path="/history" element={<ViewTransactionHistory />} />
+                                <Route path="/driverInformation" element={<ViewDriverInformation />} />
                                 <Route path="/history/:id" element={<ViewTransactionHistoryDetails />} />
                             </Routes>
                         </ProfileContext.Provider>
