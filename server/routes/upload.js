@@ -7,14 +7,7 @@ router.get("/profile/:name", (req, res) => {
     const fileName = req.params.name;
     const directoryPath = path.join(__dirname, "../public/uploads/profile_picture/");
 
-    res.download(directoryPath + fileName, fileName, (err) => {
-        if (err) {
-            return res.status(500).send({
-                message: "Could not download the file. " + err,
-            });
-
-        }
-    });
+    res.sendFile(directoryPath + fileName, fileName);
 })
 
 module.exports = router;

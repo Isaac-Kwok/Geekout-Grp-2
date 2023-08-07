@@ -97,14 +97,7 @@ router.get("/driverImage/:filename", (req, res) => {
     const fileName = req.params.filename;
     const directoryPath = path.join(__dirname, "../../public/uploads/driver/");
 
-    res.download(directoryPath + fileName, fileName, (err) => {
-        if (err) {
-            res.status(500).send({
-                message: "Could not download the file. " + err,
-            });
-
-        }
-    });
+    res.sendFile(directoryPath + fileName, fileName);
 })
 
 router.get("/GetAllDriverApplications", async (req, res) => {
