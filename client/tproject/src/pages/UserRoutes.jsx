@@ -10,6 +10,7 @@ import Verify from './Verify'
 import Reset from './Reset'
 import ProfileRoutes from './profile/ProfileRoutes'
 import DriverRoutes from './driver/DriverRoutes'
+import SupportRoutes from './support/SupportRoutes'
 import Bicycle from './Bicycle'
 import ProductRoutes from './products/ProductRoutes'
 import CreateRideRequest from './rider/CreateRideRequest'
@@ -38,6 +39,7 @@ function UserRoutes() {
             <Route path="/reset" element={<Reset />} />
             <Route path="/profile/*" element={<ProfileRoutes />} />
             <Route path="/driver/*" element={<DriverRoutes />} />
+            <Route path="/support/*" element={<SupportRoutes />} />
             <Route path="/bicycle" element={<Bicycle />} />
             <Route path="/products/*" element={<ProductRoutes />} />
             <Route path="/riderequests/create" element={<CreateRideRequest />} />

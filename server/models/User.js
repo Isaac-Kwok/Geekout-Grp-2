@@ -1,5 +1,4 @@
 const bcrypt = require("bcrypt");
-const { RideRequest } = require("./RideRequest");
 
 module.exports = (sequelize, DataTypes) => {
     // Account Types:
@@ -12,7 +11,6 @@ module.exports = (sequelize, DataTypes) => {
         email: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: true
         },
         name: {
             type: DataTypes.STRING,
@@ -68,7 +66,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true,
         },
         is_fb_auth_enabled: {
-            type: DataTypes.BOOLEAN,
+            type: DataTypes.STRING,
             allowNull: true,
         },
         is_email_verified: {
@@ -81,6 +79,47 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: false
         },
+        accepted_routes: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0
+        },
+        completed_routes: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0
+        },
+        aborted_routes: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0
+        },
+        driven_distance: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0
+        },
+        total_earned: {
+            type: DataTypes.DOUBLE,
+            allowNull: false,
+            defaultValue: 0.0
+        },
+        current_route: {
+            type: DataTypes.JSON,
+            allowNull: false,
+            defaultValue: 0
+        },
+        rideDirections: {
+            type: DataTypes.TEXT('long') ,
+            allowNull: true,
+        },
+        on_duty: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
+        },
+    }, {
+        indexes: [{ unique: true, fields: ["email"] }]
     });
 
     User.associate = (models) => {
@@ -96,6 +135,21 @@ module.exports = (sequelize, DataTypes) => {
 
         User.hasMany(models.RideRequest, {
             foreignKey: "userId",
+            onDelete: "CASCADE",
+        });
+
+        User.hasMany(models.Ticket, {
+            foreignKey: "user_id",
+            onDelete: "CASCADE",
+        });
+
+        User.hasMany(models.Message, {
+            foreignKey: "user_id",
+            onDelete: "CASCADE",
+        });
+
+        User.hasMany(models.Article, {
+            foreignKey: "user_id",
             onDelete: "CASCADE",
         });
     };
