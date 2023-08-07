@@ -5,18 +5,20 @@ import { validateUser } from '../../functions/user'
 import http from "../../http";
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
 import RemoveIcon from '@mui/icons-material/Remove';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import PageTitle from '../../components/PageTitle';
 import CardTitle from '../../components/CardTitle';
 import { useSnackbar } from 'notistack';
 import { CartContext } from './CartRoutes';
-import { UserContext } from '../../index';
+import useUser from '../../context/useUser';
 
 
 function ViewCart() {
-    const { user } = useContext(UserContext);
+    const { user } = useUser();
     const [items, setItems] = useState([]);
     const { selectedItems, setSelectedItems } = useContext(CartContext);
     const [loading, setLoading] = useState(true);
@@ -291,6 +293,25 @@ function ViewCart() {
                             )
                         }
                     </TableContainer>
+                    {!user.delivery_address && <>
+                        <Card sx={{ marginY: "1rem" }}>
+                            <CardContent>
+                                <CardTitle title="No Delivery Address" icon={<WarningAmberIcon />} />
+                                <Typography variant="body1">
+                                    You have not set a delivery address yet. Please set a delivery address before checking out.
+                                </Typography>
+                            </CardContent>
+                            <CardActions>
+                                <Button
+                                    startIcon={<EditIcon />}
+                                    variant="text"
+                                    onClick={() => navigate('/profile/edit')}
+                                >
+                                    Edit Profile
+                                </Button>
+                            </CardActions>
+                        </Card>
+                    </>}
                 </Grid>
 
                 <Grid item xs={12} md={3}>
@@ -321,6 +342,8 @@ function ViewCart() {
                                 onClick={() => {
                                     if (selectedItems.length === 0) {
                                         enqueueSnackbar('No items selected!', { variant: 'error' });
+                                    } else if (user.delivery_address === null) {
+                                        enqueueSnackbar('Please add a delivery address!', { variant: 'error' });
                                     } else {
                                         navigate("/cart/checkout", { state: { items: selectedItems } });
                                     }

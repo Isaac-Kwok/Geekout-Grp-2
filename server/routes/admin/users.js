@@ -104,6 +104,7 @@ router.put("/:id", validateAdmin, async (req, res) => {
         points: yup.number().min(0).nullable(true),
         is_2fa_enabled: yup.boolean().nullable(true),
         is_active: yup.boolean().nullable(true),
+        delivery_address: yup.string().nullable(true),
     }, [["phone_number", "phone_number"], ["profile_picture_type", "profile_picture_type"]]).noUnknown(true)
 
     try {

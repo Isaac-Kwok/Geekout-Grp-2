@@ -79,6 +79,11 @@ const Checkout = () => {
                         return navigate("/cart");
                     }
 
+                    if (user.delivery_address === null) {
+                        enqueueSnackbar("You must set a delivery address before you can checkout", { variant: "error" });
+                        return navigate("/profile/edit");
+                    }
+
                     http.post("/cart/checkout/confirm", {
                         order: {
                             user_id: user.id,
@@ -87,6 +92,7 @@ const Checkout = () => {
                             no_of_items: no_of_items,
                             subtotal_amount: subtotal,
                             gst_amount: gst,
+                            delivery_address: user.delivery_address,
                         },
                         orderItems
                     }).then((res) => {

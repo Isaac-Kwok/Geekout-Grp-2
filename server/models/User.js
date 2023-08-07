@@ -118,6 +118,10 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: false
         },
+        delivery_address: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
     }, {
         indexes: [{ unique: true, fields: ["email"] }]
     });

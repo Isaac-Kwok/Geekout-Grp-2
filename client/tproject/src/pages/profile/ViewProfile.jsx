@@ -9,9 +9,11 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { ProfileContext } from './ProfileRoutes'
 import http from '../../http'
 import { useNavigate } from 'react-router-dom'
+import useUser from '../../context/useUser'
 
 function ViewProfile() {
     const { profile, setProfile } = useContext(ProfileContext)
+    const { user } = useUser()
     const [topupOpen, setTopupOpen] = useState(false)
     const [FAEnabled, setFAEnabled] = useState(false)
     const navigate = useNavigate()
@@ -64,13 +66,16 @@ function ViewProfile() {
                         <CardTitle icon={<BadgeIcon />} title="Profile Information" />
                         <Grid container spacing={2} marginTop={"1rem"}>
                             <Grid item xs={12} sm={6} lg={4}>
-                                <InfoBox title="Name" value={profile.name} />
+                                <InfoBox title="Name" value={user?.name} />
                             </Grid>
                             <Grid item xs={12} sm={6} lg={4}>
-                                <InfoBox title="Phone Number" value={profile.phone_number} />
+                                <InfoBox title="Phone Number" value={user?.phone_number} />
                             </Grid>
                             <Grid item xs={12} sm={6} lg={4}>
-                                <InfoBox title="E-mail Address" value={profile.email} />
+                                <InfoBox title="E-mail Address" value={user?.email} />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <InfoBox title="Delivery Address" value={user?.delivery_address} />
                             </Grid>
                             {/* <Grid item xs={12} sm={6} lg={4}>
                                 <InfoBox title="Driver Application" value="Not Approved" boolean={false} />
@@ -93,14 +98,14 @@ function ViewProfile() {
                         <Grid container marginTop={"1rem"}>
                             <Grid item xs={12} sm marginBottom={["1rem", 0]}>
                                 <Box display="flex" alignItems={"center"}>
-                                    <InfoBox flexGrow={1} title="Cash Balance" value={<Typography variant='h5' fontWeight={700}>${profile.cash}</Typography>} />
+                                    <InfoBox flexGrow={1} title="Cash Balance" value={<Typography variant='h5' fontWeight={700}>${user?.cash}</Typography>} />
                                     <Button variant="text" color="primary" onClick={handleTopupOpen}>Top-up</Button>
                                 </Box>
                             </Grid>
                             <Divider orientation="vertical" sx={{marginX: "1rem"}} flexItem />
                             <Grid item xs={12} sm>
                                 <Box display="flex" alignItems={"center"}>
-                                    <InfoBox flexGrow={1} title="GreenMiles Points" value={<Typography variant='h5' fontWeight={700}>{profile.points} GM</Typography>} />
+                                    <InfoBox flexGrow={1} title="GreenMiles Points" value={<Typography variant='h5' fontWeight={700}>{user?.points} GM</Typography>} />
                                     <Button variant="text" color="primary">Redeem</Button>
                                 </Box>
                             </Grid>
