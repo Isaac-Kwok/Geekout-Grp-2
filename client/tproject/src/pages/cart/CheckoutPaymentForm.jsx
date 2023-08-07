@@ -22,6 +22,10 @@ function CheckoutPaymentForm(props) {
 
         stripe.confirmPayment({
             elements,
+            confirmParams: {
+                // Make sure to change this to your payment completion page
+                return_url: location.protocol + '//' + location.host + "/cart/checkout/success?orderId=" + props.orderId,
+            },
             redirect: "if_required",
         }).then((result) => {
             console.log(result);
@@ -33,10 +37,9 @@ function CheckoutPaymentForm(props) {
                 if (result.paymentIntent.status === "succeeded" || result.paymentIntent.status === "processing") {
                     // I set up the webhook on the backend to handle the topup, no action needed here
                     enqueueSnackbar("Payment is successful!", { variant: "success" });
-                    props.handleClose();
+                    navigate("/cart/checkout/success?orderId=" + props.orderId);
                 } else {
                     enqueueSnackbar("Payment is not successful!", { variant: "error" });
-                    navigate("/cart");
                 }
             }
             setLoading(false);

@@ -5,6 +5,7 @@ const yup = require('yup');
 const { validateToken } = require('../middleware/validateToken');
 
 const order_status = {
+    0: "Pending",
     1: "Preparing",
     2: "Wait for delivery",
     3: "Delivered",

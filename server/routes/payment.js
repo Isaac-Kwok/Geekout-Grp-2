@@ -1,4 +1,4 @@
-const { User, Transaction } = require("../models")
+const { Order, User, Transaction } = require("../models")
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 const express = require("express");
 const router = express.Router()
@@ -30,6 +30,10 @@ router.post("/webhook", async (req, res) => {
                 const user = await User.findByPk(transaction.user_id)
                 user.cash = parseFloat(user.cash) + parseFloat(transaction.amount)
                 await user.save()
+            } else if (transaction.type === "purchase") {
+                const order = await Order.findByPk(transaction.order_id)
+                order.order_status = 1
+                await order.save()
             }
             await transaction.save()
         }
@@ -65,6 +69,41 @@ router.post("/topup", validateToken, async (req, res) => {
 
         res.status(200).json({ clientSecret: paymentIntent.client_secret })
     } catch (err) {
+        res.status(400).json({ message: err.errors[0] })
+    }
+})
+
+router.post("/purchase/stripe", validateToken, async (req, res) => {
+    // Top up
+    // Create a PaymentIntent
+    const schema = yup.object().shape({
+        amount: yup.number().required().min(1),
+        order_id: yup.number().required().min(1),
+    })
+
+    try {
+        await schema.validate(req.body, { abortEarly: false })
+        const { amount, order_id } = req.body
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: Math.round(amount * 100), // changed by samuel so that his checkout page can work
+            currency: "sgd",
+            automatic_payment_methods: {enabled: true},
+        })
+
+        const transaction = await Transaction.create({
+            amount: amount,
+            type: "purchase",
+            status: "Pending",
+            paymentIntent_id: paymentIntent.id,
+            paymentIntent_client_secret: paymentIntent.client_secret,
+            user_id: req.user.id,
+            operator: "+",
+            order_id: order_id
+        })
+
+        res.status(200).json({ clientSecret: paymentIntent.client_secret })
+    } catch (err) {
+        console.log(err)
         res.status(400).json({ message: err.errors[0] })
     }
 })

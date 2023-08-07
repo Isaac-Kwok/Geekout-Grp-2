@@ -6,6 +6,8 @@ import { UserContext } from '../../index';
 import { Elements } from '@stripe/react-stripe-js';
 import { Link } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
+import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
+import PaymentIcon from '@mui/icons-material/Payment';
 import CheckoutPaymentForm from './CheckoutPaymentForm';
 import http from "../../http";
 import { validateUser } from '../../functions/user';
@@ -22,6 +24,7 @@ const Checkout = () => {
     const { selectedItems } = useContext(CartContext);
     const [loading, setLoading] = useState(true);
     const [clientSecret, setClientSecret] = useState("");
+    const [order_id, setorder_id] = useState("");
     const navigate = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
 
@@ -46,6 +49,20 @@ const Checkout = () => {
                     });
                     setItems(itemsData);
                     const selectedItemsDetails = itemsData.filter(item => selectedItems.includes(item.id));
+                    const orderItems = selectedItemsDetails.map(item => {
+                        let price = item.product_price;
+                        if (item.product_sale) {
+                            price = item.product_price * (1 - item.product_discounted_percent / 100);
+                        }
+                        return {
+                            product_id: item.Product.id,
+                            quantity: item.quantity,
+                            total_price: item.product_price * item.quantity,
+                            discounted_total_price: price * item.quantity,
+                            discounted: item.product_sale,
+                        }
+                    });
+                    const no_of_items = selectedItemsDetails.reduce((total, item) => total + item.quantity, 0);
                     const subtotal = selectedItemsDetails.reduce((sum, item) => {
                         let price = item.product_price;
                         console.log(item.product_sale);
@@ -56,7 +73,26 @@ const Checkout = () => {
                     }, 0);
                     const gst = (subtotal * 0.08).toFixed(2);
                     const total = (subtotal + parseFloat(gst)).toFixed(2);
-                    http.post("/payment/topup", { amount: total })
+
+                    if (no_of_items === 0) {
+                        enqueueSnackbar("You have no items in your cart", { variant: "error" });
+                        return navigate("/cart");
+                    }
+
+                    http.post("/cart/checkout/confirm", {
+                        order: {
+                            user_id: user.id,
+                            total_amount: total,
+                            order_status: 0,
+                            no_of_items: no_of_items,
+                            subtotal_amount: subtotal,
+                            gst_amount: gst,
+                        },
+                        orderItems
+                    }).then((res) => {
+                        const orderId = res.data.orderId;
+                        setorder_id(orderId);
+                        http.post("/payment/purchase/stripe", { amount: total, order_id: orderId })
                         .then((res) => {
                             if (res.status === 200) {
                                 if (res.data && res.data.clientSecret) {
@@ -76,6 +112,12 @@ const Checkout = () => {
                             navigate("/cart");
                             setLoading(false);
                         });
+                    }).catch((err) => {
+                        enqueueSnackbar("Failed to create order.", { variant: "error" });
+                        navigate("/cart");
+                        setLoading(false);
+                    });
+                    
                 })
                 .catch((error) => {
                     enqueueSnackbar('Error fetching cart items:', { variant: "error" });
@@ -121,69 +163,6 @@ const Checkout = () => {
         return (getSubTotalPrice() + parseFloat(getGST())).toFixed(2);
     }
 
-    const removeItemsFromCart = async () => {
-        const selectedItemsDetails = items.filter(item => selectedItems.includes(item.id));
-        const itemIdsToRemove = selectedItemsDetails.map(item => item.id);
-        try {
-            const res = await http.post("/cart/removeItems", { itemsToRemove: itemIdsToRemove });
-            if (res.status !== 200) {
-                enqueueSnackbar(`Failed to remove some items from cart`, { variant: "error" });
-            }
-        } catch (error) {
-            enqueueSnackbar(`Error removing items from cart`, { variant: "error" });
-        }
-    }
-
-    const handleClose = async () => {
-        localStorage.removeItem('selectedItems');
-        localStorage.removeItem('total');
-
-        await removeItemsFromCart();
-        setClientSecret(null);
-        navigate("/cart/checkout/success");
-
-        // create order and order items after payment
-        const selectedItemsDetails = items.filter(item => selectedItems.includes(item.id));
-        const orderItems = selectedItemsDetails.map(item => {
-            let price = item.product_price;
-            if (item.product_sale) {
-                price = item.product_price * (1 - item.product_discounted_percent / 100);
-            }
-            return {
-                product_id: item.Product.id,
-                quantity: item.quantity,
-                total_price: item.product_price * item.quantity,
-                discounted_total_price: price * item.quantity,
-                discounted: item.product_sale,
-            }
-        });
-
-        const subtotal = getSubTotalPrice();
-        const gst = getGST();
-        const total = getTotalPrice();
-        const no_of_items = selectedItemsDetails.reduce((total, item) => total + item.quantity, 0);
-
-        try {
-            const res = await http.post("/cart/checkout/confirm", {
-                order: {
-                    user_id: user.id,
-                    total_amount: total,
-                    order_status: 1,
-                    no_of_items: no_of_items,
-                    subtotal_amount: subtotal,
-                    gst_amount: gst,
-                },
-                orderItems
-            });
-            if (res.status !== 201) {
-                enqueueSnackbar(`Failed to create order`, { variant: "error" });
-            }
-        } catch (error) {
-            enqueueSnackbar(`Error creating order`, { variant: "error" });
-            console.log(error)
-        }
-    }
-
 
     if (loading || !clientSecret) {
         return (
@@ -197,26 +176,27 @@ const Checkout = () => {
         <Container maxWidth="xl" sx={{ marginY: "1rem", minWidth: 0 }}>
             <PageTitle title="Checkout" subtitle="Review Purchase" />
             <Button LinkComponent={Link} variant="outlined" color="primary" sx={{ marginBottom: "1rem" }} startIcon={<ArrowBackIcon />} to="/cart" onClick={backToCart}>Back</Button>
-            <Grid container spacing={2} flexDirection={{xs: "row-reverse", md: "row"}}>
+            <Grid container spacing={2} flexDirection={{ xs: "row-reverse", md: "row" }}>
                 <Grid item xs={12} md={9}>
                     <Card>
+                        <CardContent>
+                            <CardTitle title="Payment Details" icon={<PaymentIcon />} />
+                        </CardContent>
                         <Elements stripe={stripePromise} options={{ clientSecret: clientSecret }}>
-                            <CheckoutPaymentForm handleClose={handleClose} />
+                            <CheckoutPaymentForm orderId={order_id} />
                         </Elements>
                     </Card>
                 </Grid>
                 <Grid item xs={12} md={3}>
                     <Card>
                         <CardContent>
-                            <Typography variant="h6" gutterBottom>
-                                Payment Summary
-                            </Typography>
+                            <CardTitle title="Order Summary" icon={<RequestQuoteIcon />} />
                         </CardContent>
 
                         <List>
                             <ListItem>
                                 <ListItemText primary="Subtotal" />
-                                <Typography variant="h6">${getSubTotalPrice()}</Typography>
+                                <Typography variant="h6">${getSubTotalPrice().toFixed(2)}</Typography>
                             </ListItem>
                             <ListItem>
                                 <ListItemText primary="GST (8%)" />
