@@ -26,11 +26,13 @@ function EditProfile() {
             name: user.name || "",
             email: user.email || "",
             phone_number: user.phone_number || "",
+            delivery_address: user.delivery_address || "",
         },
         validationSchema: yup.object({
             name: yup.string().required("Required"),
             email: yup.string().email("Invalid email address").required("Required"),
             phone_number: yup.string().required("Required").min(8, "Phone number must be 8 digits").max(8, "Phone number must be 8 digits"),
+            delivery_address: yup.string().optional(),
         }),
         onSubmit: (values) => {
             setLoading(true)
@@ -133,6 +135,18 @@ function EditProfile() {
                                         onChange={editForm.handleChange}
                                         error={editForm.touched.phone_number && Boolean(editForm.errors.phone_number)}
                                         helperText={editForm.touched.phone_number && editForm.errors.phone_number}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        fullWidth
+                                        name="delivery_address"
+                                        label="Delivery Address"
+                                        variant="outlined"
+                                        value={editForm.values.delivery_address}
+                                        onChange={editForm.handleChange}
+                                        error={editForm.touched.delivery_address && Boolean(editForm.errors.delivery_address)}
+                                        helperText={editForm.touched.delivery_address && editForm.errors.delivery_address}
                                     />
                                 </Grid>
                             </Grid>

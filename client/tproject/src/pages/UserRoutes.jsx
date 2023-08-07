@@ -13,9 +13,11 @@ import DriverRoutes from './driver/DriverRoutes'
 import SupportRoutes from './support/SupportRoutes'
 import Bicycle from './Bicycle'
 import ProductRoutes from './products/ProductRoutes'
+import CartRoutes from './cart/CartRoutes'
 import CreateRideRequest from './rider/CreateRideRequest'
 import EditRideRequests from './rider/EditRideRequests'
 import ViewRideRequests from './rider/ViewRideRequests'
+import Wishlist from './wishlist/ViewWishlist'
 
 import { UserContext } from '..'
 
@@ -41,9 +43,11 @@ function UserRoutes() {
             <Route path="/support/*" element={<SupportRoutes />} />
             <Route path="/bicycle" element={<Bicycle />} />
             <Route path="/products/*" element={<ProductRoutes />} />
+            <Route path="/cart/*" element={<CartRoutes />} />
             <Route path="/riderequests/create" element={<CreateRideRequest />} />
             <Route path="/riderequests/myrequests/" element={<ViewRideRequests />} />
             <Route path="/riderequests/update" element={<EditRideRequests />} />
+            <Route path="/wishlist" element={<Wishlist/>} />
         </Routes>
     )
 }

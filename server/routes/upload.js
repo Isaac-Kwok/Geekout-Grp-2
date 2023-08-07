@@ -9,7 +9,7 @@ router.get("/profile/:name", (req, res) => {
 
     res.download(directoryPath + fileName, fileName, (err) => {
         if (err) {
-            res.status(500).send({
+            return res.status(500).send({
                 message: "Could not download the file. " + err,
             });
 
