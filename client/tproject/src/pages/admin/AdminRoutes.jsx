@@ -19,6 +19,7 @@ import BicycleAdmin from './bicycle/BicycleAdmin'
 import ViewBicycle from './bicycle/ViewBicycle'
 import AddBicycle from './bicycle/AddBicycle'
 import EditBicycle from './bicycle/EditBicycle'
+import ViewAllRequests from './requests/ViewAllRequests'
 
 // Driver 
 
@@ -68,6 +69,7 @@ function AdminRoutes() {
                 <Route path="/bicycle/view" element={<ViewBicycle />} />
                 <Route path="/bicycle/add" element={<AddBicycle />} />
                 <Route path="/bicycle/:id" element={<EditBicycle />} />
+                <Route path="/requests/viewAll" element={<ViewAllRequests />} />
 
 
                 {/* Driver Paths */}

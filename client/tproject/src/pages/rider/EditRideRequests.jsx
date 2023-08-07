@@ -21,6 +21,13 @@ import { useFormik } from "formik";
 import http from "../../http";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import AddIcon from "@mui/icons-material/Add";
+import { parseISO } from "date-fns";
+
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 
 function EditRideRequests() {
   const [loading, setLoading] = useState(false);
@@ -42,6 +49,14 @@ function EditRideRequests() {
     createdAt: "",
     updatedAt: "",
   });
+
+  const handleChangeDate = (date) => {
+    formik.setFieldValue("date", date); // Update the "date" field directly with the selected date
+  };
+
+  const handleChangeTime = (time) => {
+    formik.setFieldValue("time", time);
+  };
 
   useEffect(() => {
     // Fetch ride request data on component mount
@@ -78,7 +93,12 @@ function EditRideRequests() {
   }, []);
 
   const formik = useFormik({
-    initialValues: rideRequest,
+    initialValues: {
+      ...rideRequest,
+      // Leave out time from initialValues, set it using useEffect
+      time: null,
+      date: null,
+    },
     enableReinitialize: true,
 
     validationSchema: Yup.object({
@@ -92,9 +112,13 @@ function EditRideRequests() {
     }),
     onSubmit: (data) => {
       console.log("test submit");
+      console.log("time", data.time);
+      console.log("date", data.date);
       setLoading(true);
-      data.date = format(selectedDate, "yyyy-MM-dd");
-      data.time = data.time.trim();
+      // data.date = format(selectedDate, "yyyy-MM-dd");
+      // data.date = data.date.trim();
+      // Convert the time value to the desired format "HH:mm:ss"
+      data.time = data.time.format("HH:mm:ss");
       data.pickUp = data.pickUp.trim();
       data.destination = data.destination.trim();
       data.numberOfPassengers = Number(data.numberOfPassengers);
@@ -102,7 +126,7 @@ function EditRideRequests() {
       console.log("Data to be submitted:", data); // Log the data to be submitted
 
       http
-        .put(`/update/${id}`, data)
+        .put(`/riderequests/update/${id}`, data)
         .then((res) => {
           console.log("Response:", res); // Log the response
           if (res.status === 200) {
@@ -129,10 +153,18 @@ function EditRideRequests() {
     },
   });
 
+  // useEffect(() => {
+  //   // Once rideRequest data has loaded, set the initial value for the TimePicker
+  //   if (rideRequest.time) {
+  //     const initialTime = parseISO(rideRequest.time);
+  //     formik.setFieldValue("time", initialTime);
+  //   }
+  // }, [rideRequest, formik]);
+
   return (
     <>
       <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
-        <AdminPageTitle title="Create Ride Request" backbutton />
+        <AdminPageTitle title="Edit Ride Request" backbutton />
 
         <Card sx={{ margin: "auto" }}>
           <Box component="form" onSubmit={formik.handleSubmit}>
@@ -146,7 +178,7 @@ function EditRideRequests() {
                   {/* Date */}
                   {/* Normal text field for date */}
 
-                  <Grid item xs={6} sm={6}>
+                  {/* <Grid item xs={6} sm={6}>
                     <TextField
                       fullWidth
                       id="date"
@@ -159,9 +191,50 @@ function EditRideRequests() {
                       helperText={formik.touched.date && formik.errors.date}
                       sx={{ marginY: "1rem" }}
                     />
-                  </Grid>
+                  </Grid> */}
+
+                  {/* <Grid item xs={6} sm={6}>
+                    <TextField
+                      fullWidth
+                      id="date"
+                      name="date"
+                      label="Date"
+                      variant="outlined"
+                      value={formik.values.date}
+                      onChange={formik.handleChange}
+                      error={formik.touched.date && Boolean(formik.errors.date)}
+                      helperText={formik.touched.date && formik.errors.date}
+                      sx={{ marginY: "1rem" }}
+                    />
+                  </Grid> */}
 
                   {/* Datepicker field for date */}
+
+                  {/* Datepicker field for date */}
+                  <Grid item xs={6} sm={6}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        label="Date"
+                        // slotProps={{
+                        //   textField: {
+                        //     helperText: "MM/DD/YYYY",
+                        //   },
+                        // }}
+                        slotProps={{ textField: { fullWidth: true } }}
+                        value={formik.values.date}
+                        onChange={handleChangeDate}
+                        renderInput={(params) => (
+                          <TextField {...params} variant="outlined" />
+                        )}
+                        error={
+                          formik.touched.date && Boolean(formik.errors.date)
+                        }
+                        helperText={formik.touched.date && formik.errors.date}
+                        sx={{ marginY: "1rem" }}
+                      />
+                    </LocalizationProvider>
+                  </Grid>
+
                   {/* <Grid item xs={12} sm={6}>
                     <Grid container spacing={0} alignItems="center">
                       <Grid item xs={6} sm={6}>
@@ -268,8 +341,35 @@ function EditRideRequests() {
                     />
                   </Grid> */}
 
-                  {/* Normal text field code for time */}
                   <Grid item xs={6} sm={6}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <TimePicker
+                        fullWidth
+                        id="time"
+                        name="time"
+                        label="Time"
+                        // slotProps={{
+                        //   textField: {
+                        //     helperText: "HH:MM: aa",
+                        //   },
+                        // }}
+                        slotProps={{ textField: { fullWidth: true } }}
+                        value={formik.values.time}
+                        onChange={handleChangeTime}
+                        renderInput={(params) => (
+                          <TextField {...params} variant="outlined" />
+                        )}
+                        error={
+                          formik.touched.time && Boolean(formik.errors.time)
+                        }
+                        helperText={formik.touched.time && formik.errors.time}
+                        sx={{ marginY: "1rem" }}
+                      />
+                    </LocalizationProvider>
+                  </Grid>
+
+                  {/* Normal text field code for time */}
+                  {/* <Grid item xs={6} sm={6}>
                     <TextField
                       fullWidth
                       id="time"
@@ -282,7 +382,7 @@ function EditRideRequests() {
                       helperText={formik.touched.time && formik.errors.time}
                       sx={{ marginY: "1rem" }}
                     />
-                  </Grid>
+                  </Grid> */}
 
                   <Grid item xs={12} sm={6}>
                     <TextField
@@ -387,7 +487,7 @@ function EditRideRequests() {
                 onClick={formik.handleSubmit}
                 sx={{ marginBottom: "1rem" }}
               >
-                Submit Request
+                Save Changes
               </LoadingButton>
             </CardContent>
           </Box>

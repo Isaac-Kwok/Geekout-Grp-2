@@ -39,7 +39,7 @@ function AdminNavList() {
                 </ListItemButton>
             </ListItem>
             <ListItem key={"Requests"} disablePadding>
-                <ListItemButton component={Link} to="/">
+                <ListItemButton component={Link} to="/admin/requests/viewAll">
                     <ListItemIcon><RequestQuoteIcon /></ListItemIcon>
                     <ListItemText primary={"Requests"} />
                 </ListItemButton>

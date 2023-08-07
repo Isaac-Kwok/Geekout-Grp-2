@@ -81,7 +81,7 @@ router.get("/myrequests/:userId/specific/:requestId", validateToken, async (req,
 
 // Update a ride request by ID (does not require token validation)
 router.put("/update/:requestId", async (req, res) => {
-  let id = req.params.id;
+  let id = req.params.requestId;
   let data = req.body;
   // Validate request body
   const schema = yup.object().shape({

@@ -37,13 +37,18 @@ function EditLocation() {
     status: false,
     premium: 0,
     imageFile: "",
-    arrivals: 0,
-    departures: 0,
+    // arrivals: 0,
+    // departures: 0,
   });
+
+  // const handleChange = (event) => {
+  //   const { name, value } = event.target;
+  //   formik.setFieldValue(name, value === "Active" ? true : false);
+  // };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    formik.setFieldValue(name, value === "Active" ? true : false);
+    formik.setFieldValue(name, value); // Set the value directly
   };
 
   const onFileChange = (e) => {
@@ -124,8 +129,8 @@ function EditLocation() {
       premium: Yup.number(),
       imageFile: Yup.string().trim().required("Image is required"),
       status: Yup.string().required("Location Status is required"),
-      arrivals: Yup.number().optional(),
-      departures: Yup.number().optional(),
+      // arrivals: Yup.number().optional(),
+      // departures: Yup.number().optional(),
     }),
     onSubmit: (data) => {
       setLoading(true);
@@ -133,21 +138,23 @@ function EditLocation() {
       data.name = data.name.trim();
       data.notes = data.notes.trim();
       data.premium = Number(parseFloat(data.premium).toFixed(2));
-      data.arrivals = Number(data.arrivals);
-      data.departures = Number(data.departures);
+      // data.arrivals = Number(data.arrivals);
+      // data.departures = Number(data.departures);
       console.log("After conversion:", typeof data.premium);
 
       if (data.premium == "") {
         data.premium = 0;
       }
       data.imageFile = data.imageFile.trim();
-      data.status = data.status === "Active" ? true : false;
-      if (data.arrivals === "") {
-        data.arrivals = 0;
-      }
-      if (data.departures === "") {
-        data.departures = 0;
-      }
+      data.status = data.status.trim();
+
+      // data.status = data.status === "Active" ? true : false;
+      // if (data.arrivals === "") {
+      //   data.arrivals = 0;
+      // }
+      // if (data.departures === "") {
+      //   data.departures = 0;
+      // }
 
       console.log("Data to be submitted:", data); // Log the data to be submitted
 
@@ -264,7 +271,7 @@ function EditLocation() {
                     />
                   </Grid>
 
-                  <Grid item xs={12} sm={6}>
+                  {/* <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
                       id="status"
@@ -283,9 +290,30 @@ function EditLocation() {
                       <MenuItem value="Active">Active</MenuItem>
                       <MenuItem value="Inactive">Inactive</MenuItem>
                     </TextField>
-                  </Grid>
+                  </Grid> */}
 
                   <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      id="status"
+                      name="status"
+                      label="Status"
+                      select
+                      variant="outlined"
+                      value={formik.values.status}
+                      onChange={formik.handleChange}
+                      error={
+                        formik.touched.status && Boolean(formik.errors.status)
+                      }
+                      helperText={formik.touched.status && formik.errors.status}
+                      sx={{ marginY: "1rem" }}
+                    >
+                      <MenuItem value="Active">Active</MenuItem>
+                      <MenuItem value="Inactive">Inactive</MenuItem>
+                    </TextField>
+                  </Grid>
+
+                  {/* <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
                       id="arrivals"
@@ -323,7 +351,7 @@ function EditLocation() {
                       }
                       sx={{ marginY: "1rem" }}
                     />
-                  </Grid>
+                  </Grid> */}
 
                   <Grid item xs={6} sm={6}>
                     {/* Image upload */}

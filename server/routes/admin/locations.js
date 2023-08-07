@@ -13,11 +13,11 @@ router.post("/create", validateAdmin, async (req, res) => {
   const schema = yup.object().shape({
     name: yup.string().required(),
     notes: yup.string().max(1024),
-    status: yup.bool().required(),
+    status: yup.string().required(),
     premium: yup.number(),
     imageFile: yup.string().required(),
-    arrivals: yup.number(),
-    departures: yup.number(),
+    // arrivals: yup.number(),
+    // departures: yup.number(),
   });
 
   try {
@@ -72,11 +72,11 @@ router.put("/edit/:id", async (req, res) => {
   const schema = yup.object().shape({
     name: yup.string().required(),
     notes: yup.string().max(1024),
-    status: yup.bool().required(),
+    status: yup.string().required(),
     premium: yup.number(),
     imageFile: yup.string().required(),
-    arrivals: yup.number(),
-    departures: yup.number(),
+    // arrivals: yup.number(),
+    // departures: yup.number(),
   });
   try {
     await schema.validate(data, { abortEarly: false, strict: true });

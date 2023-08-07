@@ -10,7 +10,7 @@ import {
   Grid,
   Box,
   Container,
-  CardMedia
+  CardMedia,
 } from "@mui/material";
 import CardTitle from "../../../components/CardTitle";
 import PlaceIcon from "@mui/icons-material/Place";
@@ -20,6 +20,7 @@ const LocationDetails = () => {
   const { id } = useParams();
   const [location, setLocation] = useState(null);
   const [imageFile, setImage] = useState(null);
+  const [statusBoolean, setStatusBoolean] = useState(null);
 
   useEffect(() => {
     fetchLocation();
@@ -34,17 +35,31 @@ const LocationDetails = () => {
     });
   };
 
+  useEffect(() => {
+    if (location) {
+      setStatusBoolean(location.status === "Active" ? true : false);
+    }
+  }, [location]);
+
   if (!location) {
     return <CircularProgress />;
   }
 
   return (
     <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
-      <AdminPageTitle title="Location Details" subtitle={location.name} backbutton />
+      <AdminPageTitle
+        title="Location Details"
+        subtitle={location.name}
+        backbutton
+      />
       <Card sx={{ margin: "auto" }}>
         <CardMedia
           sx={{ height: 300 }}
-          image={import.meta.env.VITE_API_URL + "/admin/locations/images/" + imageFile}
+          image={
+            import.meta.env.VITE_API_URL +
+            "/admin/locations/images/" +
+            imageFile
+          }
           title="Image of the location"
         />
 
@@ -78,8 +93,8 @@ const LocationDetails = () => {
                 <Typography variant="body1" gutterBottom>
                   <InfoBox
                     title="Status"
-                    value={location.status ? "Active" : "Inactive"}
-                    boolean={location.status}
+                    value={statusBoolean ? "Active" : "Inactive"}
+                    boolean={statusBoolean}
                   />
                 </Typography>
               </Grid>
