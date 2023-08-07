@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Order, User, OrderItem, Product, Refund } = require('../models');
+const { Op } = require('sequelize');
 const yup = require('yup');
 const { validateToken } = require('../middleware/validateToken');
 
@@ -21,7 +22,10 @@ router.get('/', validateToken, async (req, res) => {
     try {
         const orders = await Order.findAll({
             where: {
-                user_id: req.user.id
+                user_id: req.user.id,
+                order_status: {
+                    [Op.notIn]: [0]
+                }
             },
             include: [
                 {

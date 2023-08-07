@@ -33,14 +33,7 @@ function ViewLogins() {
             minWidth: 150,
             
         },
-        {
-            field: 'order_status',
-            headerName: 'Order Status',
-            flex: 1,
-            minWidth: 150,
-            
-        },
-        { field: 'total_amount', headerName: 'Total Price', type: 'number', minWidth: 150 },
+        { field: 'total_amount', headerName: 'Total Price ($)', type: 'number', minWidth: 150 },
         { field: 'createdAt', headerName: 'Created On', type: 'dateTime', minWidth: 200, valueFormatter: (params) => new Date(params.value).toLocaleString() },
         {
             field: 'actions', type: 'actions', width: 40, getActions: (params) => [
@@ -85,6 +78,7 @@ function ViewLogins() {
             })
             .catch((error) => {
                 console.error('Error fetching orders:', error);
+                setLoading(false);
             });
     }
 
