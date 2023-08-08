@@ -165,6 +165,25 @@ router.put("/abort", validateToken, async (req, res) => {
     }
 })
 
+router.put("/ride/:id", validateToken, async (req, res) => {
+    // Update ride by id
+    let id = req.params.id;
+    let data = req.body;
+    try {
+        const ride = await RideRequest.findByPk(id)
+        if (!ride) {
+            return res.status(404).json({ message: "Ride not found" })
+        }
+
+        await ride.update(data)
+
+        res.json(ride)
+    } catch (error) {
+
+        res.status(400).json({ message: error.errors })
+    }
+})
+
 router.put("/complete", validateToken, async (req, res) => {
     // Update user by id
     try {
