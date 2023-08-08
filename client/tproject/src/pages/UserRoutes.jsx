@@ -20,6 +20,7 @@ import ViewRideRequests from './rider/ViewRideRequests'
 import Wishlist from './wishlist/ViewWishlist'
 
 import { UserContext } from '..'
+import ViewSpecificRequest from './rider/ViewSpecificRequest'
 
 function UserRoutes() {
     // Routes for admin pages. To add authenication so that only admins can access these pages, add a check for the user's role in the UserContext
@@ -46,7 +47,8 @@ function UserRoutes() {
             <Route path="/cart/*" element={<CartRoutes />} />
             <Route path="/riderequests/create" element={<CreateRideRequest />} />
             <Route path="/riderequests/myrequests/" element={<ViewRideRequests />} />
-            <Route path="/riderequests/update" element={<EditRideRequests />} />
+            <Route path="/riderequests/:userId/update/:id" element={<EditRideRequests />} />
+            <Route path="/riderequests/myrequests/:userId/:requestId" element={<ViewSpecificRequest />} />
             <Route path="/wishlist" element={<Wishlist/>} />
         </Routes>
     )
