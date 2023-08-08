@@ -15,6 +15,8 @@ import LabelIcon from '@mui/icons-material/Label';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import LiveHelpIcon from '@mui/icons-material/LiveHelp';
 import ArticleIcon from '@mui/icons-material/Article';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import InventoryIcon from '@mui/icons-material/Inventory';
 
 
 function AdminNavList() {
@@ -190,7 +192,18 @@ function AdminNavList() {
                             <ListItemText primary={"Create Product"} />
                         </ListItemButton>
                     </ListItem>
-                    {/* Add more here for more sublist items */}
+                    <ListItem key={"Orders"} disablePadding>
+                        <ListItemButton component={Link} to="/admin/orders">
+                            <ListItemIcon><LabelIcon /></ListItemIcon>
+                            <ListItemText primary={"View All Orders"} />
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem key={"Refunds"} disablePadding>
+                        <ListItemButton component={Link} to="/admin/refunds">
+                            <ListItemIcon><LabelIcon /></ListItemIcon>
+                            <ListItemText primary={"View All Refunds"} />
+                        </ListItemButton>
+                    </ListItem>
                 </List>
             </Collapse>
             <ListItem key={"Support"} disablePadding>

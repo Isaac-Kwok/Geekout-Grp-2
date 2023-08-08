@@ -70,5 +70,9 @@ module.exports = (sequelize, DataTypes) => {
         },
     });
 
+    Product.associate = (models) => {
+        Product.hasMany(models.OrderItem, { foreignKey: "product_id", onDelete: "CASCADE" });
+    };
+
     return Product;
 }

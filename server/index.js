@@ -195,19 +195,24 @@ app.post("/generateCodeChallenge", async function (req, res, next) {
 });
 
 // Routes
-const userRoutes = require("./routes/user")
-const adminUsersRoutes = require("./routes/admin/users")
-const authRoutes = require("./routes/auth")
-const uploadRoutes = require("./routes/upload")
-const paymentRoutes = require("./routes/payment")
-const driverRoutes = require('./routes/driver')
-const adminProductsRoutes = require("./routes/admin/products")
-const bicycleRoutes = require('./routes/bicycle')
-const adminDriverRoutes = require('./routes/admin/driver')
-const productsRoutes = require('./routes/products')
-const adminLocationRoutes = require('./routes/admin/locations')
-const fileRoute = require('./routes/file');
-const rideRequestsRoutes = require("./routes/rideRequests");
+const userRoutes = require("./routes/user.js")
+const adminUsersRoutes = require("./routes/admin/users.js")
+const authRoutes = require("./routes/auth.js")
+const uploadRoutes = require("./routes/upload.js")
+const paymentRoutes = require("./routes/payment.js")
+const driverRoutes = require('./routes/driver.js')
+const adminProductsRoutes = require("./routes/admin/products.js")
+const bicycleRoutes = require('./routes/bicycle.js')
+const adminDriverRoutes = require('./routes/admin/driver.js')
+const productsRoutes = require('./routes/products.js')
+const adminLocationRoutes = require('./routes/admin/locations.js')
+const fileRoute = require('./routes/file.js');
+const cartRoutes = require('./routes/cart.js');
+const adminOrdersRoutes = require('./routes/admin/orders.js');
+const orderRoutes = require('./routes/orders.js');
+const wishlistRoutes = require('./routes/wishlist.js');
+const adminRefundRoutes = require('./routes/admin/refunds.js');
+const refundRoutes = require('./routes/refunds.js');
 const adminSupportRoutes = require("./routes/admin/support");
 const supportRoutes = require("./routes/support");
 app.use("/file", fileRoute);
@@ -228,7 +233,12 @@ app.use('/bicycle', bicycleRoutes)
 app.use("/admin/driver", adminDriverRoutes)
 app.use("/products", productsRoutes)
 app.use("/admin/locations", adminLocationRoutes)
-app.use("/riderequests", rideRequestsRoutes);
+app.use("/cart", cartRoutes)
+app.use("/admin/orders", adminOrdersRoutes)
+app.use("/orders", orderRoutes)
+app.use("/wishlist", wishlistRoutes)
+app.use("/admin/refunds", adminRefundRoutes)
+app.use("/refunds", refundRoutes)
 app.use("/admin/support", adminSupportRoutes);
 app.use("/support", supportRoutes);
 

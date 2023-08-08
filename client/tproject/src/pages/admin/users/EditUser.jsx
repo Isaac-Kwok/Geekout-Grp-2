@@ -87,7 +87,8 @@ function EditUser() {
             phone_number: user ? user.phone_number : "",
             is_admin: user ? user.account_type == 0 ? true : false : false,
             cash: user ? user.cash : 0,
-            points: user ? user.points : 0
+            points: user ? user.points : 0,
+            delivery_address: user ? user.delivery_address : "",
         },
         validationSchema: Yup.object({
             email: Yup.string().email("Invalid email address").required("Email is required"),
@@ -208,6 +209,19 @@ function EditUser() {
                                                     helperText={formik.touched.phone_number && formik.errors.phone_number}
                                                 />
                                             </Grid>
+                                            <Grid item xs={12}>
+                                                <TextField
+                                                    fullWidth
+                                                    id="delivery_address"
+                                                    name="delivery_address"
+                                                    label="Delivery Address"
+                                                    variant="outlined"
+                                                    value={formik.values.delivery_address || ""}
+                                                    onChange={formik.handleChange}
+                                                    error={formik.touched.delivery_address && Boolean(formik.errors.delivery_address)}
+                                                    helperText={formik.touched.delivery_address && formik.errors.delivery_address}
+                                                />
+                                            </Grid>
                                         </Grid>
                                         <FormControlLabel label="Is Admin" control={
                                             <Checkbox
@@ -290,9 +304,9 @@ function EditUser() {
                     </DialogContent>
                     <DialogActions>
                         <Stack direction={["column", "row"]} spacing={1}>
-                            <Button style={{justifyContent: "flex-end"}} onClick={handleChangePictureDialogClose} startIcon={<CloseIcon />}>Cancel</Button>
-                            <LoadingButton style={{justifyContent: "flex-end"}} loadingPosition="start" loading={loadingPicture} variant="text" color="primary" startIcon={<PublicIcon />} onClick={handleGravatarChange}>Use Gravatar</LoadingButton>
-                            <LoadingButton style={{justifyContent: "flex-end"}} loadingPosition="start" loading={loadingPicture} variant="text" color="primary" startIcon={<FileUploadIcon />} component="label">Upload Image<input type='file' onChange={handlePictureChange} hidden /></LoadingButton>
+                            <Button style={{ justifyContent: "flex-end" }} onClick={handleChangePictureDialogClose} startIcon={<CloseIcon />}>Cancel</Button>
+                            <LoadingButton style={{ justifyContent: "flex-end" }} loadingPosition="start" loading={loadingPicture} variant="text" color="primary" startIcon={<PublicIcon />} onClick={handleGravatarChange}>Use Gravatar</LoadingButton>
+                            <LoadingButton style={{ justifyContent: "flex-end" }} loadingPosition="start" loading={loadingPicture} variant="text" color="primary" startIcon={<FileUploadIcon />} component="label">Upload Image<input type='file' onChange={handlePictureChange} hidden /></LoadingButton>
                         </Stack>
                     </DialogActions>
                 </Box>

@@ -4,8 +4,10 @@ import { Link, useNavigate } from "react-router-dom"
 import ProfilePicture from "./ProfilePicture";
 import { UserContext } from "..";
 
+import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import PersonIcon from '@mui/icons-material/Person';
 import SupportIcon from '@mui/icons-material/Support';
@@ -62,6 +64,18 @@ export function NavbarProfile() {
                         <ListItemButton component={Link} to="/profile" onClick={() => setIsPopoverOpen(false)}>
                             <ListItemIcon><PersonIcon /></ListItemIcon>
                             <ListItemText primary={"My Profile"} />
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem key={"Wishlist"} disablePadding>
+                        <ListItemButton component={Link} to="/wishlist" onClick={() => setIsPopoverOpen(false)}>
+                            <ListItemIcon><FavoriteBorderOutlinedIcon /></ListItemIcon>
+                            <ListItemText primary={"Wishlist"} />
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem key={"Cart"} disablePadding>
+                        <ListItemButton component={Link} to="/cart" onClick={() => setIsPopoverOpen(false)}>
+                            <ListItemIcon><ShoppingCartIcon /></ListItemIcon>
+                            <ListItemText primary={"Cart"} />
                         </ListItemButton>
                     </ListItem>
                     {user.account_type == 2 &&

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Container, Typography, Card, CardContent, CardActions, Box, Stack, Checkbox, InputAdornment, TextField, Grid, FormControlLabel, FormControl, IconButton, InputLabel, Select, MenuItem, Button, Dialog, DialogContent, DialogActions, DialogContentText, DialogTitle, Link, Input } from '@mui/material'
-import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CardTitle from '../../components/CardTitle';
 import { useNavigate, useParams } from 'react-router-dom'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -12,6 +12,9 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CategoryIcon from '@mui/icons-material/Category';
 import { useSnackbar } from 'notistack';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+
 
 const AspectRatioBox = ({ children }) => (
     <div style={{
@@ -40,76 +43,197 @@ function ViewSingleProduct() {
     const [loading, setLoading] = useState(false);
     const { enqueueSnackbar } = useSnackbar();
     const productPath = `${import.meta.env.VITE_API_URL}/admin/products/productImage/`
+    const [quantity, setQuantity] = useState(1);
 
-
-    function getProduct() {
-        http.get("/products/" + id)
-            .then((res) => {
-                if (res.status === 200) {
-                    setProduct(res.data);
-                    console.log("Product data:", res.data);
-                } else {
-                    enqueueSnackbar("Product retrieval failed!.", { variant: "error" });
-                    console.log("Product retrieval failed with status:", res.status);
-                    setLoading(false);
-                    return navigate(-1);
-                }
-            })
-            .catch((err) => {
-                enqueueSnackbar("Product retrieval failed! " + err.response.data.message, { variant: "error" });
-                console.log("Product retrieval failed with error:", err);
-                setLoading(false);
-                return navigate(-1);
-            })
+    function increaseQuantity() {
+        setQuantity(prevQuantity => prevQuantity + 1);
     }
 
+    function decreaseQuantity() {
+        if (quantity > 1) {
+            setQuantity(prevQuantity => prevQuantity - 1);
+        }
+    }
+    const [inWishlist, setInWishlist] = useState(false);
+
+
+    const loadWishlistItems = async (product) => {
+        try {
+            const response = await http.get('/wishlist/' + product.id);
+            const isInWishlist = response.status === 200;
+            setInWishlist(isInWishlist);
+        } catch (error) {
+            console.error('Error loading wishlist item:', error);
+        }
+    };
+
+    const handleAddToWishlist = async () => {
+        if (!product) return;
+        if (inWishlist) {
+            handleRemoveFromWishlist(product.id);
+        } else {
+            try {
+                const response = await http.post('/wishlist', { productId: product.id });
+                if (response.status === 201) {
+                    setInWishlist(true);
+                }
+            } catch (error) {
+                if (error.response && error.response.status === 400) {
+                    enqueueSnackbar('Error adding product to wishlist: Product might already be in your wishlist or does not exist', { variant: 'error' });
+                } else {
+                    console.error('Error adding product to wishlist:', error);
+                }
+            }
+        }
+    };
+
+
+    const handleRemoveFromWishlist = async (productId) => {
+        try {
+            const response = await http.delete(`/wishlist/${productId}`);
+            if (response.status === 200) {
+                setInWishlist(false);
+            }
+        } catch (error) {
+            console.error('Error removing product from wishlist:', error);
+        }
+    };
+
+    const addToCart = () => {
+        http.post('/cart', {
+            productId: product.id,
+            quantity: quantity
+        })
+            .then(response => {
+                if (response.status === 201) {
+                    enqueueSnackbar(
+                        <span>
+                            Product added to cart.{' '}
+                            <span
+                                style={{ textDecoration: 'underline', cursor: 'pointer' }}
+                                onClick={() => navigate('/cart')}
+                            >
+                                Go to Cart
+                            </span>
+                        </span>,
+                        { variant: 'success' }
+                    );
+                } else {
+                    enqueueSnackbar('Error adding product to cart', { variant: 'error' });
+                }
+            })
+            .catch(err => {
+                console.error('Error adding product to cart:', err);
+                enqueueSnackbar('Error adding product to cart', { variant: 'error' });
+            });
+    }
+
+    async function getProduct() {
+        try {
+            const res = await http.get("/products/" + id);
+            if (res.status === 200) {
+                setProduct(res.data);
+                console.log("Product data:", res.data);
+                loadWishlistItems(res.data);  // Pass the product object directly here
+            } else {
+                enqueueSnackbar("Product retrieval failed!.", { variant: "error" });
+                console.log("Product retrieval failed with status:", res.status);
+                setLoading(false);
+                return navigate(-1);
+            }
+        } catch (err) {
+            enqueueSnackbar("Product retrieval failed! " + err.response.data.message, { variant: "error" });
+            console.log("Product retrieval failed with error:", err);
+            setLoading(false);
+            return navigate(-1);
+        }
+    }
 
     useEffect(() => {
         document.title = "EnviroGo - Products"
         getProduct();
-    }, [])
+    }, []);
+
 
     return (
         <>{product && (
-            <>
-                <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
-                    <Card sx={{ margin: "auto" }}>
-                        <Box component="form">
-                            <CardContent>
-                                <CardTitle title="Product Information" icon={<IconButton size="large" onClick={() => navigate("/products")} ><ArrowBackIcon /><CategoryIcon/></IconButton>} />
-                                <Grid container spacing={1} sx={{ marginY: "1rem" }}>
-                                    <img src={`${productPath}${product.product_picture}`} alt={product.product_name} style={{ width: '100%', height: '500px', objectFit: 'cover' }} />
+            <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
+                <Card sx={{ margin: "auto" }}>
+                    <Box component="form">
+                        <CardContent>
+                            <CardTitle title="Product Information" icon={<IconButton size="large" onClick={() => navigate("/products")} ><ArrowBackIcon /><CategoryIcon /></IconButton>} />
+                            <Grid container spacing={2} sx={{ marginY: "1rem" }}>
+                                <Grid item xs={12} md={6}>
+                                    <AspectRatioBox>
+                                        <img src={`${productPath}${product.product_picture}`} alt={product.product_name} style={{ width: '100%', height: 'auto', objectFit: 'cover' }} />
+                                    </AspectRatioBox>
                                 </Grid>
-                                <Grid container spacing={2} sx={{ marginY: "1rem" }}>
-                                    <Grid item xs={12} sm={6}>
-                                        <Typography variant="h6">Product Name: {product.product_name}</Typography>
-                                        <Typography variant="body1">Category: {product.product_category}</Typography>
-                                        <Typography variant="body1">Stock: {product.product_stock}</Typography>
-                                        <Typography variant="body1">Price: {product.product_price}</Typography>
+                                <Grid item xs={12} md={6}>
+                                    <Typography variant="h6">Product Name: {product.product_name}</Typography>
+                                    <Typography variant="body1">Category: {product.product_category}</Typography>
+                                    <Typography variant="body1">
+                                        <span>Availability:&nbsp;</span>
+                                        <span style={{ color: product.product_status == 1 && product.product_stock ? "black" : "red" }}>
+                                            {product.product_status == 1 && product.product_stock ? "In Stock" : "Out of Stock"}
+                                        </span>
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ display: "flex", alignItems: "center" }}>
+                                        <Typography variant="body1" component="span">
+                                            Price:
+                                        </Typography>
+                                        <Typography variant="body1" component="span" sx={{ textDecoration: product.product_sale ? "line-through" : "none" }}>
+                                            ${product.product_price ? product.product_price : "NIL"}
+                                        </Typography>
                                         {product.product_sale && (
-                                            <Typography variant="body1">Sale: {product.product_sale}</Typography>,
-                                            <Typography variant="body1">Discounted Price: {(1 - product.product_discounted_percent / 100) * product.product_price}</Typography>
-
+                                            <Typography variant="body1" component="span" sx={{ color: "red", marginLeft: "0.5rem" }}>
+                                                ${((product.product_price * (1 - product.product_discounted_percent / 100)).toFixed(2))}
+                                            </Typography>
                                         )}
-                                        {product.product_category === "Pass" && (
-                                            <Typography variant="body1">Duration of Pass: {product.duration_of_pass}</Typography>
-                                        )}
-                                    </Grid>
+                                    </Typography>
+                                    {product.product_category === "Pass" && (
+                                        <Typography variant="body1">Duration of Pass: {product.duration_of_pass}</Typography>
+                                    )}
                                     <Grid item xs={12} sm={6}>
                                         <Typography variant="body1">Description: </Typography>
                                         <MDEditor.Markdown
-                                            style={{ backgroundColor: "white", color: "black" }}
-                                            source={product.product_description} />
+                                            style={{ backgroundColor: "white", color: "black", fontFamily: "Poppins" }}
+                                            source={product.product_description} sx={{ whiteSpace: 'pre-wrap' }} />
                                     </Grid>
+                                    {product.product_status == 1 && product.product_stock && (
+                                        <>
+                                            <Grid container spacing={2} alignItems="center">
+                                                <Grid item>
+                                                    <IconButton onClick={decreaseQuantity} disabled={quantity === 1}>
+                                                        <RemoveIcon />
+                                                    </IconButton>
+                                                </Grid>
+                                                <Grid item>
+                                                    <Typography>{quantity}</Typography>
+                                                </Grid>
+                                                <Grid item>
+                                                    <IconButton onClick={increaseQuantity}>
+                                                        <AddIcon />
+                                                    </IconButton>
+                                                </Grid>
+                                            </Grid>
+                                            <Button onClick={addToCart} variant="contained" color="primary">
+                                                Add to Cart
+                                            </Button>
+                                        </>)}
+                                    <IconButton
+                                        onClick={() => handleAddToWishlist(product.id)}
+                                    >
+                                        {inWishlist
+                                            ? <FavoriteIcon color="error" />
+                                            : <FavoriteBorderIcon />}
+                                    </IconButton>
                                 </Grid>
-                            </CardContent>
-                        </Box>
-                    </Card>
-                </Container>
-            </>
-        )}
-
-        </>
+                            </Grid>
+                        </CardContent>
+                    </Box>
+                </Card>
+            </Container>
+        )}</>
     )
 }
 

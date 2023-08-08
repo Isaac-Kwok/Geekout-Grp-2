@@ -20,6 +20,11 @@ import ViewBicycle from './bicycle/ViewBicycle'
 import AddBicycle from './bicycle/AddBicycle'
 import EditBicycle from './bicycle/EditBicycle'
 import ViewAllRequests from './requests/ViewAllRequests'
+import ViewOrders from './order/ViewOrders'
+import ViewAdminSingleOrder from './order/ViewAdminSingleOrder'
+import EditOrderStatus from './order/EditOrderStatus'
+import ViewRefunds from './refund/ViewRefunds'
+import ViewAdminSingleRefund from './refund/ViewAdminSingleRefund'
 import CreateArticle from './support/CreateArticle'
 import ViewHelpArticles from './support/ViewHelpArticles'
 import EditHelpArticle from './support/EditHelpArticle'
@@ -76,6 +81,11 @@ function AdminRoutes() {
                 <Route path="/bicycle/add" element={<AddBicycle />} />
                 <Route path="/bicycle/:id" element={<EditBicycle />} />
                 <Route path="/requests/viewAll" element={<ViewAllRequests />} />
+                <Route path="/orders" element={<ViewOrders />} />   
+                <Route path="/orders/:id" element= {<ViewAdminSingleOrder />}/>
+                <Route path="/orders/editstatus/:id" element= {<EditOrderStatus/>}/>
+                <Route path="/refunds" element={<ViewRefunds />} />
+                <Route path="/refunds/editstatus/:id" element={<ViewAdminSingleRefund />} />
 
 
                 {/* Driver Paths */}
