@@ -19,6 +19,7 @@ import BicycleAdmin from './bicycle/BicycleAdmin'
 import ViewBicycle from './bicycle/ViewBicycle'
 import AddBicycle from './bicycle/AddBicycle'
 import EditBicycle from './bicycle/EditBicycle'
+import ViewAllRequests from './requests/ViewAllRequests'
 import ViewOrders from './order/ViewOrders'
 import ViewAdminSingleOrder from './order/ViewAdminSingleOrder'
 import EditOrderStatus from './order/EditOrderStatus'
@@ -79,6 +80,7 @@ function AdminRoutes() {
                 <Route path="/bicycle/view" element={<ViewBicycle />} />
                 <Route path="/bicycle/add" element={<AddBicycle />} />
                 <Route path="/bicycle/:id" element={<EditBicycle />} />
+                <Route path="/requests/viewAll" element={<ViewAllRequests />} />
                 <Route path="/orders" element={<ViewOrders />} />   
                 <Route path="/orders/:id" element= {<ViewAdminSingleOrder />}/>
                 <Route path="/orders/editstatus/:id" element= {<EditOrderStatus/>}/>
