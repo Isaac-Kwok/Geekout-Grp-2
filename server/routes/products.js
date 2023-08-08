@@ -9,9 +9,6 @@ router.get('/', async (req, res) => {
             attributes: {
                 exclude: ["createdAt"]
             },
-            where:{
-                product_status: true
-            }
         });
         res.json(product);
     } catch (error) {
@@ -37,14 +34,7 @@ router.get("/productImage/:filename", (req, res) => {
     const fileName = req.params.filename;
     const directoryPath = path.join(__dirname, "../../public/uploads/products/");
     
-    res.download(directoryPath + fileName, fileName, (err) => {
-        if (err) {
-            res.status(500).send({
-                message: "Could not download the file. " + err,
-            });
-
-        }
-    });
+    res.sendFile(directoryPath + fileName, fileName);
 })
 
 module.exports = router

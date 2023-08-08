@@ -4,10 +4,13 @@ import { Link, useNavigate } from "react-router-dom"
 import ProfilePicture from "./ProfilePicture";
 import { UserContext } from "..";
 
+import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import PersonIcon from '@mui/icons-material/Person';
+import SupportIcon from '@mui/icons-material/Support';
 import { enqueueSnackbar } from "notistack";
 
 export function NavbarProfile() {
@@ -63,6 +66,18 @@ export function NavbarProfile() {
                             <ListItemText primary={"My Profile"} />
                         </ListItemButton>
                     </ListItem>
+                    <ListItem key={"Wishlist"} disablePadding>
+                        <ListItemButton component={Link} to="/wishlist" onClick={() => setIsPopoverOpen(false)}>
+                            <ListItemIcon><FavoriteBorderOutlinedIcon /></ListItemIcon>
+                            <ListItemText primary={"Wishlist"} />
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem key={"Cart"} disablePadding>
+                        <ListItemButton component={Link} to="/cart" onClick={() => setIsPopoverOpen(false)}>
+                            <ListItemIcon><ShoppingCartIcon /></ListItemIcon>
+                            <ListItemText primary={"Cart"} />
+                        </ListItemButton>
+                    </ListItem>
                     {user.account_type == 2 &&
                     <ListItem key={"Driver's Dashboard"} disablePadding>
                         <ListItemButton component={Link} to="/driver/dashboard" onClick={() => setIsPopoverOpen(false)}>
@@ -84,6 +99,12 @@ export function NavbarProfile() {
                             <ListItemText primary={"Admin Panel"} />
                         </ListItemButton>
                     </ListItem> }
+                    <ListItem key={"Support"} disablePadding>
+                        <ListItemButton component={Link} to="/support" onClick={() => setIsPopoverOpen(false)}>
+                            <ListItemIcon><SupportIcon /></ListItemIcon>
+                            <ListItemText primary={"Support"} />
+                        </ListItemButton>
+                    </ListItem>
                     <ListItem key={"Logout"} disablePadding>
                         <ListItemButton onClick={() => handleLogout()}>
                             <ListItemIcon><LogoutIcon /></ListItemIcon>

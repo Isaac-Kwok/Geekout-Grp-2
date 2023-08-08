@@ -59,6 +59,7 @@ router.put("/", validateToken, async (req, res) => {
         email: yup.string().email().optional(),
         password: yup.string().min(12).max(64).optional(),
         profile_picture_type: yup.string().oneOf(["local", "gravatar"]).optional(),
+        delivery_address: yup.string().optional(),
     }, [["phone_number", "phone_number"], ["profile_picture_type", "profile_picture_type"]]).noUnknown(true)
 
     try {
