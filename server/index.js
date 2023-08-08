@@ -215,6 +215,7 @@ const adminRefundRoutes = require('./routes/admin/refunds.js');
 const refundRoutes = require('./routes/refunds.js');
 const adminSupportRoutes = require("./routes/admin/support");
 const supportRoutes = require("./routes/support");
+const rideRequestRoutes = require("./routes/rideRequests");
 app.use("/file", fileRoute);
 
 app.use(express.urlencoded({ extended: false }));
@@ -241,6 +242,7 @@ app.use("/admin/refunds", adminRefundRoutes)
 app.use("/refunds", refundRoutes)
 app.use("/admin/support", adminSupportRoutes);
 app.use("/support", supportRoutes);
+app.use("/riderequests", rideRequestRoutes);
 
 
 app.use((err, req, res, next) => {
