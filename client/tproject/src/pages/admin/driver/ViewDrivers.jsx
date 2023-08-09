@@ -60,24 +60,29 @@ function ViewDriverApplications() {
 
     const handledeleteAllApplicationDialogOpen = () => {
         if (selectedRows.length == 0) {
-            enqueueSnackbar("Please select at least one application entry!", { variant: "danger" })
+            enqueueSnackbar("Please select at least one driver!", { variant: "danger" })
         }
         else {
             setDeleteAllApplicationDialog(true)
         }
     }
     // HTTP included methods
-    const handleGetDriverApplications = () => {
+    const handleGetDriverApplications = async () => {
         let drivers = []
-        http.get("/admin/driver/getalldriverapplications").then((res) => {
+        http.get("/admin/driver/getalldriverapplications").then(async(res) => {
             if (res.status === 200) {
                 for (let index = 0; index < res.data.length; index++) {
+                    let driverObject = {};
                     const driver = res.data[index];
                     if (driver.driver_status == "Approved") {
-                        drivers.push(driver)
+                        console.log('id', driver.user_id)
+                        const user = await http.get("/admin/users/" + driver.user_id)
+                        driverObject = Object.assign(driver, user.data);
+                        drivers.push(driverObject)
                     }     
                 }
                 setDriverApplications(drivers)
+                console.log('list',driverApplications)
             }
         })
     }
@@ -87,32 +92,45 @@ function ViewDriverApplications() {
         })
     }
     const deleteById = () => {
-        http.delete("/admin/driver/deletedriverapplicationbyID/" + deleteApplication.id).then((res) => {
+        let data = {account_type: 1}
+        http.put("/admin/users/" + deleteApplication.user_id, data).then((res) => {
             if (res.status === 200) {
                 setDeleteApplicationDialog(false)
                 handleGetDriverApplications()
-                navigate('/admin/driver/viewdriverapplications');
-                enqueueSnackbar("Driver Application deleted successfully!", { variant: "success" });
+                navigate('/admin/driver/viewdrivers');
+                enqueueSnackbar("Driver deactivated successfully!", { variant: "success" });
+            }
+        })
+    }
+    const handleactivateuser = (object) => {
+        let data = {account_type: 2}
+        http.put("/admin/users/" + object.user_id, data).then((res) => {
+            if (res.status === 200) {
+                handleGetDriverApplications()
+                navigate('/admin/driver/viewdrivers');
+                enqueueSnackbar("Driver Activated successfully!", { variant: "success" });
             }
         })
     }
     const bulkDelete = () => {
         console.log('rows', selectedRows)
         if (selectedRows.length == 0) {
-            enqueueSnackbar("No driver application entries are selected!", { variant: "danger" });
+            enqueueSnackbar("No drivers are selected!", { variant: "danger" });
         }
         else {
+            let data = {account_type: 1}
             for (let index = 0; index < selectedRows.length; index++) {
                 let row = selectedRows[index];
-                http.delete("/admin/driver/deletedriverapplicationbyID/" + row.id).then((res) => {
+                http.put("/admin/users/" + row.user_id, data).then((res) => {
                     if (res.status === 200) {
+                        console.log( res.data)
                     }
                 })
             }
             setDeleteAllApplicationDialog(false);
             handleGetDriverApplications()
-            navigate('/admin/driver/viewdriverapplications');
-            enqueueSnackbar("Driver Applications deleted successfully!", { variant: "success" });
+            navigate('/admin/driver/viewdrivers');
+            enqueueSnackbar("Driver deleted successfully!", { variant: "success" });
         }
 
     }
@@ -156,26 +174,44 @@ function ViewDriverApplications() {
             width: 250,
         },
         {
-            field: 'driver_status',
+            field: 'account_type',
             headerName: 'Status',
             width: 200,
+            valueGetter: (params) => {
+                if (params.value === 2) {
+                    return 'Active'
+                }
+                else if (params.value === 1) {
+                    return 'Not Active'
+                }
+            }
         },
         {
             field: 'actions', type: 'actions', headerName: "Actions", width: 100, getActions: (params) => [
                 <GridActionsCellItem
                     icon={<DeleteIcon />}
-                    label="Delete"
+                    label="Activate Driver"
                     onClick={() => {
-                        setDeleteApplication(params.row)
-                        handledeleteApplicationDialogOpen()
+                        handleactivateuser(params.row);
                     }}
+                    showInMenu
                 />,
                 <GridActionsCellItem
+                icon={<DeleteIcon />}
+                label="Deactivate Driver"
+                onClick={() => {
+                    setDeleteApplication(params.row)
+                    handledeleteApplicationDialogOpen()
+                }}
+                showInMenu
+            />,
+                <GridActionsCellItem
                     icon={<PreviewIcon />}
-                    label="View"
+                    label="View Appplication"
                     onClick={() => {
                         navigate('/admin/driver/EditDriverApplication/' + params.row.id)
                     }}
+                    showInMenu
                 />
             ]
         },
@@ -362,7 +398,7 @@ function ViewDriverApplications() {
                 <Button variant='contained' color='error' onClick={() => {
                     handledeleteAllApplicationDialogOpen()
                 }}>
-                    Delete All
+                    Deactivate All
                 </Button>
             </Box>
 
@@ -389,12 +425,12 @@ function ViewDriverApplications() {
                 autoHeight
             />
             <Dialog open={deleteApplicationDialog} onClose={handledeleteApplicationDialogClose}>
-                <DialogTitle>Delete Driver Application</DialogTitle>
+                <DialogTitle>Deactivate Driver </DialogTitle>
                 <DialogContent sx={{ paddingTop: 0 }}>
                     <DialogContentText>
-                        Are you sure you want to Delete this Application?
+                        Are you sure you want to Deactivate this Driver?
                         <br />
-                        Application Details:
+                        Driver Details:
                         <ul>
                             <li>Driver Name: {deleteApplication?.driver_nric_name}</li>
                             <li>User ID: {deleteApplication?.user_id}</li>
@@ -407,12 +443,12 @@ function ViewDriverApplications() {
                 </DialogActions>
             </Dialog>
             <Dialog open={deleteAllApplicationDialog} onClose={handledeleteAllApplicationDialogClose}>
-                <DialogTitle>Delete Driver Applications</DialogTitle>
+                <DialogTitle>Deactivate Driver Applications</DialogTitle>
                 <DialogContent sx={{ paddingTop: 0 }}>
                     <DialogContentText>
-                        Are you sure you want to Delete these Applications?
+                        Are you sure you want to Deactivate these Drivers?
                         <br />
-                        Applications:
+                        Drivers:
                         <ul>
                             {
                                 selectedRows.map((row, i) => {

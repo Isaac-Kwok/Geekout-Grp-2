@@ -3,14 +3,10 @@ import { GoogleMap, MarkerF, useJsApiLoader, DirectionsRenderer, Autocomplete, }
 import { Button, Container, Grid, Card, CardContent, Box, TextField, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { useState, useRef, useEffect } from "react";
 import googleMapsReverseGeocoder from '../../googleMapsReverseGeocoder'
-import googleMapsDecisionMatrix from '../../googleMapsDecisionMatrix'
 import http from '../../http'
 import useUser from '../../context/useUser';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
-import { CatchingPokemonSharp } from '@mui/icons-material';
-
-
 
 function DriverRouting() {
   const navigate = useNavigate()
@@ -46,100 +42,6 @@ function DriverRouting() {
     setOpen(false);
   };
 
-  const sampleData = [
-    {
-      "requestId": 20,
-      "userId": 2,
-      "name": "user1",
-      "date": "2023-08-19",
-      "time": "16:15:00",
-      "pickUp": "Serangoon NEX",
-      "destination": "Dover MRT",
-      "numberOfPassengers": 1,
-      "status": "Pending",
-      "createdAt": "2023-08-08T05:35:13.000Z",
-      "updatedAt": "2023-08-08T05:35:13.000Z"
-    },
-    {
-      "requestId": 21,
-      "userId": 3,
-      "name": "user2",
-      "date": "2023-08-19",
-      "time": "16:20:00",
-      "pickUp": "Serangoon NEX",
-      "destination": "Buona Vista MRT",
-      "numberOfPassengers": 2,
-      "status": "Pending",
-      "createdAt": "2023-08-08T05:36:18.000Z",
-      "updatedAt": "2023-08-08T05:36:18.000Z"
-    },
-    {
-      "requestId": 22,
-      "userId": 4,
-      "name": "user3",
-      "date": "2023-08-19",
-      "time": "16:55:00",
-      "pickUp": "Ang Mo Kio",
-      "destination": "HarbourFront MRT",
-      "numberOfPassengers": 1,
-      "status": "Pending",
-      "createdAt": "2023-08-08T05:37:22.000Z",
-      "updatedAt": "2023-08-08T05:37:22.000Z"
-    },
-    {
-      "requestId": 22,
-      "userId": 4,
-      "name": "user3",
-      "date": "2023-08-19",
-      "time": "16:17:00",
-      "pickUp": "Serangoon NEX",
-      "destination": "HarbourFront MRT",
-      "numberOfPassengers": 1,
-      "status": "Pending",
-      "createdAt": "2023-08-08T05:37:22.000Z",
-      "updatedAt": "2023-08-08T05:37:22.000Z"
-    }
-    ,
-    {
-      "requestId": 22,
-      "userId": 4,
-      "name": "user3",
-      "date": "2023-08-19",
-      "time": "16:17:00",
-      "pickUp": "Ang Mo Kio",
-      "destination": "HarbourFront MRT",
-      "numberOfPassengers": 3,
-      "status": "Pending",
-      "createdAt": "2023-08-08T05:37:22.000Z",
-      "updatedAt": "2023-08-08T05:37:22.000Z"
-    },
-    {
-      "requestId": 22,
-      "userId": 4,
-      "name": "user3",
-      "date": "2023-08-19",
-      "time": "16:14:00",
-      "pickUp": "Ang Mo Kio",
-      "destination": "HarbourFront MRT",
-      "numberOfPassengers": 1,
-      "status": "Pending",
-      "createdAt": "2023-08-08T05:37:22.000Z",
-      "updatedAt": "2023-08-08T05:37:22.000Z"
-    },
-    {
-      "requestId": 22,
-      "userId": 4,
-      "name": "user3",
-      "date": "2023-08-19",
-      "time": "16:55:00",
-      "pickUp": "Ang Mo Kio",
-      "destination": "HarbourFront MRT",
-      "numberOfPassengers": 1,
-      "status": "Accepted",
-      "createdAt": "2023-08-08T05:37:22.000Z",
-      "updatedAt": "2023-08-08T05:37:22.000Z"
-    }
-  ];
   const handleGetRideRequests = async () => {
     try {
       const res = await http.get("/riderequests/allrequests");

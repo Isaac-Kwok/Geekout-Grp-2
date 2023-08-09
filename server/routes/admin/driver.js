@@ -11,7 +11,7 @@ var MarkdownIt = require('markdown-it');
 
 
 // Route to update driver Applicaiton using 'PUT'
-router.put("/edit/:id", async (req, res) => {
+router.put("/edit/:id", validateAdmin, async (req, res) => {
     let id = req.params.id;
     let application = await DriverApplication.findByPk(id);
     if (!application) {
@@ -44,7 +44,8 @@ router.put("/edit/:id", async (req, res) => {
     if (data.status == "Approved") {
         newDriverApplication = {
             driver_status: data.status,
-            driver_reason: data.body
+            driver_reason: data.body,
+            driver_date_joined: data.driver_date_joined
         };
         newUser = {
             account_type: 2,
@@ -93,14 +94,14 @@ router.put("/edit/:id", async (req, res) => {
 });
 
 // Get driver images by name
-router.get("/driverImage/:filename", (req, res) => {
+router.get("/driverImage/:filename", validateAdmin, (req, res) => {
     const fileName = req.params.filename;
     const directoryPath = path.join(__dirname, "../../public/uploads/driver/");
 
     res.sendFile(directoryPath + fileName, fileName);
 })
 
-router.get("/GetAllDriverApplications", async (req, res) => {
+router.get("/GetAllDriverApplications", validateAdmin, async (req, res) => {
     let list = await DriverApplication.findAll({
         order: [['createdAt', 'DESC']],
         include: { model: User, as: "User", attributes: ['name', "email", "profile_picture", "profile_picture_type"] }
@@ -108,7 +109,7 @@ router.get("/GetAllDriverApplications", async (req, res) => {
     res.json(list);
 })
 
-router.get('/SearchDriverApplication', async (req, res) => {
+router.get('/SearchDriverApplication', validateAdmin, async (req, res) => {
     let condition = {};
     let search = req.query.search;
     if (search) {
@@ -131,7 +132,7 @@ router.get('/SearchDriverApplication', async (req, res) => {
 });
 
 // route to get Driver Application data by ID
-router.get('/GetdriverApplicationbyId/:id', async (req, res) => {
+router.get('/GetdriverApplicationbyId/:id', validateAdmin, async (req, res) => {
     let id = req.params.id;
     let driver = await DriverApplication.findByPk(id, {
         include: { model: User, as: "User", attributes: ["email", "phone_number"] }
@@ -144,7 +145,7 @@ router.get('/GetdriverApplicationbyId/:id', async (req, res) => {
     }
     res.json(driver);
 })
-router.delete("/deleteDriverApplicationById/:id", async (req, res) => {
+router.delete("/deleteDriverApplicationById/:id", validateAdmin, async (req, res) => {
     let id = req.params.id;
     let num = await DriverApplication.destroy({
         where: { id: id }
