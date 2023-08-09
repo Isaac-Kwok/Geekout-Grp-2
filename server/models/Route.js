@@ -9,6 +9,18 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
+        date: {
+            type: DataTypes.DATEONLY,
+            allowNull: true
+        },
+        time: {
+            type: DataTypes.TIME,
+            allowNull: true
+        },
+        formattedTime: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
         wayPoints: {
             type: DataTypes.STRING,
             allowNull: false

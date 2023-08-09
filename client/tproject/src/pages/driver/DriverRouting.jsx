@@ -48,108 +48,108 @@ function DriverRouting() {
 
   const sampleData = [
     {
-        "requestId": 20,
-        "userId": 2,
-        "name": "user1",
-        "date": "2023-08-19",
-        "time": "16:15:00",
-        "pickUp": "Serangoon NEX",
-        "destination": "Dover MRT",
-        "numberOfPassengers": 1,
-        "status": "Pending",
-        "createdAt": "2023-08-08T05:35:13.000Z",
-        "updatedAt": "2023-08-08T05:35:13.000Z"
+      "requestId": 20,
+      "userId": 2,
+      "name": "user1",
+      "date": "2023-08-19",
+      "time": "16:15:00",
+      "pickUp": "Serangoon NEX",
+      "destination": "Dover MRT",
+      "numberOfPassengers": 1,
+      "status": "Pending",
+      "createdAt": "2023-08-08T05:35:13.000Z",
+      "updatedAt": "2023-08-08T05:35:13.000Z"
     },
     {
-        "requestId": 21,
-        "userId": 3,
-        "name": "user2",
-        "date": "2023-08-19",
-        "time": "16:20:00",
-        "pickUp": "Serangoon NEX",
-        "destination": "Buona Vista MRT",
-        "numberOfPassengers": 2,
-        "status": "Pending",
-        "createdAt": "2023-08-08T05:36:18.000Z",
-        "updatedAt": "2023-08-08T05:36:18.000Z"
+      "requestId": 21,
+      "userId": 3,
+      "name": "user2",
+      "date": "2023-08-19",
+      "time": "16:20:00",
+      "pickUp": "Serangoon NEX",
+      "destination": "Buona Vista MRT",
+      "numberOfPassengers": 2,
+      "status": "Pending",
+      "createdAt": "2023-08-08T05:36:18.000Z",
+      "updatedAt": "2023-08-08T05:36:18.000Z"
     },
     {
-        "requestId": 22,
-        "userId": 4,
-        "name": "user3",
-        "date": "2023-08-19",
-        "time": "16:55:00",
-        "pickUp": "Ang Mo Kio",
-        "destination": "HarbourFront MRT",
-        "numberOfPassengers": 1,
-        "status": "Pending",
-        "createdAt": "2023-08-08T05:37:22.000Z",
-        "updatedAt": "2023-08-08T05:37:22.000Z"
+      "requestId": 22,
+      "userId": 4,
+      "name": "user3",
+      "date": "2023-08-19",
+      "time": "16:55:00",
+      "pickUp": "Ang Mo Kio",
+      "destination": "HarbourFront MRT",
+      "numberOfPassengers": 1,
+      "status": "Pending",
+      "createdAt": "2023-08-08T05:37:22.000Z",
+      "updatedAt": "2023-08-08T05:37:22.000Z"
     },
     {
-        "requestId": 22,
-        "userId": 4,
-        "name": "user3",
-        "date": "2023-08-19",
-        "time": "16:17:00",
-        "pickUp": "Serangoon NEX",
-        "destination": "HarbourFront MRT",
-        "numberOfPassengers": 1,
-        "status": "Pending",
-        "createdAt": "2023-08-08T05:37:22.000Z",
-        "updatedAt": "2023-08-08T05:37:22.000Z"
+      "requestId": 22,
+      "userId": 4,
+      "name": "user3",
+      "date": "2023-08-19",
+      "time": "16:17:00",
+      "pickUp": "Serangoon NEX",
+      "destination": "HarbourFront MRT",
+      "numberOfPassengers": 1,
+      "status": "Pending",
+      "createdAt": "2023-08-08T05:37:22.000Z",
+      "updatedAt": "2023-08-08T05:37:22.000Z"
     }
     ,
     {
-        "requestId": 22,
-        "userId": 4,
-        "name": "user3",
-        "date": "2023-08-19",
-        "time": "16:17:00",
-        "pickUp": "Ang Mo Kio",
-        "destination": "HarbourFront MRT",
-        "numberOfPassengers": 3,
-        "status": "Pending",
-        "createdAt": "2023-08-08T05:37:22.000Z",
-        "updatedAt": "2023-08-08T05:37:22.000Z"
+      "requestId": 22,
+      "userId": 4,
+      "name": "user3",
+      "date": "2023-08-19",
+      "time": "16:17:00",
+      "pickUp": "Ang Mo Kio",
+      "destination": "HarbourFront MRT",
+      "numberOfPassengers": 3,
+      "status": "Pending",
+      "createdAt": "2023-08-08T05:37:22.000Z",
+      "updatedAt": "2023-08-08T05:37:22.000Z"
     },
     {
-        "requestId": 22,
-        "userId": 4,
-        "name": "user3",
-        "date": "2023-08-19",
-        "time": "16:14:00",
-        "pickUp": "Ang Mo Kio",
-        "destination": "HarbourFront MRT",
-        "numberOfPassengers": 1,
-        "status": "Pending",
-        "createdAt": "2023-08-08T05:37:22.000Z",
-        "updatedAt": "2023-08-08T05:37:22.000Z"
+      "requestId": 22,
+      "userId": 4,
+      "name": "user3",
+      "date": "2023-08-19",
+      "time": "16:14:00",
+      "pickUp": "Ang Mo Kio",
+      "destination": "HarbourFront MRT",
+      "numberOfPassengers": 1,
+      "status": "Pending",
+      "createdAt": "2023-08-08T05:37:22.000Z",
+      "updatedAt": "2023-08-08T05:37:22.000Z"
     },
     {
-        "requestId": 22,
-        "userId": 4,
-        "name": "user3",
-        "date": "2023-08-19",
-        "time": "16:55:00",
-        "pickUp": "Ang Mo Kio",
-        "destination": "HarbourFront MRT",
-        "numberOfPassengers": 1,
-        "status": "Accepted",
-        "createdAt": "2023-08-08T05:37:22.000Z",
-        "updatedAt": "2023-08-08T05:37:22.000Z"
+      "requestId": 22,
+      "userId": 4,
+      "name": "user3",
+      "date": "2023-08-19",
+      "time": "16:55:00",
+      "pickUp": "Ang Mo Kio",
+      "destination": "HarbourFront MRT",
+      "numberOfPassengers": 1,
+      "status": "Accepted",
+      "createdAt": "2023-08-08T05:37:22.000Z",
+      "updatedAt": "2023-08-08T05:37:22.000Z"
     }
-];
+  ];
   const handleGetRideRequests = async () => {
     try {
       const res = await http.get("/riderequests/allrequests");
       if (res.status === 200) {
         const ridesList = res.data;
-        const maxRidesPerList = 3; // Adjust the value as desired
 
         // Group the rides based on pickUp location
-        const groupedRides = groupPendingRidesByDateTimeAndPickUp(sampleData);
+        const groupedRides = groupPendingRidesByDateTimeAndPickUp(ridesList);
         const updatedGroupedRides = splitListsIfNeeded(groupedRides);
+        console.log('updated grouped rides', updatedGroupedRides)
         const listsOfRoutes = await createSummaryList(updatedGroupedRides);
 
         // Now set the grouped rides in the state
@@ -165,61 +165,79 @@ function DriverRouting() {
     const groupedData = [];
 
     for (const ride of pendingRides) {
-        const currentDateTime = new Date(ride.date + 'T' + ride.time);
-        let addedToGroup = false;
+      const currentDateTime = new Date(ride.date + 'T' + ride.time);
+      let addedToGroup = false;
 
-        for (const group of groupedData) {
-            const firstRideInGroup = group[0];
-            const groupDateTime = new Date(firstRideInGroup.date + 'T' + firstRideInGroup.time);
+      for (const group of groupedData) {
+        const firstRideInGroup = group[0];
+        const groupDateTime = new Date(firstRideInGroup.date + 'T' + firstRideInGroup.time);
 
-            if (ride.pickUp === firstRideInGroup.pickUp && Math.abs(currentDateTime - groupDateTime) <= 5 * 60 * 1000) {
-                group.push(ride);
-                addedToGroup = true;
-                break;
-            }
+        if (ride.pickUp === firstRideInGroup.pickUp && Math.abs(currentDateTime - groupDateTime) <= 5 * 60 * 1000) {
+          group.push(ride);
+          addedToGroup = true;
+          break;
         }
+      }
 
-        if (!addedToGroup) {
-            groupedData.push([ride]);
-        }
+      if (!addedToGroup) {
+        groupedData.push([ride]);
+      }
     }
 
     return groupedData;
-}
+  }
 
   function splitListsIfNeeded(groupedData) {
     const updatedGroupedData = [];
 
     for (const group of groupedData) {
-        let currentGroup = [];
-        let groupPassengerCount = 0;
+      let currentGroup = [];
+      let groupPassengerCount = 0;
 
-        for (const ride of group) {
-            if (groupPassengerCount + ride.numberOfPassengers > 3) {
-                updatedGroupedData.push(currentGroup);
-                currentGroup = [];
-                groupPassengerCount = 0;
-            }
-
-            currentGroup.push(ride);
-            groupPassengerCount += ride.numberOfPassengers;
+      for (const ride of group) {
+        if (groupPassengerCount + ride.numberOfPassengers > 3) {
+          updatedGroupedData.push(currentGroup);
+          currentGroup = [];
+          groupPassengerCount = 0;
         }
 
-        if (currentGroup.length > 0) {
-            updatedGroupedData.push(currentGroup);
-        }
+        currentGroup.push(ride);
+        groupPassengerCount += ride.numberOfPassengers;
+      }
+
+      if (currentGroup.length > 0) {
+        updatedGroupedData.push(currentGroup);
+      }
     }
-
+    console.log('data', updatedGroupedData)
     return updatedGroupedData;
-}
+  }
 
 
 
   async function createSummaryList(groupedRides) {
+    // Current date and time
+    const currentDateTime = new Date();
     const summaryList = [];
 
     // Iterate through each group of rides with the same pickUp location
     for (const rideGroup of groupedRides) {
+      const [hours, minutes] = rideGroup[0].time.split(':');
+      let formattedTime = '';
+
+      if (parseInt(hours) === 0) {
+        formattedTime = '12';
+      } else if (parseInt(hours) < 12) {
+        formattedTime = hours;
+      } else if (parseInt(hours) === 12) {
+        formattedTime = '12';
+      } else {
+        formattedTime = (parseInt(hours) - 12).toString();
+      }
+
+      formattedTime += `.${minutes} ${parseInt(hours) < 12 ? 'AM' : 'PM'}`;
+      const date = rideGroup[0].date;
+      const time = rideGroup[0].time;
       const pickUpLocation = rideGroup[0].pickUp;
       const destinationList = [pickUpLocation];
       const wayPoints = []; // Create a new waypoints array for each group
@@ -237,10 +255,11 @@ function DriverRouting() {
         };
         wayPoints.push(wayPoint);
       });
-      wayPoints.pop()
+      wayPoints.pop();
 
-      // Get the destination from the last waypoint
-
+      // Calculate the time difference between ride's date and time and current date and time
+      const rideDateTime = new Date(`${date}T${time}`);
+      const timeDifference = Math.abs(currentDateTime - rideDateTime);
 
       // Extract the names from the rides in the group
       const names = rideGroup.map((ride) => ride.name);
@@ -250,16 +269,23 @@ function DriverRouting() {
 
       // Create the summary object and add it to the summaryList
       const summaryObject = {
+        date: date,
+        time: time,
+        formattedTime: formattedTime,
         pickUp: pickUpLocation,
         wayPoints: wayPoints,
         names: names,
         destinationList: result,
         destination: result[result.length - 1], // Add the destination attribute
         rideIds: rideIds, // Add the rideIds attribute as a string
+        timeDifference: timeDifference, // Add the timeDifference attribute
       };
 
       summaryList.push(summaryObject);
     }
+
+    // Sort the summaryList based on timeDifference (smallest difference first)
+    summaryList.sort((a, b) => a.timeDifference - b.timeDifference);
 
     return summaryList;
   }
@@ -474,15 +500,14 @@ function DriverRouting() {
       const formattedTotalDuration = `${Math.floor(totalDuration / 60)} mins`;
 
       const newObj = { ...originalObj };
-      console.log('test', newObj)
       // Convert wayPoints array to a string
       newObj.wayPoints = newObj.wayPoints
         .map(wayPoint => `${wayPoint.location}`)
-        .join(', ');
+        .join('| ');
 
       newObj.destinationList = newObj.destinationList
         .map(destination => `${destination}`)
-        .join(',');
+        .join('|');
       // Convert names array to a string
       newObj.names = newObj.names.map(name => (name !== null ? name.toString() : 'null')).join(', ');
 
@@ -496,8 +521,27 @@ function DriverRouting() {
       newObj.total_cost = ((totalDistance / 1000) * 2)
       newObj.rideDirections = results
 
-      console.log('new:', newObj);
-
+      // Change Ride requests status from DB
+      const rideIdsList = originalObj.rideIds.split(","); // Split the string by commas
+      console.log('list', rideIdsList)
+      for (let index = 0; index < rideIdsList.length; index++) {
+        const rideId = rideIdsList[index];
+        let data = {
+          status: "Accepted"
+        }
+        http.put("/driver/ride/" + rideId, data)
+          .then((res) => {
+            if (res.status === 200) {
+              console.log(res.data);
+            } else {
+              console.log("Failed to update rides:", res.status);
+            }
+          })
+          .catch((err) => {
+            console.error("Error updating rides:", err);
+            // Handle the error here, e.g., display an error message or take appropriate action
+          });
+      }
       http.post("/driver/createRoute", newObj)
         .then((res) => {
           if (res.status === 200) {
@@ -518,7 +562,8 @@ function DriverRouting() {
     }
   };
 
-  const handleAbort = () => {
+  const handleAbort = (routeObj) => {
+
     handleClose()
     // delete route from DB
     http.delete("/driver/route/" + user.current_route.id)
@@ -533,13 +578,35 @@ function DriverRouting() {
         console.error("Error deleting route:", err);
         // Handle the error here, e.g., display an error message or take appropriate action
       });
-
+    // Change Ride requests status from DB
+    const rideIdsList = routeObj.rideIds.split(","); // Split the string by commas
+    for (let index = 0; index < rideIdsList.length; index++) {
+      const rideId = rideIdsList[index];
+      let data = {
+        status: "Pending"
+      }
+      http.put("/driver/ride/" + rideId, data)
+        .then((res) => {
+          if (res.status === 200) {
+            console.log(res.data);
+          } else {
+            console.log("Failed to update rides:", res.status);
+          }
+        })
+        .catch((err) => {
+          console.error("Error updating rides:", err);
+          // Handle the error here, e.g., display an error message or take appropriate action
+        });
+    }
     // updating the driver status
     http.put("/driver/abort")
       .then((res) => {
         if (res.status === 200) {
           console.log(res.data);
           refreshUser();
+          // Reload the page
+          window.location.reload();
+
           enqueueSnackbar('You have aborted Route!', { variant: 'warning' });
         } else {
           console.log("Failed to abort routes:", res.status);
@@ -550,18 +617,17 @@ function DriverRouting() {
         // Handle the error here, e.g., display an error message or take appropriate action
       });
     clearRoute()
+
   };
 
   const handleComplete = (routeObj) => {
-    // delete Ride requests from DB
-    console.log(
-      routeObj
-    )
+    // Change Ride requests status from DB
     const rideIdsList = routeObj.rideIds.split(","); // Split the string by commas
+    console.log('list', rideIdsList)
     for (let index = 0; index < rideIdsList.length; index++) {
       const rideId = rideIdsList[index];
-      data = {
-        status: "Complete"
+      let data = {
+        status: "Completed"
       }
       http.put("/driver/ride/" + rideId, data)
         .then((res) => {
@@ -729,6 +795,12 @@ function DriverRouting() {
                           <b>Pick Up:</b> {routeObj.pickUp}
                         </Typography>
                         <Typography variant="body1" gutterBottom>
+                          <b>Pick Up Date:</b> {routeObj.date}
+                        </Typography>
+                        <Typography variant="body1" gutterBottom>
+                          <b>Pick Up Time:</b> {routeObj.formattedTime}
+                        </Typography>
+                        <Typography variant="body1" gutterBottom>
                           <b>Riders:</b> {routeObj.names.join(', ')}
                         </Typography>
                         <Typography variant="body1" gutterBottom>
@@ -817,6 +889,12 @@ function DriverRouting() {
                       <b>Pick Up:</b> {user.current_route.pickUp}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
+                      <b>Pick Up Date:</b> {user.current_route.date}
+                    </Typography>
+                    <Typography variant="body1" gutterBottom>
+                      <b>Pick Up Time:</b> {user.current_route.formattedTime}
+                    </Typography>
+                    <Typography variant="body1" gutterBottom>
                       <b>Riders:</b> {user.current_route.names}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
@@ -884,7 +962,7 @@ function DriverRouting() {
                       variant='contained'
                     >Back</Button>
                     <Button
-                      onClick={() => handleAbort()}
+                      onClick={() => handleAbort(user.current_route)}
                       variant='contained' color='error'
                     >
                       Abort

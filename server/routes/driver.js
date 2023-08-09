@@ -90,7 +90,7 @@ router.post("/createRoute", validateToken, async (req, res) => {
     // Validate request body
     let validationSchema = yup.object().shape({
         names: yup.string().trim().matches(/^[a-z ,.'-]+$/i)
-            .min(3).max(50).required(),
+            .min(2).max(50).required(),
         pickUp: yup.string().trim().required(),
         destination: yup.string().trim().required(),
         wayPoints: yup.string().trim(),
