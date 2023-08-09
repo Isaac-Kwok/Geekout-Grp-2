@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DATE,
             allowNull: true
         },
+        reportType: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
         report: {
             type: DataTypes.STRING,
             allowNull: false

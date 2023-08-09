@@ -10,11 +10,19 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true
         },
         startPosition: {
-            type: DataTypes.STRING,
+            type: DataTypes.DOUBLE,
             allowNull: false
         },
-        EndPosition: {
-            type: DataTypes.STRING,
+        endPosition: {
+            type: DataTypes.DOUBLE,
+            allowNull: false
+        },
+        user_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        transaction: {
+            type: DataTypes.FLOAT,
             allowNull: false
         }
 

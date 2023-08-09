@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         passkey: {
             type: DataTypes.INTEGER,
-            alowNull: true
+            allowNull: true
         },
         registered: {
             type: DataTypes.BOOLEAN,
@@ -41,11 +41,11 @@ module.exports = (sequelize, DataTypes) => {
             onDelete: "CASCADE"
         });
         Bicycle.hasMany(models.BicycleReports, {
-            foreignKey: "id",
+            foreignKey: "bike_id",
             onDelete: "CASCADE",
         });
         Bicycle.hasMany(models.BicycleUsages, {
-            foreignKey: "id",
+            foreignKey: "bike_id",
             onDelete: "CASCADE",
         });
     }

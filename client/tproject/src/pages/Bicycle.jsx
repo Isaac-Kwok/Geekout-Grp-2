@@ -20,6 +20,39 @@ const bounds = {
     east: 104.131,
 };
 
+function CombinedComponent({ distance, proximity, isUserOwner, isBikeUnlocked, handleLock, handleUnlock, handleReportBike }) {
+    return (
+        <div className="small-rectangular-component">
+            <div className="top-left">Find a Bike</div>
+            <div className="top-right">
+                <button className="circular-button" onClick={handleReportBike}>
+                    Bike missing?
+                </button>
+            </div>
+            <div className="bottom-left">$1.00/30min</div>
+            <div className="bottom-center">
+                {isUserOwner ? (
+                    <button className="circular-button" onClick={handleLock}>
+                        {isBikeUnlocked ? 'Lock' : 'Locked'}
+                    </button>
+                ) : (
+                    <button
+                        className="circular-button"
+                        onClick={handleUnlock}
+                        disabled={distance > proximity || isBikeUnlocked}
+                    >
+                        {isBikeUnlocked
+                            ? 'Locked'
+                            : distance > proximity
+                                ? 'Proceed to Bike to receive code'
+                                : 'Unlock'}
+                    </button>
+                )}
+            </div>
+        </div>
+    );
+};
+
 function Bicycle() {
 
     const [bicycle, setBicycle] = useState([]);
@@ -28,9 +61,9 @@ function Bicycle() {
     const [selectedMarker, setSelectedMarker] = useState(null);
     const [directions, setDirections] = useState(null);
     const [mapLoaded, setMapLoaded] = useState(false);
+    const [isLocked, setIsLocked] = useState(false);
     const { enqueueSnackbar } = useSnackbar();
     const { user, refreshUser } = useUser();
-    const [ reloadComponent, setReloadComponent ] = useState(false);
     const navigate = useNavigate();
 
     // Function to reload the LoadScript
@@ -42,10 +75,6 @@ function Bicycle() {
             window.location.reload();
         }, 3000);
     };
-
-    const handleReloadComponent = () => {
-        setReloadComponent(true);
-    }
 
     const { isLoaded } = useLoadScript({
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_API_KEY,
@@ -86,6 +115,7 @@ function Bicycle() {
     };
 
     const handleMarkerClick = (marker) => {
+        handleGetBicycle()
         if (marker.id === 0) {
             console.log('currentLocation:', currentLocation);
         } else {
@@ -157,7 +187,7 @@ function Bicycle() {
         }
     };
 
-    const getDateTime = () =>  {
+    const getDateTime = () => {
         const now = new Date();
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0'); // Month is 0-based, so we add 1 and pad with '0'
@@ -165,7 +195,7 @@ function Bicycle() {
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const seconds = String(now.getSeconds()).padStart(2, '0');
-        
+
         return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     }
 
@@ -179,14 +209,14 @@ function Bicycle() {
 
     const getPasskey = () => {
         const passKey = genKey()
-        toast("Your passkey is: "+passKey);
-        
+        toast("Your passkey is: " + passKey);
+
         const date = getDateTime()
 
         const data = {
             bicycle_lat: selectedMarker.bicycle_lat,
             bicycle_lng: selectedMarker.bicycle_lng,
-            disabled: false, 
+            disabled: false,
             passkey: passKey,
 
             // for demo purpose the bicycle unlocks instantly
@@ -196,9 +226,31 @@ function Bicycle() {
             user_id: user.id
         }
 
+        const usageData = {
+            bike_id: selectedMarker.id,
+            unlockedAt: date,
+            startPosition: (selectedMarker.bicycle_lat, selectedMarker.bicycle_lng),
+            endPosition: 0,
+            user_id: user.id,
+            transaction: 0
+        }
+
         http.put("/bicycle/" + selectedMarker.id, data).then((res) => {
             if (res.status === 200) {
                 enqueueSnackbar("Bicycle key generated succesfully!", { variant: "success" });
+                setIsLocked(false);
+                handleGetBicycle();
+
+                http.post("/bicycle/usages", usageData).then((res) => {
+                    if (res.status === 200) {
+                        console.log("Bicycle usage updated succesfully!", { variant: "success" });
+                    } else {
+                        console.log("Failed to update bicycle usage", { variant: "error" });
+                    }
+                }).catch((err) => {
+                    console.log("Failed to update bicycle usage" + err.response.data.message, { variant: "error" });
+                    setLoading(false);
+                })
             } else {
                 enqueueSnackbar("Failed to generate bicycle key", { variant: "error" });
                 setLoading(false);
@@ -218,23 +270,23 @@ function Bicycle() {
     const getTimeDifference = (datetime1, datetime2) => {
         const date1 = new Date(datetime1);
         const date2 = new Date(datetime2);
-    
+
         // Calculate the time difference in milliseconds
         const timeDifferenceInMs = date2 - date1;
-    
+
         // You can convert the time difference to other units if needed
         // For example, to get the difference in seconds:
         const timeDifferenceInSeconds = timeDifferenceInMs / 1000;
-    
+
         // To get the difference in minutes:
         const timeDifferenceInMinutes = timeDifferenceInMs / (1000 * 60);
-    
+
         // To get the difference in hours:
         const timeDifferenceInHours = timeDifferenceInMs / (1000 * 60 * 60);
-    
+
         // To get the difference in days:
         const timeDifferenceInDays = timeDifferenceInMs / (1000 * 60 * 60 * 24);
-    
+
         // Return the time difference in the desired unit or the raw milliseconds
         return timeDifferenceInMs;
     };
@@ -247,21 +299,39 @@ function Bicycle() {
         console.log("Time Difference in Hours:", timeDifferenceInHours);
 
         const price = Math.max(Math.round(timeDifferenceInHours / 2), 1)
-            enqueueSnackbar("$"+price+" has been credited from your wallet");
+        enqueueSnackbar("$" + price + " has been credited from your wallet");
 
         const data = {
             bicycle_lat: selectedMarker.bicycle_lat,
             bicycle_lng: selectedMarker.bicycle_lng,
-            disabled: false, 
+            disabled: false,
             passkey: null,
             unlocked: false,
             unlockedAt: 0,
             user_id: null
         }
 
+        const usageData = {
+            endPosition: (selectedMarker.bicycle_lat, selectedMarker.bicycle_lng),
+            transaction: price,
+        }
+
         http.put("/bicycle/" + selectedMarker.id, data).then((res) => {
             if (res.status === 200) {
                 enqueueSnackbar("Bicycle locked succesfully!", { variant: "success" });
+                setIsLocked(true);
+                handleGetBicycle();
+
+                http.put("/bicycle/usages", usageData).then((res) => {
+                    if (res.status === 200) {
+                        console.log("Bicycle usage updated succesfully!", { variant: "success" });
+                    } else {
+                        console.log("Failed to update bicycle usage", { variant: "error" });
+                    }
+                }).catch((err) => {
+                    console.log("Failed to update bicycle usage" + err.response.data.message, { variant: "error" });
+                    setLoading(false);
+                })
             } else {
                 enqueueSnackbar("Failed to lock bicycle", { variant: "error" });
                 setLoading(false);
@@ -272,62 +342,59 @@ function Bicycle() {
         })
     };
 
-    const ComponentUnlock = () => {
-        const distance = calculateDistance(
-            selectedMarker.bicycle_lat,
-            selectedMarker.bicycle_lng,
-            currentLocation.lat,
-            currentLocation.lng
-        );
+    const CombinedComponentWrapper = () => {
+        const distance = selectedMarker
+            ? calculateDistance(
+                selectedMarker.bicycle_lat,
+                selectedMarker.bicycle_lng,
+                currentLocation.lat,
+                currentLocation.lng
+            )
+            : 0; // Set a default distance value if no marker is selected
 
         const proximity = 100;
 
-        return (
-            <div className="small-rectangular-component">
-                <div className="top-left">Find a Bike</div>
-                <div className="top-right">
-                    <button className="circular-button" onClick={reportBike}>Bike missing?</button>
-                </div>
-                <div className="bottom-left">$1.00/30min</div>
-                <div className="bottom-center">
-                    {(distance > proximity) ? 'Proceed to Bike to receive code' : <button className="circular-button" onClick={getPasskey}>Unlock</button>}
-                </div>
-            </div>
-        );
-    };
+        const isUserOwner = selectedMarker && selectedMarker.user_id === user.id;
 
-    const ComponentLock = () => {
-        return (
-            <div className="small-rectangular-component">
-                <div className="top-right">
-                    <button className="circular-button" onClick={reportBike}>Bike missing?</button>
-                </div>
-                <div className="bottom-left">$1.00/30min</div>
-                <div className="bottom-center">
-                    <button className="circular-button" onClick={lockBike}>Lock</button>
-                </div>
-            </div>
-        );
-    }
+        // Determine if the bike is unlocked
+        const isBikeUnlocked = selectedMarker && selectedMarker.unlocked;
+
+        const handleUnlock = () => {
+            // Logic to unlock the bike
+            if (distance <= proximity) {
+                getPasskey();
+            }
+            setSelectedMarker(null);
+        };
+
+        const handleLock = () => {
+            // Logic to lock the bike
+            lockBike();
+            setSelectedMarker(null);
+        };
+
+        const handleReportBike = () => {
+            // Logic to report a missing bike
+            reportBike();
+        };
+        
+        if (selectedMarker) {
+            return (
+                <CombinedComponent
+                    distance={distance}
+                    proximity={proximity}
+                    isUserOwner={isUserOwner}
+                    isBikeUnlocked={isBikeUnlocked}
+                    handleLock={handleLock}
+                    handleUnlock={handleUnlock}
+                    handleReportBike={handleReportBike}
+                />
+            );
+        }
+    };
 
     const currentLocationMarkerUrl = "../currentlocation.png"
     const bikeMarkerUrl = "../bike.png"
-
-    const renderComponent = () => {
-        if (!selectedMarker) {
-            return null; // If no marker is selected, return null to render nothing
-        }
-
-        if (selectedMarker.user_id == user.id) {
-            return (
-                <ComponentLock></ComponentLock>
-            )
-        } else {
-            return (
-                <ComponentUnlock></ComponentUnlock>
-            ) 
-        }
-    }
 
     const renderMap = () => {
         return (
@@ -393,6 +460,8 @@ function Bicycle() {
 
                 {/* Render Directions */}
                 {directions && <DirectionsRenderer directions={directions} options={{ suppressMarkers: true }} />}
+
+                {/* {renderComponent()} */}
             </GoogleMap>
         );
     };
@@ -417,7 +486,7 @@ function Bicycle() {
             ) : (
                 <h1>Loading...</h1>
             )}
-            {renderComponent()}
+            <CombinedComponentWrapper />
             <ToastContainer />
         </Container>
     );
