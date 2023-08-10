@@ -2,7 +2,7 @@ module.exports = (sequelize, DataTypes) => {
 
     const Ticket = sequelize.define("Ticket", {
         title: {
-            type: DataTypes.FLOAT,
+            type: DataTypes.STRING,
             allowNull: false
         },
         description: {
@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
         category: {
             type: DataTypes.STRING,
             allowNull: false,
-            defaultValue: "General"
+            defaultValue: "general"
         },
         status: {
             type: DataTypes.STRING,

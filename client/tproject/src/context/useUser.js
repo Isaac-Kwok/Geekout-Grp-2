@@ -4,7 +4,7 @@ import http from "../http"
 
 
 function useUser() {
-    const {setUser,user} = useContext(UserContext);
+    const {setUser,user, userLoading} = useContext(UserContext);
     const getUser = async () => {
         console.log(user);
     }
@@ -18,7 +18,7 @@ function useUser() {
         }
     }
 
-    return { user,getUser, refreshUser };
+    return { user, getUser, refreshUser, userLoading };
 }
 
 export default useUser;

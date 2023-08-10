@@ -42,6 +42,7 @@ let theme = createTheme({
   palette: {
     primary: {
       main: "#0f6d51",
+      light: "#b2cfc6",
     },
     secondary: {
       main: grey[500],
@@ -82,6 +83,8 @@ function MainApp() {
   // Global context to store if the current page is an admin page
   const [isAdminPage, setIsAdminPage] = useState(false);
 
+  const [userLoading, setUserLoading] = useState(true);
+
   // Check if the user is logged in
   useEffect(() => {
     try {
@@ -89,7 +92,10 @@ function MainApp() {
       http.get("auth/refresh").then((res) => {
         // If the token is valid, set the user context to the decoded token
         setUser(res.data.user)
+        // Set the token in local storage
         localStorage.setItem("token", res.data.token)
+        // Set the loading state to false
+        setUserLoading(false)
       }).catch((err) => {
         // If the token is invalid, set the user context to null
         setUser(null)
@@ -107,6 +113,7 @@ function MainApp() {
       <UserContext.Provider value={{
         user: user,
         setUser: setUser,
+        userLoading: userLoading,
         isAdminPage: isAdminPage,
         setIsAdminPage: setIsAdminPage
       }}>

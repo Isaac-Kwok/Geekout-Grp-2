@@ -1,7 +1,7 @@
 const express = require("express");
 const yup = require("yup");
 const router = express.Router();
-const { Article, User, Sequelize } = require("../models")
+const { Article, User, Sequelize, Ticket, Message } = require("../models")
 const { Op } = Sequelize;
 const { validateToken } = require("../middleware/validateToken");
 const path = require("path");
@@ -95,5 +95,143 @@ router.get("/article/:id", async (req, res) => {
         res.status(500).json({ message: error.message })
     }
 })
+
+
+// Support ticket
+router.post("/ticket", validateToken, async (req, res) => {
+    const schema = yup.object().shape({
+        title: yup.string().required(),
+        description: yup.string().required(),
+        category: yup.string().required(),
+    }).noUnknown()
+
+    try {
+        const { title, description, category } = await schema.validate(req.body)
+        const { id } = req.user
+
+        const ticket = await Ticket.create({
+            title,
+            description,
+            category,
+            user_id: id
+        })
+
+        res.status(201).json(ticket)
+    } catch (error) {
+        res.status(400).json({ message: error.message })
+    }
+})
+
+router.get("/ticket", validateToken, async (req, res) => {
+    try {
+        const { id } = req.user
+        const tickets = await Ticket.findAll({
+            where: { user_id: id },
+        })
+
+        res.status(200).json(tickets)
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
+
+router.get("/ticket/:id", validateToken, async (req, res) => {
+    try {
+        const { id } = req.params
+        const { id: userId } = req.user
+        
+        const ticket = await Ticket.findOne({
+            where: { id: id, user_id: userId },
+            include: {
+                model: User,
+                attributes: ["name", "email"]
+            }
+        })
+
+        if (!ticket) {
+            return res.status(404).json({ message: "Ticket not found" })
+        }
+
+        res.status(200).json(ticket)
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
+
+
+router.post("/ticket/:id/message", validateToken, async (req, res) => {
+    const schema = yup.object().shape({
+        message: yup.string().required(),
+    }).noUnknown()
+
+    try {
+        const { id } = req.params
+        const { id: userId } = req.user
+        const { message } = await schema.validate(req.body)
+
+        const ticket = await Ticket.findOne({
+            where: { id: id, user_id: userId },
+        })
+
+        if (!ticket) {
+            return res.status(404).json({ message: "Ticket not found" })
+        }
+
+        if (ticket.status === "Closed" || ticket.user_id !== userId) {
+            return res.status(403).json({ message: "You are not allowed to reply to this ticket" })
+        }
+
+        const newMessage = await Message.create({
+            message,
+            ticket_id: id,
+            user_id: userId
+        })
+
+        const sendingMessage = await Message.findByPk(newMessage.id, {
+            include: {
+                model: User,
+                attributes: ["id", "name", "account_type"]
+            }
+        })
+
+
+        req.app.io.to(`support_${ticket.id}`).emit("ticket_message", sendingMessage)
+        res.status(201).json(newMessage)
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
+
+router.get("/ticket/:id/message", validateToken, async (req, res) => {
+    try {
+        const { id } = req.params
+        const { id: userId } = req.user
+
+        const ticket = await Ticket.findOne({
+            where: { id: id, user_id: userId },
+        })
+
+        if (!ticket) {
+            return res.status(404).json({ message: "Ticket not found" })
+        }
+
+        if (ticket.user_id !== userId) {
+            return res.status(403).json({ message: "You are not allowed to view this ticket" })
+        }
+
+        const messages = await Message.findAll({
+            where: { ticket_id: id },
+            include: {
+                model: User,
+                attributes: ["id", "name", "account_type"]
+            }
+        })
+
+        res.status(200).json(messages)
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
+
 
 module.exports = router;
