@@ -19,13 +19,36 @@ module.exports = (sequelize, DataTypes) => {
         },
         passkey: {
             type: DataTypes.INTEGER,
-            alowNull: true
+            allowNull: true
         },
         registered: {
             type: DataTypes.BOOLEAN,
             allowNull: false
         },
+        unlocked: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false
+        },
+        unlockedAt: {
+            type: DataTypes.DATE,
+            allowNull: true
+        }
     });
+
+    Bicycle.associate = (models) => {
+        Bicycle.belongsTo(models.User, {
+            foreignKey: "user_id",
+            onDelete: "CASCADE"
+        });
+        Bicycle.hasMany(models.BicycleReports, {
+            foreignKey: "bike_id",
+            onDelete: "CASCADE",
+        });
+        Bicycle.hasMany(models.BicycleUsages, {
+            foreignKey: "bike_id",
+            onDelete: "CASCADE",
+        });
+    }
 
     return Bicycle;
 }

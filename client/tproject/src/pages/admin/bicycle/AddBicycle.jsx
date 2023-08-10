@@ -37,13 +37,17 @@ function AddBicycle() {
             disabled: yup.boolean().optional(),
             reports: yup.number().integer().min(0).optional(),
             passkey: yup.string().nullable().optional(),
-            registered: yup.boolean().optional()
+            registered: yup.boolean().optional(),
+            unlocked: yup.boolean().optional(),
+            unlockedAt: yup.date().optional()
         }),
         onSubmit: (data) => {
             data.disabled = true
             data.reports = 0
             data.passkey = null
             data.registered = false
+            data.unlocked = false
+            data.unlockedAt = null
             http.post("/bicycle", data).then((res) => {
                 if (res.status === 200) {
                     enqueueSnackbar("Bicycle added succesfully!", { variant: "success" });
