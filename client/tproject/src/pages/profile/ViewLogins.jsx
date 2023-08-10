@@ -3,6 +3,7 @@ import { Box, Card, CardContent, CardActions, Typography, Button, Stack, Grid, D
 import { LoadingButton } from '@mui/lab'
 import { useSnackbar } from 'notistack'
 import { useGoogleLogin } from '@react-oauth/google'
+import FacebookLogin from '@greatsumini/react-facebook-login';
 import useUser from '../../context/useUser'
 import QRCode from 'qrcode'
 import InfoBox from '../../components/InfoBox'
@@ -104,6 +105,31 @@ function ViewLogins() {
         },
     })
 
+    const handleFacebookSuccess = async (res) => {
+        setSocialLoading(true)
+        http.post("/user/social/facebook", { token: res.accessToken }).then((res) => {
+            if (res.status === 200) {
+                enqueueSnackbar(res.data.message, { variant: "success" });
+                refreshUser()
+                setSocialLoading(false)
+            }
+        }).catch((err) => {
+            enqueueSnackbar("Failed to change Facebook account. " + err.response.data.message, { variant: "error" });
+            setSocialLoading(false)
+        })
+    }
+
+    const handleFacebookFailure = (err) => {
+        console.log(err);
+        if (err.status === "loginCancelled") {
+            enqueueSnackbar("Login failed! Cancelled by user.", { variant: "error" });
+            setLoading(false);
+        } else {
+            enqueueSnackbar("Login failed! " + err.status, { variant: "error" });
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
         document.title = "EnviroGo - Social Logins & 2FA"
         check2FA()
@@ -150,7 +176,15 @@ function ViewLogins() {
                             <Grid item xs={12} sm>
                                 <Box component="form" display="flex" alignItems={"center"}>
                                     <InfoBox flexGrow={1} title="Facebook Account" value={user?.is_fb_auth_enabled ? "Linked" : "Not Linked"} boolean={user?.is_fb_auth_enabled || false} />
-                                    <Button disabled={socialLoading} variant="text" color="primary">{user?.is_fb_auth_enabled ? "Un-link" : "Link"}</Button>
+                                    <FacebookLogin
+                                        appId={import.meta.env.VITE_FACEBOOK_APP_ID}
+                                        onSuccess={handleFacebookSuccess}
+                                        onFail={handleFacebookFailure}
+                                        render={({ onClick, logout }) => (
+                                            <Button disabled={socialLoading} variant="text" color="primary" onClick={onClick}>{user?.is_fb_auth_enabled ? "Un-link" : "Link"}</Button>
+                                        )}
+                                    />
+                                    
                                 </Box>
                             </Grid>
                         </Grid>

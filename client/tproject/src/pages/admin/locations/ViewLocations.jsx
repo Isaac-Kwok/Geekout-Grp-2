@@ -62,6 +62,7 @@ function LocationList() {
         // Handle delete error, show an error message, etc.
       });
   };
+  
 
   const columns = [
     { field: 'name', headerName: 'Location Name', minWidth: 200 },
@@ -69,7 +70,7 @@ function LocationList() {
     { field: 'premium', headerName: 'Premium', width: 150, type: "number" },
     { field: 'arrivals', headerName: 'Arrivals', minWidth: 150, type: "number" },
     { field: 'departures', headerName: 'Departures', minWidth: 150, type: "number" },
-    { field: 'status', headerName: 'Status', type: 'boolean', minWidth: 80 },
+    { field: 'status', headerName: 'Status', minWidth: 80 },
     {
       field: 'actions', type: 'actions', width: 120, getActions: (params) => [
         <GridActionsCellItem
@@ -98,7 +99,7 @@ function LocationList() {
   ];
 
   return (
-    <Container sx={{ marginTop: "1rem" }} maxWidth="xl">
+    <Container sx={{ marginTop: "1rem", minWidth: 0 }} maxWidth="xl">
       <AdminPageTitle title="All Locations" />
       <>
         <Box sx={{ display: "flex", mb: "1rem" }}>

@@ -7,6 +7,7 @@ const { uploadProfilePicture } = require("../middleware/upload")
 const path = require("path")
 const { authenticator } = require("otplib")
 const { OAuth2Client } = require('google-auth-library');
+const axios = require("axios")
 const client = new OAuth2Client();
 
 // Get the user based on the token
@@ -57,6 +58,8 @@ router.put("/", validateToken, async (req, res) => {
         }),
         email: yup.string().email().optional(),
         password: yup.string().min(12).max(64).optional(),
+        profile_picture_type: yup.string().oneOf(["local", "gravatar"]).optional(),
+        delivery_address: yup.string().optional(),
     }, [["phone_number", "phone_number"], ["profile_picture_type", "profile_picture_type"]]).noUnknown(true)
 
     try {
@@ -160,7 +163,7 @@ router.post("/social/google", validateToken, async (req, res) => {
 
         if (user.is_google_auth_enabled) {
             if (user.is_google_auth_enabled !== ticket.email) {
-                return res.status(400).json({ message: "Google account already linked to another account" })
+                return res.status(400).json({ message: "Can only un-link with the same Google account used to link" })
             }
             user.is_google_auth_enabled = null
             user.save()
@@ -172,6 +175,40 @@ router.post("/social/google", validateToken, async (req, res) => {
         }
     } catch (error) {
         res.status(400).json({ message: error.errors })
+    }
+    
+})
+
+// TODO: Need to catch axios error
+router.post("/social/facebook", validateToken, async (req, res) => {
+    const schema = yup.object().shape({
+        token: yup.string().required(),
+    })
+    try {
+        await schema.validate(req.body, { abortEarly: false })
+        const accessToken = req.body.token
+        const ticket = await axios.get(`https://graph.facebook.com/me?fields=id,name,email&access_token=${accessToken}`)
+
+        const user = await User.findByPk(req.user.id)
+        if (!user) {
+            return res.status(404).json({ message: "User not found" })
+        }
+
+        if (user.is_fb_auth_enabled) {
+            if (user.is_fb_auth_enabled !== ticket.data.id) {
+                return res.status(400).json({ message: "Can only un-link with the same Facebook account used to link" })
+            }
+            user.is_fb_auth_enabled = null
+            user.save()
+            res.json({ message: "Facebook account un-linked" })
+        } else {
+            user.is_fb_auth_enabled = ticket.data.id
+            user.save()
+            res.json({ message: "Facebook account linked" })
+        }
+    } catch (error) {
+        res.status(400).json({ message: error.errors })
+        console.log(error)
     }
     
 })

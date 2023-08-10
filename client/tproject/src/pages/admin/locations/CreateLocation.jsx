@@ -33,18 +33,18 @@ function CreateLocation() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    formik.setFieldValue(name, value === "Active" ? true : false);
+    formik.setFieldValue(name, value); // Set the value directly
   };
 
   const formik = useFormik({
     initialValues: {
       name: "",
       notes: "",
-      status: false,
+      status: "Inactive",
       premium: 0,
       imageFile: "",
-      arrivals: 0,
-      departures: 0,
+      // arrivals: 0,
+      // departures: 0,
     },
 
     validationSchema: Yup.object({
@@ -53,8 +53,8 @@ function CreateLocation() {
       premium: Yup.number(),
       // imageFile: Yup.string().required("Image is required").trim(),
       status: Yup.string().required("Location Status is required"),
-      arrivals: Yup.number().optional(),
-      departures: Yup.number().optional(),
+      // arrivals: Yup.number().optional(),
+      // departures: Yup.number().optional(),
     }),
     onSubmit: (data) => {
       console.log("test submit");
@@ -62,21 +62,20 @@ function CreateLocation() {
       data.name = data.name.trim();
       data.notes = data.notes.trim();
       data.premium = Number(parseFloat(data.premium).toFixed(2));
-      data.arrivals = Number(data.arrivals);
-      data.departures = Number(data.departures);
+      // data.arrivals = Number(data.arrivals);
+      // data.departures = Number(data.departures);
       if (data.premium === "") {
         data.premium = 0;
       }
-      // if (imageFile) {
-      //   data.imageFile = imageFile;
-      //   }
-      data.status = data.status === "Active" ? true : false;
-      if (data.arrivals === "") {
-        data.arrivals = 0;
-      }
-      if (data.departures === "") {
-        data.departures = 0;
-      }
+      data.status = data.status.trim();
+
+      // data.status = data.status === "Active" ? true : false;
+      // if (data.arrivals === "") {
+      //   data.arrivals = 0;
+      // }
+      // if (data.departures === "") {
+      //   data.departures = 0;
+      // }
 
       console.log("Data to be submitted:", data); // Log the data to be submitted
 
@@ -148,20 +147,20 @@ function CreateLocation() {
       <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
         <AdminPageTitle title="Create Location" backbutton />
 
+        <LoadingButton
+          variant="contained"
+          color="primary"
+          type="submit"
+          loading={loading}
+          loadingPosition="start"
+          startIcon={<AddIcon />}
+          onClick={formik.handleSubmit}
+          sx={{ marginBottom: "1rem" }}
+        >
+          Create Location
+        </LoadingButton>
         <Card sx={{ margin: "auto" }}>
           <Box component="form" onSubmit={formik.handleSubmit}>
-            <LoadingButton
-              variant="contained"
-              color="primary"
-              type="submit"
-              loading={loading}
-              loadingPosition="start"
-              startIcon={<AddIcon />}
-              onClick={formik.handleSubmit}
-              sx={{ marginBottom: "1rem" }}
-            >
-              Create Location
-            </LoadingButton>
             <CardContent>
               <CardTitle
                 title="Location Information"
@@ -228,7 +227,7 @@ function CreateLocation() {
                       label="Status"
                       select
                       variant="outlined"
-                      value={formik.values.status ? "Active" : "Inactive"}
+                      value={formik.values.status}
                       onChange={formik.handleChange}
                       error={
                         formik.touched.status && Boolean(formik.errors.status)
@@ -241,7 +240,7 @@ function CreateLocation() {
                     </TextField>
                   </Grid>
 
-                  <Grid item xs={12} sm={6}>
+                  {/* <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
                       id="arrivals"
@@ -279,7 +278,8 @@ function CreateLocation() {
                       }
                       sx={{ marginY: "1rem" }}
                     />
-                  </Grid>
+                  </Grid> */}
+
                   <Grid item xs={12} sm={6}>
                     {/* Image upload */}
                     <Box sx={{ textAlign: "center", mt: 2 }}>
@@ -313,14 +313,23 @@ function CreateLocation() {
                     </Box>
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <img
-                      src={
-                        import.meta.env.VITE_API_URL +
-                        "/admin/locations/images/" +
-                        imageFile
-                      }
-                      style={{ maxWidth: "100%", height: "auto" }}
-                    />
+                    {imageFile ? (
+                      <img
+                        src={
+                          import.meta.env.VITE_API_URL +
+                          "/admin/locations/images/" +
+                          imageFile
+                        }
+                        style={{
+                          maxWidth: "100%",
+                          maxHeight: "200px",
+                          marginLeft: "auto",
+                          marginRight: "auto",
+                        }}
+                      />
+                    ) : (
+                      <></>
+                    )}
                   </Grid>
                 </Grid>
               </Grid>

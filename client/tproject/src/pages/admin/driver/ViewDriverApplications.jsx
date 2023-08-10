@@ -18,9 +18,6 @@ import CancelIcon from '@mui/icons-material/Cancel';
 
 function ViewDriverApplications() {
     const [driverApplications, setDriverApplications] = useState([])
-    const [approvedApplications, setApprovedApplications] = useState([])
-    const [rejectedApplications, setRejectedApplications] = useState([])
-    const [pendingApplications, setPendingApplications] = useState([])
     const [deleteApplicationDialog, setDeleteApplicationDialog] = useState(false)
     const [deleteAllApplicationDialog, setDeleteAllApplicationDialog] = useState(false)
     const [deleteApplication, setDeleteApplication] = useState(null)
@@ -104,6 +101,8 @@ function ViewDriverApplications() {
             }
             setDeleteAllApplicationDialog(false);
             handleGetDriverApplications()
+            handleGetDriverApplications()
+            navigate('/admin/driver/viewdriverapplications');
             navigate('/admin/driver/viewdriverapplications');
             enqueueSnackbar("Driver Applications deleted successfully!", { variant: "success" });
         }
@@ -196,7 +195,7 @@ function ViewDriverApplications() {
         <Container maxWidth="xl" sx={{ marginBottom: "100px", marginY: "1rem", minWidth: 0 }}>
             <AdminPageTitle title="View Driver Applications" />
             <Grid container spacing={2} sx={{ marginBottom: "1.5em" }}>
-                <Grid item xs={6} xl={3}>
+                <Grid item xs={12} xl={3} md={6} sm={6}>
                     <Card>
                         <CardContent>
                             <Stack
@@ -208,7 +207,7 @@ function ViewDriverApplications() {
                                 <Stack spacing={1}>
                                     <Typography
                                         color="text.secondary"
-                                        variant="overline"
+                                        variant="h6"
                                     >
                                         Total Applications
                                     </Typography>
@@ -231,7 +230,7 @@ function ViewDriverApplications() {
                         </CardContent>
                     </Card>
                 </Grid>
-                <Grid item xs={6} xl={3}>
+                <Grid item xs={12} xl={3} md={6} sm={6}>
                     <Card>
                         <CardContent>
                             <Stack
@@ -243,7 +242,7 @@ function ViewDriverApplications() {
                                 <Stack spacing={1}>
                                     <Typography
                                         color="text.secondary"
-                                        variant="overline"
+                                        variant="h6"
                                     >
                                         Approved Applications
                                     </Typography>
@@ -266,7 +265,7 @@ function ViewDriverApplications() {
                         </CardContent>
                     </Card>
                 </Grid>
-                <Grid item xs={6} xl={3}>
+                <Grid item xs={12} xl={3} md={6} sm={6}>
                     <Card>
                         <CardContent>
                             <Stack
@@ -278,7 +277,7 @@ function ViewDriverApplications() {
                                 <Stack spacing={1}>
                                     <Typography
                                         color="text.secondary"
-                                        variant="overline"
+                                        variant="h6"
                                     >
                                         Rejected Applications
                                     </Typography>
@@ -300,7 +299,7 @@ function ViewDriverApplications() {
                         </CardContent>
                     </Card>
                 </Grid>
-                <Grid item xs={6} xl={3}>
+                <Grid item xs={12} xl={3} md={6} sm={6}>
                     <Card>
                         <CardContent>
                             <Stack
@@ -312,7 +311,7 @@ function ViewDriverApplications() {
                                 <Stack spacing={1}>
                                     <Typography
                                         color="text.secondary"
-                                        variant="overline"
+                                        variant="h6"
                                     >
                                         Pending Applications
                                     </Typography>

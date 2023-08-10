@@ -27,14 +27,7 @@ router.get("/productImage/:filename", (req, res) => {
     const fileName = req.params.filename;
     const directoryPath = path.join(__dirname, "../../public/uploads/products/");
     
-    res.download(directoryPath + fileName, fileName, (err) => {
-        if (err) {
-            res.status(500).send({
-                message: "Could not download the file. " + err,
-            });
-
-        }
-    });
+    res.sendFile(directoryPath + fileName, fileName);
 })
 // Upload file
 router.post('/upload',validateAdmin, upload_picture, (req, res) => {
@@ -99,12 +92,14 @@ router.get("/:id", async (req, res) => {
 });
 
 router.put("/status/:id", validateAdmin, async (req, res) => {
-    const schema = yup.object().shape({
-        product_status: yup.bool()
-    });
     try {
+        const schema = yup.object().shape({
+            product_status: yup.bool()
+        });
+
         const body = await schema.validate(req.body, { abortEarly: false })
         const product = await Product.findByPk(req.params.id)
+
         if (!product) {
             return res.status(404).json({message:"Product not found"})
         }
@@ -117,8 +112,8 @@ router.put("/status/:id", validateAdmin, async (req, res) => {
     } catch (error) {
         res.status(400).json({ message: error.errors })
     }
-
 });
+
 
 router.put("/:id", validateAdmin, async (req, res) => {
     const schema = yup.object().shape({

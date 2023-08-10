@@ -46,6 +46,8 @@ let uploadProfilePicture = multer({
     filename: (req, file, cb) => {
       if (req.params.id) {
         cb(null, req.params.id + path.extname(file.originalname));
+      } else if (req.user.id) {
+        cb(null, req.user.id + path.extname(file.originalname));
       } else {
         cb(null, req.user.email + path.extname(file.originalname));
       }
@@ -66,6 +68,22 @@ const locationUpload = multer.diskStorage({
     callback(null, nanoid(10) + path.extname(file.originalname));
   },
 });
+
+// Help Article upload file
+const ArticleUpload = multer.diskStorage({
+  destination: (req, file, callback) => {
+    fs.mkdirSync("./public/uploads/article", { recursive: true });
+    callback(null, "./public/uploads/article");
+  },
+  filename: (req, file, callback) => {
+    callback(null, nanoid(10) + path.extname(file.originalname));
+  },
+});
+
+const uploadArticlePicture = multer({
+  storage: ArticleUpload,
+  limits: { fileSize: 1024 * 1024 * 5 },
+}).single("file"); // file input name
 
 const uploadLocationPicture = multer({
   storage: locationUpload,
@@ -105,4 +123,4 @@ const upload_picture = multer({
 
 uploadProfilePicture = util.promisify(uploadProfilePicture);
 
-module.exports = { uploadFile, uploadProfilePicture, upload, upload_picture, uploadProductPicture, uploadLocationPicture};
+module.exports = { uploadFile, uploadProfilePicture, upload, upload_picture, uploadProductPicture, uploadLocationPicture, uploadArticlePicture};
