@@ -1,11 +1,13 @@
-import React, { useState } from 'react'
-import { Container, Typography, Card, CardContent, Box, Tab, Tabs, Stack, Checkbox, InputAdornment, TextField, Grid, FormControlLabel, FormControl, InputLabel, Select, MenuItem, Button, Dialog, DialogContent, DialogActions, DialogContentText, DialogTitle } from '@mui/material'
+import React, { useState, useEffect } from 'react'
+import { Container, Typography, Card, CardContent, Box, Tab, Tabs, Stack, Checkbox, InputAdornment, TextField, Grid, CardActions, FormControlLabel, FormControl, InputLabel, Select, MenuItem, Button, Dialog, DialogContent, DialogActions, DialogContentText, DialogTitle, CardMedia } from '@mui/material'
 import AspectRatio from '@mui/joy/AspectRatio';
 import LoadingButton from '@mui/lab/LoadingButton';
 import CategoryIcon from '@mui/icons-material/Category';
 import AddIcon from '@mui/icons-material/Add';
-import CloseIcon from '@mui/icons-material/Close';
-import CardTitle from "../../../components/CardTitle";
+import DeleteIcon from '@mui/icons-material/Delete';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import IconButton from '@mui/material/IconButton';
 import ImageIcon from '@mui/icons-material/Image';
 import http from '../../../http';
 import MDEditor from '@uiw/react-md-editor';
@@ -37,8 +39,9 @@ function TabPanel(props) {
 function CreateProduct() {
   const [value, setValue] = React.useState(0);
   const [loading, setLoading] = useState(false);
-  const [productFile, setProductFile] = useState();
-  const [productFileUpload, setProductFileUpload] = useState();
+  const [productFiles, setProductFiles] = useState([]);
+  const [productFileUploads, setProductFileUploads] = useState([]);
+  const [uploadedFilenames, setUploadedFilenames] = useState([]);
   const [descriptionValue, setDescriptionValue] = useState();
   const [loadingPicture, setLoadingPicture] = useState(false);
   const [changePictureDialog, setChangePictureDialog] = useState(false);
@@ -77,30 +80,33 @@ function CreateProduct() {
   const handleChangePictureDialogOpen = () => {
     setChangePictureDialog(true);
   }
+
   function handleChangeProductImage(e) {
-    setProductFile(URL.createObjectURL(e.target.files[0]));
-    setProductFileUpload(e.target.files[0]);
-    console.log(productFileUpload)
-    enqueueSnackbar("Successfully uploaded product picture. ", { variant: "success" })
-  }
+    const fileList = Array.from(e.target.files);
+    const totalImages = productFiles.length + fileList.length;
 
-  const handlePictureChange = (e) => {
-    setLoadingPicture(true);
-    console.log(e);
-    const formData = new FormData();
-
-    // Loop through the files and append each to the form data
-    for (let i = 0; i < e.target.files.length; i++) {
-      formData.append("product_picture", e.target.files[i]);
+    if (totalImages > 5) {
+      enqueueSnackbar("You can only upload a maximum of 5 images.", { variant: "warning" });
+      return; // exit the function early
     }
 
+    setProductFiles(prevFiles => [...prevFiles, ...fileList.map(file => URL.createObjectURL(file))]);
+    setProductFileUploads(prevFiles => [...prevFiles, ...fileList]);
+    enqueueSnackbar("Successfully uploaded product pictures.", { variant: "success" });
   }
+
+
+  useEffect(() => {
+    console.log(productFiles);
+    console.log(productFileUploads);
+  }, [productFiles, productFileUploads]);
 
   const subCategories = {
     'Health and Beauty': ['Bath', 'Disinfectant', 'Feminine Care', 'Hair', 'Oral Care'],
     'Household': ['Bathroom', 'Bug & Insect Repellent'],
     'Take Away & Travel': ['Bag, pouch, carrier', 'Lunch Box', 'Straw', 'Toiletries'],
   };
+
 
   const handleCategoryChange = (event) => {
     formik.handleChange(event);
@@ -116,7 +122,6 @@ function CreateProduct() {
       product_stock: 0,
       product_description: "",
       product_picture: "",
-      product_picture_type: "",
       product_price: 0,
       product_sale: false,
       product_discounted_percent: 0,
@@ -131,7 +136,6 @@ function CreateProduct() {
       product_stock: Yup.number("Invalid number").integer().required("Product Stock is required"),
       product_description: Yup.string().trim().min(3).max(1000).required("Product Description is required"),
       product_picture: Yup.string(),
-      product_picture_type: Yup.string(),
       product_price: Yup.number().min(0).integer().required("Product Price is required"),
       product_sale: Yup.bool(),
       product_discounted_percent: Yup.number().min(0).integer().required("Discount Percentage is required"),
@@ -153,10 +157,23 @@ function CreateProduct() {
       data.product_status = data.product_status;
       data.duration_of_pass = data.duration_of_pass;
 
+      console.log(data);
+
+      let formData = new FormData();
+
+      console.log(productFileUploads);
+      console.log(productFileUploads.length);
+      // Loop through the productFileUploads and append each to the form data
+      productFileUploads.forEach((file) => {
+        formData.append('product_picture', file);
+      });
 
       console.log(data)
-      let formData = new FormData();
-      formData.append('file', productFileUpload);
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
+
+
       http.post('/admin/products/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -164,8 +181,10 @@ function CreateProduct() {
       })
         .then((uploadRes) => {
           if (uploadRes.status === 200) {
-            data.product_picture = uploadRes.data.filename;
-            console.log(data)
+            // Here, I'm assuming the server sends back an array of filenames for the uploaded images.
+            data.product_picture = JSON.stringify(uploadRes.data.filenames);
+            setUploadedFilenames(uploadRes.data.filenames);
+            console.log(data);
             http.post("/admin/products/create", data)
               .then((res) => {
                 if (res.status === 200) {
@@ -179,11 +198,40 @@ function CreateProduct() {
           }
         })
         .catch((e) => {
-          enqueueSnackbar("Error uploading file. " + e.response.data.message, { variant: "error" });
+          enqueueSnackbar("Error uploading files. " + e.response.data.message, { variant: "error" });
         });
-
     }
+
   })
+
+  function handleDeleteImage(index) {
+    // Update the productFiles state
+    const updatedFiles = [...productFiles];
+    updatedFiles.splice(index, 1);
+    setProductFiles(updatedFiles);
+
+    // Update the productFileUploads state (assuming this is where you hold the actual File objects)
+    const updatedFileUploads = [...productFileUploads];
+    updatedFileUploads.splice(index, 1);
+    setProductFileUploads(updatedFileUploads);
+
+    // Since we're not making an HTTP request, directly show a success snackbar
+    enqueueSnackbar("Image deleted successfully.", { variant: "success" });
+  }
+
+
+  function handleMoveBackward(index) {
+    const updatedFiles = [...productFiles];
+    [updatedFiles[index - 1], updatedFiles[index]] = [updatedFiles[index], updatedFiles[index - 1]];
+    setProductFiles(updatedFiles);
+  }
+
+  function handleMoveForward(index) {
+    const updatedFiles = [...productFiles];
+    [updatedFiles[index], updatedFiles[index + 1]] = [updatedFiles[index + 1], updatedFiles[index]];
+    setProductFiles(updatedFiles);
+  }
+
 
   return (
     <>
@@ -369,9 +417,9 @@ function CreateProduct() {
                                 error={formik.touched.duration_of_pass && Boolean(formik.errors.duration_of_pass)}
                                 helperText={formik.touched.duration_of_pass && formik.errors.duration_of_pass}
                               >
-                                <MenuItem value="7">7 Days</MenuItem>
-                                <MenuItem value="30">1 Month</MenuItem>
-                                <MenuItem value="60">2 Months</MenuItem>
+                                <MenuItem value={7}>7 Days</MenuItem>
+                                <MenuItem value={30}>1 Month</MenuItem>
+                                <MenuItem value={60}>2 Months</MenuItem>
                               </Select>
                             </FormControl>
                           </Grid>
@@ -452,26 +500,35 @@ function CreateProduct() {
                 <Grid xs={12} lg={6} spacing={1} item container>
                   <Grid item xs={12}>
                     <Typography fontWeight={700} marginBottom={"0.25rem"}>Product Images</Typography>
-                    {
-                      productFile && (
-                        <AspectRatioBox>
-                          <img src={productFile} alt="" width="100%" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        </AspectRatioBox>
-                      )
-                    }
+                    <Grid container spacing={3}>
+                      {productFiles.map((file, index) => (
+                        <Grid item xs={12} sm={6} md={4} key={index}>
+                          <Card>
+                            <CardMedia>
+                              <img src={file} alt="" height={140} />
+                            </CardMedia>
+                            <CardActions>
+                              <IconButton onClick={() => handleDeleteImage(index)}><DeleteIcon /></IconButton>
+                              {index > 0 && <IconButton onClick={() => handleMoveBackward(index)}><ArrowBackIcon /></IconButton>}
+                              {index < productFiles.length - 1 && <IconButton onClick={() => handleMoveForward(index)}><ArrowForwardIcon /></IconButton>}
+                            </CardActions>
+                          </Card>
+                        </Grid>
+                      ))}
+                    </Grid>
                   </Grid>
                 </Grid>
                 <Grid xs={12} lg={6} spacing={2} item container>
                   <Grid item xs={12} marginTop={"0.25rem"}>
-                    {/* product_picture */}
                     <Button variant="contained" component="label" fullWidth>
-                      Upload Product Image
+                      Upload Product Images
                       <input hidden accept="image/*" onChange={handleChangeProductImage} multiple type="file" />
                     </Button>
                   </Grid>
                 </Grid>
               </Grid>
             </CardContent>
+
           </TabPanel>
 
         </Card>

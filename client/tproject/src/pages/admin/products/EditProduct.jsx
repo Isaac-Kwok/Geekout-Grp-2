@@ -37,35 +37,16 @@ function EditProduct() {
   const [product, setProduct] = useState(null);
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
-  const [productFile, setProductFile] = useState();
-  const [productFileUpload, setProductFileUpload] = useState();
-  const [loadingPicture, setLoadingPicture] = useState(false);
-  const [changePictureDialog, setChangePictureDialog] = useState(false);
+  const [productFile, setProductFile] = useState([]);
+  const [productFileUpload, setProductFileUpload] = useState([]);
   const [descriptionValue, setDescriptionValue] = useState();
   const { enqueueSnackbar } = useSnackbar();
   const productPath = `${import.meta.env.VITE_API_URL}/admin/products/productImage/`
 
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
-  const setProductImage = () => {
-    setProductFile(product.product_picture);
-  }
-
-  const handleChangePictureDialogClose = () => {
-    setChangePictureDialog(false);
-  }
-
-  const handleChangePictureDialogOpen = () => {
-    setChangePictureDialog(true);
-  }
-  function handleChangeProductImage(e) {
-    setProductFile(URL.createObjectURL(e.target.files[0]));
-    setProductFileUpload(e.target.files[0]);
-    console.log(productFileUpload)
-    enqueueSnackbar("Successfully uploaded product picture. ", { variant: "success" })
-  }
 
   const subCategories = {
     'Health and Beauty': ['Bath', 'Disinfectant', 'Feminine Care', 'Hair', 'Oral Care'],
@@ -78,15 +59,10 @@ function EditProduct() {
     formik.setFieldValue('sub_category', '');
   };
 
-  const handlePictureChange = (e) => {
-    setLoadingPicture(true);
-    console.log(e);
-    const formData = new FormData();
-
-    // Loop through the files and append each to the form data
-    for (let i = 0; i < e.target.files.length; i++) {
-      formData.append("product_picture", e.target.files[i]);
-    }
+  function handleChangeProductImage(e) {
+    const fileList = Array.from(e.target.files);
+    setProductFile(prevFiles => [...prevFiles, ...fileList.map(file => URL.createObjectURL(file))]);
+    setProductFileUpload(prevFiles => [...prevFiles, ...fileList]);
 
   }
 
@@ -141,83 +117,134 @@ function EditProduct() {
       product_status: Yup.bool()
     }),
     onSubmit: (data) => {
+      console.log('Form submitted!', data);
       setLoading(true);
       data.product_name = data.product_name.trim();
       data.product_category = data.product_category.trim();
+      data.product_sub_category = data.product_sub_category.trim();
+      data.pass_category_status = data.pass_category_status;
       data.product_stock = data.product_stock;
       data.product_description = data.product_description.trim();
+      data.product_picture = data.product_picture;
       data.product_price = data.product_price;
       data.product_sale = data.product_sale;
       data.product_discounted_percent = data.product_discounted_percent;
+      data.duration_of_pass = data.duration_of_pass;
       data.product_status = data.product_status;
 
+      console.log(productFileUpload)
+      console.log('Modified form data:', data);
 
-      console.log(data)
-      if (productFileUpload) {
+      let combinedProductFiles = [...productFile];
+      if (productFileUpload && productFileUpload.length > 0) {
+        combinedProductFiles = [...combinedProductFiles, ...productFileUpload.map(file => file.name)];
+      }
+      console.log('Combined product files:', combinedProductFiles);
+    
+      if (productFileUpload.length > 0) {
         let formData = new FormData();
-        formData.append('file', productFileUpload);
+        productFileUpload.forEach(file => formData.append('file', file));
+    
         http.post('/admin/products/upload', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
         })
           .then((uploadRes) => {
+            console.log('Upload response:', uploadRes);
+    
             if (uploadRes.status === 200) {
-              data.product_picture = uploadRes.data.filename
-              console.log(uploadRes.data.filename)
-              console.log(data)
-              http.put("/admin/products/" + id, data).then((res) => {
-                if (res.status === 200) {
-                  enqueueSnackbar("Product updated successfully!", { variant: "success" });
-                  navigate("/admin/products")
-                } else {
-                  enqueueSnackbar("Product update failed!", { variant: "error" });
-                  setLoading(false);
-                }
-              }).catch((err) => {
-                enqueueSnackbar("Product update failed! " + err.response.data.message, { variant: "error" });
-                setLoading(false);
-              })
+              data.product_picture = JSON.stringify(combinedProductFiles);
+              console.log('Sending product data after successful image upload:', data);
+    
+              return http.put("/admin/products/" + id, data);
+            } else {
+              console.error('Image upload failed with status:', uploadRes.status);
+              throw new Error("Failed to upload images");
             }
           })
+          .then((res) => {
+            if (res.status === 200) {
+              console.log('Product update response:', res);
+              enqueueSnackbar("Product updated successfully!", { variant: "success" });
+              navigate("/admin/products");
+            } else {
+              console.error('Product update failed with status:', res.status);
+              enqueueSnackbar("Product update failed!", { variant: "error" });
+              setLoading(false);
+            }
+          })
+          .catch((err) => {
+            console.error('Error caught during form submission:', err);
+            enqueueSnackbar("Product update failed! " + (err.response && err.response.data && err.response.data.message ? err.response.data.message : err.message), { variant: "error" });
+            setLoading(false);
+          });
+    
       } else {
+        data.product_picture = JSON.stringify(combinedProductFiles);
+    
         http.put("/admin/products/" + id, data).then((res) => {
           if (res.status === 200) {
+            console.log('Product update response:', res);
             enqueueSnackbar("Product updated successfully!", { variant: "success" });
-            navigate("/admin/products")
+            navigate("/admin/products");
           } else {
+            console.error('Product update failed with status:', res.status);
             enqueueSnackbar("Product update failed!", { variant: "error" });
             setLoading(false);
           }
-        }).catch((err) => {
-          enqueueSnackbar("Product update failed! " + err.response.data.message, { variant: "error" });
-          setLoading(false);
         })
+          .catch((err) => {
+            console.error('Error caught during form submission:', err);
+            enqueueSnackbar("Product update failed! " + (err.response && err.response.data && err.response.data.message ? err.response.data.message : err.message), { variant: "error" });
+            setLoading(false);
+          });
       }
+
     },
     enableReinitialize: true
-  })
+  });
 
   function getProduct() {
     http.get("/admin/products/" + id).then((res) => {
       if (res.status === 200) {
         setProduct(res.data);
-        console.log(data)
+        console.log(res.data)
+        let filenames = [];
+        if (typeof res.data.product_picture === 'string') {
+          filenames = res.data.product_picture.split(',');
+        } else if (Array.isArray(res.data.product_picture)) {
+          filenames = res.data.product_picture;
+        }
+
+        const productFile = filenames.map(filename =>
+          `${import.meta.env.VITE_API_URL}/admin/products/productImage/${filename}`
+        );
+        setProductFile(productFile);
+
       } else {
         enqueueSnackbar("Product retrieval failed!", { variant: "error" });
         setLoading(false);
         return navigate(-1);
       }
     }).catch((err) => {
-      enqueueSnackbar("Product retrieval failed! " + err.response.data.message, { variant: "error" });
+      if (err.response && err.response.data && err.response.data.message) {
+        enqueueSnackbar("Product retrieval failed! " + err.response.data.message, { variant: "error" });
+      } else {
+        enqueueSnackbar("Product retrieval failed! Something went wrong.", { variant: "error" });
+        console.log(err);
+      }
       setLoading(false);
       return navigate(-1);
-    })
+    });
   }
+
+
 
   useEffect(() => {
     getProduct();
   }, [])
+
 
   return (
     <>
@@ -483,22 +510,26 @@ function EditProduct() {
           </TabPanel>
           <TabPanel value={value} index={1}>
             <CardContent>
-              <Grid container spacing={2} >
+              <Grid container spacing={2}>
                 <Grid xs={12} lg={6} spacing={1} item container>
                   <Grid item xs={12}>
                     <Typography fontWeight={700} marginBottom={"0.25rem"}>Product Images</Typography>
-                    <AspectRatioBox>
-                      <img src={productFile ? productFile : product ? `${productPath}${product.product_picture}` : ""} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    </AspectRatioBox>
+                    {productFile.map((file, index) => (
+                      <AspectRatioBox key={index}>
+                        <img src={file} alt="" width="100%" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      </AspectRatioBox>
+                    ))}
                   </Grid>
                 </Grid>
                 <Grid xs={12} lg={6} spacing={2} item container>
                   <Grid item xs={12} marginTop={"0.25rem"}>
-                    {/* product_picture */}
-                    <Button variant="contained" component="label" fullWidth>
-                      Upload Product Image
-                      <input hidden accept="image/*" onChange={handleChangeProductImage} multiple type="file" />
-                    </Button>
+                    <Grid item xs={12} marginTop={"0.25rem"}>
+                      {/* product_picture */}
+                      <Button variant="contained" component="label" fullWidth>
+                        Upload Product Image
+                        <input hidden accept="image/*" onChange={handleChangeProductImage} multiple type="file" />
+                      </Button>
+                    </Grid>
                   </Grid>
                 </Grid>
               </Grid>

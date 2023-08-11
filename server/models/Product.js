@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         product_stock:{
-            type: DataTypes.TINYINT,
+            type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue:0
         },
@@ -60,7 +60,7 @@ module.exports = (sequelize, DataTypes) => {
         duration_of_pass: {
             type: DataTypes.TINYINT,
             allowNull: false,
-            defaultValue: 1
+            defaultValue: 7
         },
         // Product status
         product_status: {
