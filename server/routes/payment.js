@@ -1,13 +1,13 @@
-const { Order, User, Transaction } = require("../models")
+const { Order, User, Transaction, OrderItem, Product } = require("../models")
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 const express = require("express");
 const router = express.Router()
 const yup = require("yup");
+const moment = require("moment")
 const { validateToken } = require("../middleware/validateToken");
 
 router.post("/webhook", async (req, res) => {
     // Handle webhook
-    console.log(req.body)
     // PayementIntent object
     const data = req.body.data.object
 
@@ -32,6 +32,35 @@ router.post("/webhook", async (req, res) => {
                 await user.save()
             } else if (transaction.type === "purchase") {
                 const order = await Order.findByPk(transaction.order_id)
+                const orderItems = await OrderItem.findAll({
+                    where: {
+                        order_id: order.id
+                    },
+                    include: {
+                        model: Product,
+                        attributes: ["pass_category_status", "duration_of_pass"]
+                    }
+                })
+
+                console.log(orderItems)
+
+                for (let i = 0; i < orderItems.length; i++) {
+                    const orderItem = orderItems[i]
+
+                    // Check if the product is a pass
+                    if (orderItem.Product.pass_category_status) {
+                        // Add days to the user's pass expiry date times the quantity
+                        console.log("boom")
+                        const user = await User.findByPk(order.user_id)
+                        if (user.bike_pass_expiry < new Date()) {
+                            user.bike_pass_expiry = moment(user.bike_pass_expiry || new Date()).add(orderItem.Product.duration_of_pass * orderItem.quantity, "days").toDate()
+                        } else {
+                            user.bike_pass_expiry = moment(user.bike_pass_expiry).add(orderItem.Product.duration_of_pass * orderItem.quantity, "days").toDate()
+                        }
+                        await user.save()
+                    }
+                }
+
                 order.order_status = 1
                 await order.save()
             }
@@ -147,6 +176,34 @@ router.get("/purchase/wallet/settle/:id", validateToken, async (req, res) => {
         user.cash = parseFloat(user.cash) - parseFloat(order.total_amount)
         await user.save()
 
+        const orderItems = await OrderItem.findAll({
+            where: {
+                order_id: order.id
+            },
+            include: {
+                model: Product,
+                attributes: ["pass_category_status", "duration_of_pass"]
+            }
+        })
+
+        console.log(orderItems)
+
+        for (let i = 0; i < orderItems.length; i++) {
+            const orderItem = orderItems[i]
+
+            // Check if the product is a pass
+            if (orderItem.Product.pass_category_status) {
+                // Add days to the user's pass expiry date times the quantity
+                const user = await User.findByPk(order.user_id)
+                if (user.bike_pass_expiry < new Date()) {
+                    user.bike_pass_expiry = moment(user.bike_pass_expiry || new Date()).add(orderItem.Product.duration_of_pass * orderItem.quantity, "days").toDate()
+                } else {
+                    user.bike_pass_expiry = moment(user.bike_pass_expiry).add(orderItem.Product.duration_of_pass * orderItem.quantity, "days").toDate()
+                }
+                await user.save()
+            }
+        }
+
         order.order_status = 1
         await order.save()
 
@@ -198,6 +255,34 @@ router.get("/purchase/point/settle/:id", validateToken, async (req, res) => {
 
         user.points = parseFloat(user.points) - parseFloat(p)
         await user.save()
+
+        const orderItems = await OrderItem.findAll({
+            where: {
+                order_id: order.id
+            },
+            include: {
+                model: Product,
+                attributes: ["pass_category_status", "duration_of_pass"]
+            }
+        })
+
+        console.log(orderItems)
+
+        for (let i = 0; i < orderItems.length; i++) {
+            const orderItem = orderItems[i]
+
+            // Check if the product is a pass
+            if (orderItem.Product.pass_category_status) {
+                // Add days to the user's pass expiry date times the quantity
+                const user = await User.findByPk(order.user_id)
+                if (user.bike_pass_expiry < new Date()) {
+                    user.bike_pass_expiry = moment(user.bike_pass_expiry || new Date()).add(orderItem.Product.duration_of_pass * orderItem.quantity, "days").toDate()
+                } else {
+                    user.bike_pass_expiry = moment(user.bike_pass_expiry).add(orderItem.Product.duration_of_pass * orderItem.quantity, "days").toDate()
+                }
+                await user.save()
+            }
+        }
 
         transaction.status = "Succeeded"
         await transaction.save()

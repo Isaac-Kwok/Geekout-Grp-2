@@ -369,9 +369,9 @@ function CreateProduct() {
                                 error={formik.touched.duration_of_pass && Boolean(formik.errors.duration_of_pass)}
                                 helperText={formik.touched.duration_of_pass && formik.errors.duration_of_pass}
                               >
-                                <MenuItem value="7">7 Days</MenuItem>
-                                <MenuItem value="30">1 Month</MenuItem>
-                                <MenuItem value="60">2 Months</MenuItem>
+                                <MenuItem value={7}>7 Days</MenuItem>
+                                <MenuItem value={30}>1 Month</MenuItem>
+                                <MenuItem value={60}>2 Months</MenuItem>
                               </Select>
                             </FormControl>
                           </Grid>

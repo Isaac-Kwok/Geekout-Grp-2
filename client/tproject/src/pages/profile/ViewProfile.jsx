@@ -6,14 +6,15 @@ import TopUpDialog from '../../components/TopUpDialog'
 import EditIcon from '@mui/icons-material/Edit';
 import BadgeIcon from '@mui/icons-material/Badge';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import { DirectionsBike } from '@mui/icons-material'
 import { ProfileContext } from './ProfileRoutes'
 import http from '../../http'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import useUser from '../../context/useUser'
 
 function ViewProfile() {
     const { profile, setProfile } = useContext(ProfileContext)
-    const { user } = useUser()
+    const { user, refreshUser } = useUser()
     const [topupOpen, setTopupOpen] = useState(false)
     const [FAEnabled, setFAEnabled] = useState(false)
     const navigate = useNavigate()
@@ -56,6 +57,7 @@ function ViewProfile() {
     useEffect(() => {
         document.title = "EnviroGo - Account Overview"
         check2FA()
+        refreshUser()
     }, [])
 
     return (
@@ -89,8 +91,27 @@ function ViewProfile() {
                         </Grid>
                     </CardContent>
                     <CardActions>
-                        <Button variant="text" color="primary" startIcon={<EditIcon/>} onClick={handleEditProfile}>Edit Profile</Button>
+                        <Button variant="text" color="primary" startIcon={<EditIcon />} onClick={handleEditProfile}>Edit Profile</Button>
                     </CardActions>
+                </Card>
+                <Card>
+                    <CardContent>
+                        <CardTitle icon={<DirectionsBike />} title="Bicycle Pass Status" />
+                        <Grid container marginTop={"1rem"}>
+                            <Grid item xs={12} sm marginBottom={["1rem", 0]}>
+                                <Box display="flex" alignItems={"center"}>
+                                    <InfoBox flexGrow={1} title="Pass Status" value={(new Date(user?.bike_pass_expiry) > new Date()) ? "Active" : "Not Active"} boolean={new Date(user?.bike_pass_expiry) > new Date()} />
+                                    <Button variant="text" color="primary" LinkComponent={Link} to="/products">Buy</Button>
+                                </Box>
+                            </Grid>
+                            <Divider orientation="vertical" sx={{ marginX: "1rem" }} flexItem />
+                            <Grid item xs={12} sm>
+                                <Box display="flex" alignItems={"center"}>
+                                    <InfoBox flexGrow={1} title="Pass valid till" value={new Date(user?.bike_pass_expiry).toLocaleString() || "Not Bought"} />
+                                </Box>
+                            </Grid>
+                        </Grid>
+                    </CardContent>
                 </Card>
                 <Card>
                     <CardContent>
@@ -102,11 +123,11 @@ function ViewProfile() {
                                     <Button variant="text" color="primary" onClick={handleTopupOpen}>Top-up</Button>
                                 </Box>
                             </Grid>
-                            <Divider orientation="vertical" sx={{marginX: "1rem"}} flexItem />
+                            <Divider orientation="vertical" sx={{ marginX: "1rem" }} flexItem />
                             <Grid item xs={12} sm>
                                 <Box display="flex" alignItems={"center"}>
                                     <InfoBox flexGrow={1} title="GreenMiles Points" value={<Typography variant='h5' fontWeight={700}>{user?.points} GM</Typography>} />
-                                    <Button variant="text" color="primary">Redeem</Button>
+                                    <Button variant="text" color="primary" LinkComponent={Link} to="/products">Redeem</Button>
                                 </Box>
                             </Grid>
                         </Grid>
