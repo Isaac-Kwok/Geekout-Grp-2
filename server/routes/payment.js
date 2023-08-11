@@ -108,6 +108,109 @@ router.post("/purchase/stripe", validateToken, async (req, res) => {
     }
 })
 
+router.get("/purchase/wallet/settle/:id", validateToken, async (req, res) => {
+    // Get Order
+    try {
+        const { id } = req.params
+
+        const order = await Order.findOne({
+            where: {
+                id: id,
+                user_id: req.user.id
+            }
+        })
+
+        const transaction = await Transaction.findOne({
+            where: {
+                order_id: id
+            }
+        })
+
+        if (!order) {
+            res.status(404).json({ message: "Order not found." })
+        }
+
+        if (!transaction) {
+            res.status(404).json({ message: "Transaction not found." })
+        }
+
+        if (order.order_status > 0) {
+            res.status(400).json({ message: "Order has already been settled." })
+        }
+
+        const user = await User.findByPk(req.user.id)
+
+        if (user.cash < order.total_amount) {
+            res.status(400).json({ message: "Insufficient funds." })
+        }
+
+        user.cash = parseFloat(user.cash) - parseFloat(order.total_amount)
+        await user.save()
+
+        order.order_status = 1
+        await order.save()
+
+        transaction.status = "Succeeded"
+        await transaction.save()
+
+        res.status(200).json({ message: "Order settled." })
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
+})
+
+router.get("/purchase/point/settle/:id", validateToken, async (req, res) => {
+    // Get Order
+    try {
+        const { id } = req.params
+
+        const order = await Order.findOne({
+            where: {
+                id: id,
+                user_id: req.user.id
+            }
+        })
+
+        const transaction = await Transaction.findOne({
+            where: {
+                order_id: id
+            }
+        })
+
+        if (!order) {
+            res.status(404).json({ message: "Order not found." })
+        }
+
+        if (!transaction) {
+            res.status(404).json({ message: "Transaction not found." })
+        }
+
+        if (order.order_status > 0) {
+            res.status(400).json({ message: "Order has already been settled." })
+        }
+
+        const user = await User.findByPk(req.user.id)
+        const p = (order.total_amount * 100).toFixed(0)
+
+        if (user.points < p) {
+            res.status(400).json({ message: "Insufficient funds." })
+        }
+
+        user.points = parseFloat(user.points) - parseFloat(p)
+        await user.save()
+
+        transaction.status = "Succeeded"
+        await transaction.save()
+
+        order.order_status = 1
+        await order.save()
+
+        res.status(200).json({ message: "Order settled." })
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
+})
+
 router.get("/history", validateToken, async (req, res) => {
     // Get history
     try {
