@@ -161,7 +161,7 @@ function ViewSingleProduct() {
                 <Card sx={{ margin: "auto" }}>
                     <Box component="form">
                         <CardContent>
-                            <CardTitle title="Product Information" icon={<IconButton size="large" onClick={() => navigate("/products")} ><ArrowBackIcon /><CategoryIcon /></IconButton>} />
+                            <CardTitle title="Product Information" icon={<CategoryIcon />} back="/products" />
                             <Grid container spacing={2} sx={{ marginY: "1rem" }}>
                                 <Grid item xs={12} md={6}>
                                     <AspectRatioBox>

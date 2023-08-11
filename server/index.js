@@ -56,7 +56,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({ limit: "100mb", extended: true }));
 app.use(function (err, req, res, next) {
   console.error(err.stack);
-  res.status(500).send({"message":"Something broke! Check console for details"});
+  res.status(500).send({ "message": "Something broke! Check console for details" });
 })
 
 // Main Route (Status check)
@@ -284,12 +284,14 @@ app.get('*', function (req, res) {
 
 app.io = io
 
+let port = process.env.APP_PORT
+server.listen(port, () => {
+  console.clear()
+  console.log(`The server has been started on port ${port}\nIf you made changes to the database, please continue waiting till 'Database synced' appears.`)
+})
+
 db.sequelize.sync({ alter: true }).then(() => {
-  let port = process.env.APP_PORT
-  server.listen(port, () => {
-    console.clear()
-    console.log(`The server has been started on port ${port}`)
-  })
+  console.log('Database synced')
 })
 
 module.exports = app;
