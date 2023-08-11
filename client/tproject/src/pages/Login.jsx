@@ -19,7 +19,6 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import http from "../http";
 import { UserContext } from "..";
-import axios from "axios";
 
 function Login() {
     const [loading, setLoading] = useState(false);

@@ -25,7 +25,10 @@ function ViewHelpArticles() {
     const columns = [
         { field: 'title', headerName: 'Article Title', minWidth: 300, flex: 1 },
         {
-            field: 'isPublished', headerName: 'Is Published?', minWidth: 200, renderCell: (params) => {
+            field: 'isPublished', 
+            headerName: 'Is Published?',
+            minWidth: 200, 
+            renderCell: (params) => {
                 return <Chip variant="filled" size="small" icon={params.value ? <DoneIcon/> : <CloseIcon/>} label={params.value ? "Published" : "Not Published"} color={params.value ? "success" : "error"}  />;
             },
             valueGetter: (params) => {

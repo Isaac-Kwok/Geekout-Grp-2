@@ -5,7 +5,7 @@ import { CartContext } from './CartRoutes';
 import { UserContext } from '../../index';
 import { Elements } from '@stripe/react-stripe-js';
 import { Link } from 'react-router-dom';
-import { loadStripe } from '@stripe/stripe-js';
+import { loadStripe } from '@stripe/stripe-js/pure';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import PaymentIcon from '@mui/icons-material/Payment';
 import CheckoutPaymentForm from './CheckoutPaymentForm';
