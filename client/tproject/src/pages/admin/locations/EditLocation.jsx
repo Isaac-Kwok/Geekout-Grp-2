@@ -23,7 +23,6 @@ import http from "../../../http";
 import PlaceIcon from "@mui/icons-material/Place";
 import { ToastContainer, toast } from "react-toastify";
 
-
 function EditLocation() {
   const [loading, setLoading] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
@@ -91,7 +90,7 @@ function EditLocation() {
       .then((res) => {
         console.log("Location data:", res.data);
         setLocation(res.data);
-        setImageFile(res.data.imageFile)
+        setImageFile(res.data.imageFile);
         // const locationData = res.data;
         // // Set the form values with the fetched data
         // formik.setValues({
@@ -145,6 +144,15 @@ function EditLocation() {
       if (data.premium == "") {
         data.premium = 0;
       }
+
+      // Check if the imageFile is still the placeholder value
+      if (data.imageFile === "placeholderImageFileString") {
+        enqueueSnackbar("Location approval failed! Image is required.", {
+          variant: "error",
+        });
+        setLoading(false); // Stop loading
+        return; // Return early to prevent further execution
+      }
       data.imageFile = data.imageFile.trim();
       data.status = data.status.trim();
 
@@ -195,7 +203,11 @@ function EditLocation() {
   return (
     <>
       <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
-        <AdminPageTitle title="Edit Location" subtitle={location.name} backbutton />
+        <AdminPageTitle
+          title="Edit Location"
+          subtitle={location.name}
+          backbutton
+        />
         <Box component="form" onSubmit={formik.handleSubmit}>
           <LoadingButton
             variant="contained"
@@ -210,10 +222,7 @@ function EditLocation() {
             Save changes
           </LoadingButton>
           <Card sx={{ margin: "auto" }}>
-
-
             <CardContent>
-
               <CardTitle
                 title="Location Information"
                 icon={<PlaceIcon color="text.secondary" />}
@@ -386,12 +395,24 @@ function EditLocation() {
                     </Box>
                   </Grid>
                   <Grid item xs={6} sm={6}>
-                    <img src={import.meta.env.VITE_API_URL + "/admin/locations/images/" + imageFile} alt="locImg" style={{ maxWidth: "100%", maxHeight: "200px", marginLeft: "auto", marginRight: "auto" }} />
+                    <img
+                      src={
+                        import.meta.env.VITE_API_URL +
+                        "/admin/locations/images/" +
+                        imageFile
+                      }
+                      alt="locImg"
+                      style={{
+                        maxWidth: "100%",
+                        maxHeight: "200px",
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                      }}
+                    />
                   </Grid>
                 </Grid>
               </Grid>
             </CardContent>
-
           </Card>
         </Box>
       </Container>

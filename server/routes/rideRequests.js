@@ -18,11 +18,12 @@ router.post("/create", validateToken, async (req, res) => {
   const schema = yup.object().shape({
     // userId: yup.number().required(),
     // name: yup.string().required(),
-    date: yup.date().required(),
-    time: yup.string().required(),
+    dateTime: yup.date().required(),
     pickUp: yup.string().required(),
     destination: yup.string().required(),
     numberOfPassengers: yup.number().required(),
+    // date: yup.date().required(),
+    // time: yup.string().required(),
   });
   try {
     await schema.validate(req.body, { abortEarly: false });
@@ -87,11 +88,12 @@ router.put("/update/:requestId", async (req, res) => {
   const schema = yup.object().shape({
     // userId: yup.number().required(),
     // name: yup.string().required(),
-    date: yup.date().required(),
-    time: yup.string().required(),
+    dateTime: yup.date().required(),
     pickUp: yup.string().required(),
     destination: yup.string().required(),
     numberOfPassengers: yup.number().required(),
+    // date: yup.date().required(),
+    // time: yup.string().required(),
   });
 
   try {

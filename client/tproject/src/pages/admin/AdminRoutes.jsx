@@ -89,6 +89,7 @@ function AdminRoutes() {
                 <Route path="/orders/editstatus/:id" element= {<EditOrderStatus/>}/>
                 <Route path="/refunds" element={<ViewRefunds />} />
                 <Route path="/refunds/editstatus/:id" element={<ViewAdminSingleRefund />} />
+                <Route path="/requests" element={<ViewAllRequests />} />
 
 
                 {/* Driver Paths */}
