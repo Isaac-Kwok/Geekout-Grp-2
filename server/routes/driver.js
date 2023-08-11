@@ -1,9 +1,10 @@
 const express = require("express")
 const yup = require("yup")
-const { DriverApplication, Sequelize, User, Route, RideRequest } = require("../models")
+const { DriverApplication, Sequelize, User, Route, RideRequest, Message } = require("../models")
 const router = express.Router()
 require('dotenv').config();
 const axios = require('axios');
+
 
 const { upload } = require('../middleware/upload');
 
@@ -276,4 +277,78 @@ router.post('/getDistanceMatrix', async (req, res) => {
     }
   });
 
+  router.post("/chat/:id/message", validateToken, async (req, res) => {
+    const schema = yup.object().shape({
+        message: yup.string().required(),
+    }).noUnknown()
+
+    try {
+        const { id } = req.params
+        const { id: userId } = req.user
+        const { message } = await schema.validate(req.body)
+
+        const route = await Route.findOne({
+            where: { id: id, user_id: userId },
+        })
+
+        if (!route) {
+            return res.status(404).json({ message: "Route not found" })
+        }
+
+        if (route.user_id !== userId) {
+            return res.status(403).json({ message: "You are not allowed to reply to this Chat" })
+        }
+
+        const newMessage = await Message.create({
+            message,
+            chat_id: id,
+            user_id: userId
+        })
+
+        const sendingMessage = await Message.findByPk(newMessage.id, {
+            include: {
+                model: User,
+                attributes: ["id", "name", "account_type"]
+            }
+        })
+
+
+        req.app.io.to(`chat_${route.id}`).emit("chat_message", sendingMessage)
+        res.status(201).json(newMessage)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
+router.get("/chat/:id/message", validateToken, async (req, res) => {
+    try {
+        const { id } = req.params
+        const { id: userId } = req.user
+
+        const route = await Route.findOne({
+            where: { id: id, user_id: userId },
+        })
+
+        if (!route) {
+            return res.status(404).json({ message: "Route not found" })
+        }
+
+        if (route.user_id !== userId) {
+            return res.status(403).json({ message: "You are not allowed to view this Chat" })
+        }
+
+        const messages = await Message.findAll({
+            where: { chat_id: id },
+            include: {
+                model: User,
+                attributes: ["id", "name", "account_type"]
+            }
+        })
+
+        res.status(200).json(messages)
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
 module.exports = router;

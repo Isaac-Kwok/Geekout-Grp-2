@@ -1,12 +1,16 @@
 import React from 'react'
 import { GoogleMap, MarkerF, useJsApiLoader, DirectionsRenderer, Autocomplete, } from "@react-google-maps/api";
-import { Button, Container, Grid, Card, CardContent, Box, TextField, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Button, Container, Grid, Card, CardContent, Box, TextField, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Tabs, Tab } from '@mui/material';
 import { useState, useRef, useEffect } from "react";
 import googleMapsReverseGeocoder from '../../googleMapsReverseGeocoder'
 import http from '../../http'
 import useUser from '../../context/useUser';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
+import DriverChatBox from '../../components/DriverChatBox';
+import ChatIcon from '@mui/icons-material/Chat';
+import DirectionsIcon from '@mui/icons-material/Directions';
+import io from 'socket.io-client'
 
 function DriverRouting() {
   const navigate = useNavigate()
@@ -33,6 +37,15 @@ function DriverRouting() {
   const originRef = useRef({})
   const destinationRef = useRef({})
   const isDataFetched = useRef(false); // useRef to track whether data has been fetched
+  const [value, setValue] = useState(0);
+  const [closed, setClosed] = useState(false)
+  const [socket, setSocket] = useState(null)
+
+
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -561,9 +574,20 @@ function DriverRouting() {
         // Handle the error here, e.g., display an error message or take appropriate action
       });
   }
+  useEffect(() => {
+    const newSocket = io.connect(import.meta.env.VITE_API_URL, {
+      query: {
+        token: localStorage.getItem("token"),
+        room: `chat_${user?.current_route.id}`
+      }
+    })
+    setSocket(newSocket)
+    return () => newSocket.close()
+  }, [user])
 
   useEffect(() => {
     refreshUser()
+
     console.log('user', user)
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(showPosition);
@@ -779,8 +803,21 @@ function DriverRouting() {
                 </GoogleMap>
               </Grid>
               <Grid id='route' item xs={12} lg={3} md={5} sm={12} >
+                <Box sx={{ width: '100%' }}>
+                  <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+                      <Tab label="Directions" icon={< DirectionsIcon/>} />
+                      <Tab label="Chat" icon={< ChatIcon/>}/>
+                    </Tabs>
+                  </Box>
+                </Box>
+                <div className="" style={{ maxHeight: '520px', overflowY: 'auto' }}>
+                  <Box display={value == 0 ? "initial" : "none"} id="instructions"></Box>
+                </div>
 
-                <div id="instructions" style={{ maxHeight: '500px', overflowY: 'auto' }}></div>
+                <Box className="" display={value == 1 ? "initial" : "none"}>
+                  <DriverChatBox socket={socket} route={user.current_route.id} closed={false}></DriverChatBox>
+                </Box>
                 <Card style={{ marginBottom: '10px' }}>
                   <CardContent>
                     <Typography variant="h6" gutterBottom>
