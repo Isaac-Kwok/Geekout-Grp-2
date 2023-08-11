@@ -51,17 +51,17 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 0
         },
         total_cost: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.DOUBLE,
             allowNull: false,
-            defaultValue: 0
+            defaultValue: 0.0
         },
         driver_profit: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.DOUBLE,
             allowNull: false,
             defaultValue: 0
         },
         company_profit: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.DOUBLE,
             allowNull: false,
             defaultValue: 0
         },

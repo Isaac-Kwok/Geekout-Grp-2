@@ -550,6 +550,8 @@ function DriverRouting() {
           console.log(res.data);
           refreshUser();
           enqueueSnackbar('You have Completed Route!', { variant: 'success' });
+          // Reload the page
+          window.location.reload();
         } else {
           console.log("Failed to complete routes:", res.status);
         }
@@ -558,9 +560,6 @@ function DriverRouting() {
         console.error("Error updating driver status:", err);
         // Handle the error here, e.g., display an error message or take appropriate action
       });
-    refreshUser()
-    handleGetRideRequests()
-    navigate('/driver/routes')
   }
 
   useEffect(() => {

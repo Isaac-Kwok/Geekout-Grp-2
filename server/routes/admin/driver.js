@@ -94,7 +94,7 @@ router.put("/edit/:id", validateAdmin, async (req, res) => {
 });
 
 // Get driver images by name
-router.get("/driverImage/:filename", validateAdmin, (req, res) => {
+router.get("/driverImage/:filename", (req, res) => {
     const fileName = req.params.filename;
     const directoryPath = path.join(__dirname, "../../public/uploads/driver/");
 

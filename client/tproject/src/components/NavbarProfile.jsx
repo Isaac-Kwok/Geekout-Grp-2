@@ -78,7 +78,7 @@ export function NavbarProfile() {
                             <ListItemText primary={"Cart"} />
                         </ListItemButton>
                     </ListItem>
-                    {user.account_type == 2 &&
+                    {user.account_type == 2 || user.account_type == 1  && user.driver_application_sent &&
                     <ListItem key={"Driver's Dashboard"} disablePadding>
                         <ListItemButton component={Link} to="/driver/dashboard" onClick={() => setIsPopoverOpen(false)}>
                             <ListItemIcon><DirectionsCarIcon /></ListItemIcon>

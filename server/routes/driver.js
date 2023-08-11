@@ -143,6 +143,18 @@ router.get("/getRoutes", validateToken, async (req, res) => {
         res.status(500).json({ message: error.message })
     }
 })
+
+// Get the routes based on the id
+router.get("/getRoutesById/:id", validateToken, async (req, res) => {
+    try {
+        const id = req.params.id
+        const routes = await Route.findAll({ where: { user_id: id } })
+        console.log('routes:', routes)
+        res.json(routes)
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
 router.put("/abort", validateToken, async (req, res) => {
     // Update user by id
     try {
