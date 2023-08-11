@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { DialogContent, Grid, Paper, Divider, Container, Typography, CircularProgress, List, ListItem, ListItemText, Button, Card, CardContent, Select, FormControl, InputLabel, MenuItem } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { CartContext } from './CartRoutes';
-import { UserContext } from '../../index';
+import useUser from '../../context/useUser';
 import { Elements } from '@stripe/react-stripe-js';
 import { Link } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js/pure';
@@ -19,7 +19,7 @@ import CardTitle from '../../components/CardTitle';
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 const Checkout = () => {
-    const { user } = useContext(UserContext);
+    const { user, refreshUser } = useUser()
     const [items, setItems] = useState([]);
     const { selectedItems } = useContext(CartContext);
     const [loading, setLoading] = useState(true);
@@ -36,6 +36,7 @@ const Checkout = () => {
             navigate("/login");
         } else {
             document.title = 'Checkout';
+            refreshUser();
             setLoading(true);
             http.get('/cart')
                 .then((response) => {

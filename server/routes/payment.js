@@ -157,20 +157,24 @@ router.get("/purchase/wallet/settle/:id", validateToken, async (req, res) => {
 
         if (!order) {
             res.status(404).json({ message: "Order not found." })
+            return
         }
 
         if (!transaction) {
             res.status(404).json({ message: "Transaction not found." })
+            return
         }
 
         if (order.order_status > 0) {
             res.status(400).json({ message: "Order has already been settled." })
+            return
         }
 
         const user = await User.findByPk(req.user.id)
 
-        if (user.cash < order.total_amount) {
+        if (parseFloat(user.cash) < parseFloat(order.total_amount)) {
             res.status(400).json({ message: "Insufficient funds." })
+            return
         }
 
         user.cash = parseFloat(user.cash) - parseFloat(order.total_amount)
@@ -236,14 +240,17 @@ router.get("/purchase/point/settle/:id", validateToken, async (req, res) => {
 
         if (!order) {
             res.status(404).json({ message: "Order not found." })
+            return
         }
 
         if (!transaction) {
             res.status(404).json({ message: "Transaction not found." })
+            return
         }
 
         if (order.order_status > 0) {
             res.status(400).json({ message: "Order has already been settled." })
+            return
         }
 
         const user = await User.findByPk(req.user.id)
@@ -251,6 +258,7 @@ router.get("/purchase/point/settle/:id", validateToken, async (req, res) => {
 
         if (user.points < p) {
             res.status(400).json({ message: "Insufficient funds." })
+            return
         }
 
         user.points = parseFloat(user.points) - parseFloat(p)
