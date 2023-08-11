@@ -107,7 +107,7 @@ function ViewProfile() {
                             <Divider orientation="vertical" sx={{ marginX: "1rem" }} flexItem />
                             <Grid item xs={12} sm>
                                 <Box display="flex" alignItems={"center"}>
-                                    <InfoBox flexGrow={1} title="Pass valid till" value={new Date(user?.bike_pass_expiry).toLocaleString() || "Not Bought"} />
+                                    <InfoBox flexGrow={1} title="Pass valid till" value={user?.bike_pass_expiry ? new Date(user?.bike_pass_expiry).toLocaleString() : "Not Bought"} />
                                 </Box>
                             </Grid>
                         </Grid>
