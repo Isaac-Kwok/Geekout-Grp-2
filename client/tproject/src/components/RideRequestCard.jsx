@@ -9,12 +9,14 @@ import {
 } from "@mui/material";
 import { Edit, Delete, Visibility } from "@mui/icons-material";
 import InfoBox from "../components/InfoBox";
+import StarHalfIcon from '@mui/icons-material/StarHalf';
 
 function RideRequestCard({
   rideRequest,
   handleDetail,
   handleEdit,
-  handleDelete,
+  handleOpen,
+  handleRate,
 }) {
   const { locationDetails } = rideRequest;
   const imageFile = locationDetails ? locationDetails.imageFile : null;
@@ -58,18 +60,30 @@ function RideRequestCard({
         >
           <Visibility />
         </IconButton>
+        {rideRequest.status !== "Completed" && (
         <IconButton
           onClick={() => handleEdit(rideRequest.requestId)}
           title="Edit Request"
         >
           <Edit />
-        </IconButton>
+        </IconButton>)}
+
+        {rideRequest.status !== "Completed" && (
         <IconButton
-          onClick={() => handleDelete(rideRequest.requestId)}
+          onClick={() => handleOpen(rideRequest.requestId)}
           title="Delete Request"
         >
           <Delete />
-        </IconButton>
+        </IconButton>)}
+
+        {rideRequest.status === "Completed" && (
+          <IconButton
+            onClick={() => handleRate(rideRequest.requestId)}
+            title="Rate ride"
+          >
+            <StarHalfIcon />
+          </IconButton>
+        )}
       </CardContent>
     </Card>
   );

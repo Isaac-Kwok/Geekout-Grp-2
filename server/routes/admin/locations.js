@@ -1,12 +1,13 @@
 const express = require("express");
 const yup = require("yup");
-const { Location, Sequelize } = require("../../models");
+const { Location, RideRequest, Sequelize } = require("../../models");
 const router = express.Router();
 // const jwt = require("jsonwebtoken");
 // const ejs = require("ejs");
 const { validateAdmin } = require("../../middleware/validateAdmin");
 const { name } = require("ejs");
 const path = require("path");
+const fs = require("fs");
 
 // create new location (staff)
 router.post("/create", validateAdmin, async (req, res) => {
@@ -67,6 +68,7 @@ router.get("/:id", async (req, res) => {
 // Edit location data (Staff)
 router.put("/edit/:id", async (req, res) => {
   let id = req.params.id;
+  const locationId = req.params.id;
   let data = req.body;
   // Validate request body
   const schema = yup.object().shape({
@@ -87,6 +89,35 @@ router.put("/edit/:id", async (req, res) => {
   }
   data.name = data.name.trim();
   data.notes = data.notes.trim();
+
+  // image deletion code
+  // Fetch the location details
+  const location = await Location.findByPk(locationId);
+  if (!location) {
+    return res.status(404).json({ message: "Location not found" });
+  }
+
+  // If a new imageFile is provided in the request, delete the old image
+  if (data.imageFile && data.imageFile !== location.imageFile) {
+    const imagePath = path.join(
+      __dirname,
+      "..",
+      "..",
+      "public",
+      "uploads",
+      "location_pictures",
+      location.imageFile
+    );
+    fs.unlink(imagePath, (err) => {
+      if (err) {
+        console.error("Error deleting image:", err);
+      } else {
+        console.log("Image deleted successfully");
+      }
+    });
+  }
+  // end of image deletion code
+
   let num = await Location.update(data, {
     where: { name: id },
   });
@@ -101,19 +132,76 @@ router.put("/edit/:id", async (req, res) => {
   }
 });
 
+// router.delete("/delete/:id", async (req, res) => {
+//   let id = req.params.id;
+//   let num = await Location.destroy({
+//     where: { name: id },
+//     cascade: true,
+//   });
+//   if (num == 1) {
+//     res.json({
+//       message: "Location was deleted successfully.",
+//     });
+//   } else {
+//     res.status(400).json({
+//       message: `Cannot delete location with id ${id}.`,
+//     });
+//   }
+// });
+
 router.delete("/delete/:id", async (req, res) => {
-  let id = req.params.id;
-  let num = await Location.destroy({
-    where: { name: id },
+  const locationId = req.params.id;
+
+  // dependency checking code
+  // Check if there are any associated ride requests
+  const associatedRideRequests = await RideRequest.findAll({
+    where: { pickUp: locationId },
   });
-  if (num == 1) {
-    res.json({
-      message: "Location was deleted successfully.",
+  // console.log(associatedRideRequests);
+  // console.log(associatedRideRequests.length);
+
+  if (associatedRideRequests.length > 0) {
+    // console.log("Unable to delete location as it is a dependency");
+    return res.status(400).json({
+      message: "Cannot delete location. Associated ride requests exist.",
     });
-  } else {
-    res.status(400).json({
-      message: `Cannot delete location with id ${id}.`,
+  }
+  // end of dependency checking code
+
+  try {
+    // Fetch the location details
+    const location = await Location.findByPk(locationId);
+    if (!location) {
+      return res.status(404).json({ message: "Location not found" });
+    }
+
+    // Delete the image file
+    const imagePath = path.join(
+      __dirname,
+      "..",
+      "..",
+      "public",
+      "uploads",
+      "location_pictures",
+      location.imageFile
+    );
+    fs.unlink(imagePath, (err) => {
+      if (err) {
+        console.error("Error deleting image:", err);
+      } else {
+        console.log("Image deleted successfully");
+      }
     });
+
+    // Delete the location
+    await location.destroy();
+
+    res
+      .status(200)
+      .json({ message: "Location and image deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error deleting location" });
   }
 });
 

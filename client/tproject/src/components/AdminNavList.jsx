@@ -96,6 +96,12 @@ function AdminNavList() {
                             <ListItemText primary={"View Applications"} />
                         </ListItemButton>
                     </ListItem>
+                    <ListItem key={"ViewDrivers"} disablePadding>
+                        <ListItemButton component={Link} to="/admin/driver/viewdrivers">
+                            <ListItemIcon><LabelIcon /></ListItemIcon>
+                            <ListItemText primary={"View Drivers"} />
+                        </ListItemButton>
+                    </ListItem>
                     {/* Add more here for more sublist items */}
                 </List>
             </Collapse>
@@ -163,7 +169,7 @@ function AdminNavList() {
             <Collapse in={requestsOpen} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
                     <ListItem key={"ViewRequests"} disablePadding>
-                        <ListItemButton component={Link} to="/">
+                        <ListItemButton component={Link} to="/admin/requests">
                             <ListItemIcon><LabelIcon /></ListItemIcon>
                             <ListItemText primary={"View Requests"} />
                         </ListItemButton>
