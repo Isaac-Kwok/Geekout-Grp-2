@@ -90,13 +90,18 @@ const LocationDetails = () => {
               </Grid>
 
               <Grid item xs={12} sm={6}>
-                <Typography variant="body1" gutterBottom>
-                  <InfoBox
-                    title="Status"
-                    value={statusBoolean ? "Active" : "Inactive"}
-                    boolean={statusBoolean}
-                  />
-                </Typography>
+                {location.status === "Pending" && (
+                  <InfoBox title="Status" value={location.status} />
+                )}
+                {["Active", "Inactive"].includes(location.status) && (
+                  <Typography variant="body1" gutterBottom>
+                    <InfoBox
+                      title="Status"
+                      value={statusBoolean ? "Active" : "Inactive"}
+                      boolean={statusBoolean}
+                    />
+                  </Typography>
+                )}
               </Grid>
 
               <Grid item xs={12} sm={6}>

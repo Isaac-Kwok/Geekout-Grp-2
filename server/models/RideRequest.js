@@ -20,12 +20,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    date: {
-      type: DataTypes.DATEONLY,
-      allowNull: false,
-    },
-    time: {
-      type: DataTypes.TIME,
+    dateTime: {
+      type: DataTypes.DATE,
       allowNull: false,
     },
     pickUp: {
@@ -39,12 +35,19 @@ module.exports = (sequelize, DataTypes) => {
     numberOfPassengers: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 1,
     },
     status: {
       type: DataTypes.ENUM("Pending", "Accepted", "Completed"),
       allowNull: false,
       defaultValue: "Pending",
+    },
+    date: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+    },
+    time: {
+      type: DataTypes.TIME,
+      allowNull: true,
     },
   });
 
