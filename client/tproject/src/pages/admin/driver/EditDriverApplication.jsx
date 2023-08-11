@@ -62,6 +62,7 @@ function EditDriverApplication() {
             data.email = driverApplication.driver_email;
             data.body = emailValue;
             data.status = status;
+            data.driver_date_joined = new Date();
             console.log("Submission successful", data);
             http.put("/admin/driver/edit/" + id, data).then((res) => {
                 if (res.status === 200) {

@@ -278,8 +278,8 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke!')
 })
 
-app.get('*', function(req, res){
-  res.status(404).send({message: 'Endpoint not implemented'});
+app.get('*', function (req, res) {
+  res.status(404).send({ message: 'Endpoint not implemented' });
 });
 
 app.io = io

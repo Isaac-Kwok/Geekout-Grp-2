@@ -96,6 +96,12 @@ function AdminNavList() {
                             <ListItemText primary={"View Applications"} />
                         </ListItemButton>
                     </ListItem>
+                    <ListItem key={"ViewDrivers"} disablePadding>
+                        <ListItemButton component={Link} to="/admin/driver/viewdrivers">
+                            <ListItemIcon><LabelIcon /></ListItemIcon>
+                            <ListItemText primary={"View Drivers"} />
+                        </ListItemButton>
+                    </ListItem>
                     {/* Add more here for more sublist items */}
                 </List>
             </Collapse>
