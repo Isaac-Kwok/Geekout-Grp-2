@@ -54,6 +54,9 @@ let theme = createTheme({
       main: "#faf2e9",
       dark: "#c49451",
     },
+    white: {
+      main: "#ffffff",
+    }
   },
   typography: {
     fontFamily: fonts,
