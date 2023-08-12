@@ -95,7 +95,6 @@ function EditProduct() {
       pass_category_status: product ? product.pass_category_status : false,
       product_stock: product ? product.product_stock : 0,
       product_description: product ? product.product_description : "",
-      product_picture: product ? product.product_picture : "",
       product_price: product ? product.product_price : 0,
       product_sale: product ? product.product_sale : false,
       product_discounted_percent: product ? product.product_discounted_percent : 0,
@@ -109,7 +108,6 @@ function EditProduct() {
       pass_category_status: Yup.bool(),
       product_stock: Yup.number("Invalid number").integer().required("Product Stock is required"),
       product_description: Yup.string().trim().min(3).max(1000).required("Product Description is required"),
-      product_picture: Yup.string(),
       product_price: Yup.number().min(0).integer().required("Product Price is required"),
       product_sale: Yup.bool(),
       product_discounted_percent: Yup.number().min(0).integer().required("Discount Percentage is required"),
@@ -125,7 +123,6 @@ function EditProduct() {
       data.pass_category_status = data.pass_category_status;
       data.product_stock = data.product_stock;
       data.product_description = data.product_description.trim();
-      data.product_picture = data.product_picture;
       data.product_price = data.product_price;
       data.product_sale = data.product_sale;
       data.product_discounted_percent = data.product_discounted_percent;
@@ -218,7 +215,7 @@ function EditProduct() {
         }
 
         const productFile = filenames.map(filename =>
-          `${import.meta.env.VITE_API_URL}/admin/products/productImage/${filename}`
+          `${filename}`
         );
         setProductFile(productFile);
 
