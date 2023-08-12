@@ -146,7 +146,7 @@ router.get("/getRoutes", validateToken, async (req, res) => {
 })
 
 // Get the routes based on the id
-router.get("/getRoutesById/:id", validateToken, async (req, res) => {
+router.get("/getRoutesById/:id", async (req, res) => {
     try {
         const id = req.params.id
         const routes = await Route.findAll({ where: { user_id: id } })
@@ -306,14 +306,26 @@ router.post('/getDistanceMatrix', async (req, res) => {
         const { message } = await schema.validate(req.body)
 
         const route = await Route.findOne({
-            where: { id: id, user_id: userId },
+            where: { id: id },
         })
 
         if (!route) {
             return res.status(404).json({ message: "Route not found" })
         }
 
-        if (route.user_id !== userId) {
+        const rideIds = route.rideIds.split(", ")
+        const rideRequest = await RideRequest.findAll({
+            where: {
+                requestId: rideIds
+            }
+        })
+        console.log('list of ride requests:', rideRequest)
+        var riders = []
+        rideRequest.forEach(request => {
+            riders.push(request.userId)
+        });
+
+        if (route.user_id !== userId && !riders.includes(userId)) {
             return res.status(403).json({ message: "You are not allowed to reply to this Chat" })
         }
 
@@ -345,14 +357,26 @@ router.get("/chat/:id/message", validateToken, async (req, res) => {
         const { id: userId } = req.user
 
         const route = await Route.findOne({
-            where: { id: id, user_id: userId },
+            where: { id: id },
         })
+
+        const rideIds = route.rideIds.split(", ")
+        const rideRequest = await RideRequest.findAll({
+            where: {
+                requestId: rideIds
+            }
+        })
+        console.log('list of ride requests:', rideRequest)
+        var riders = []
+        rideRequest.forEach(request => {
+            riders.push(request.userId)
+        });
 
         if (!route) {
             return res.status(404).json({ message: "Route not found" })
         }
 
-        if (route.user_id !== userId) {
+        if (route.user_id !== userId && !riders.includes(userId)) {
             return res.status(403).json({ message: "You are not allowed to view this Chat" })
         }
 

@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     status: {
-      type: DataTypes.ENUM("Pending", "Accepted", "Completed"),
+      type: DataTypes.ENUM("Pending", "Accepted", "Completed", "Rated"),
       allowNull: false,
       defaultValue: "Pending",
     },
@@ -47,6 +47,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     time: {
       type: DataTypes.TIME,
+      allowNull: true,
+    },
+    routeId: {
+      type: DataTypes.INTEGER,
       allowNull: true,
     },
   });
@@ -64,6 +68,11 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "userId",
       as: "user",
     });
+
+    RideRequest.hasMany(models.RideRating, {
+      foreignKey: "requestId",
+      onDelete: "CASCADE",
+  });
   };
 
   return RideRequest;
