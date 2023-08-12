@@ -2,13 +2,13 @@ import { GoogleMap, MarkerF, useLoadScript, InfoWindowF, DirectionsService, Dire
 import { Button, Container, Stack, Divider } from '@mui/material';
 import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import { Link } from 'react-router-dom';
-import '../bicycle.css';
 import http from "../http";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 import useUser from "../context/useUser";
+import PageTitle from "../components/PageTitle";
 
 const libraries = ['geometry'];
 
@@ -377,7 +377,7 @@ function Bicycle() {
             // Logic to report a missing bike
             reportBike();
         };
-        
+
         if (selectedMarker) {
             return (
                 <CombinedComponent
@@ -480,15 +480,19 @@ function Bicycle() {
     }, [currentLocation, isLoaded]);
 
     return (
-        <Container maxWidth="xl" sx={{ marginTop: '1rem' }}>
-            {isLoaded && mapLoaded ? (
-                renderMap()
-            ) : (
-                <h1>Loading...</h1>
-            )}
-            <CombinedComponentWrapper />
-            <ToastContainer />
-        </Container>
+        <>
+            <PageTitle title="View Map" subtitle="Find a bicycle near you" />
+            <Container maxWidth="xl" sx={{ marginTop: '1rem' }}>
+                {isLoaded && mapLoaded ? (
+                    renderMap()
+                ) : (
+                    <h1>Loading...</h1>
+                )}
+                <CombinedComponentWrapper />
+                <ToastContainer />
+            </Container>
+        </>
+
     );
 }
 
