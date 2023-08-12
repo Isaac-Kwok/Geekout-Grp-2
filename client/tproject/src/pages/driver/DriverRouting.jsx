@@ -243,11 +243,11 @@ function DriverRouting() {
     googleMapsReverseGeocoder
       .get(
         "json?latlng=" +
-          position.coords.latitude +
-          "," +
-          position.coords.longitude +
-          "&key=" +
-          import.meta.env.VITE_DRIVER_GOOGLE_API_KEY
+        position.coords.latitude +
+        "," +
+        position.coords.longitude +
+        "&key=" +
+        import.meta.env.VITE_DRIVER_GOOGLE_API_KEY
       )
       .then((res) => {
         if (res.status === 200) {
@@ -439,13 +439,14 @@ function DriverRouting() {
 
       // Convert destination to a string
       newObj.destination = newObj.destination.toString();
-      newObj.distance = formattedTotalDistance;
-      newObj.distance_value = totalDistance;
-      newObj.duration = formattedTotalDuration;
-      newObj.driver_profit = (totalDistance / 1000) * 2 * 0.65;
-      newObj.company_profit = (totalDistance / 1000) * 2 * 0.35;
-      newObj.total_cost = (totalDistance / 1000) * 2;
-      newObj.rideDirections = results;
+      newObj.distance = formattedTotalDistance
+      newObj.distance_value = totalDistance
+      newObj.duration = formattedTotalDuration
+      newObj.driver_profit = (((totalDistance / 1000) * 2) * 0.65)
+      newObj.company_profit = (((totalDistance / 1000) * 2) * 0.35)
+      newObj.total_cost = ((totalDistance / 1000) * 2)
+      newObj.rideDirections = results
+      newObj.status = "Accepted"
 
       // Change Ride requests status from DB
       const rideIdsList = originalObj.rideIds.split(","); // Split the string by commas
@@ -476,6 +477,11 @@ function DriverRouting() {
             console.log(res.data);
             refreshUser();
             setrouteObj(user.current_route);
+            http.post(`/driver/chat/${res.data.id}/message`, { message: 'Hello, I have accepted your ride request, I am on my way.' }).then(res => {
+            }).catch(err => {
+              console.log(err)
+              enqueueSnackbar("Error sending message. " + err.response.data.message, { variant: "error" });
+            })
             enqueueSnackbar("You have accepted Route!", { variant: "success" });
           } else {
             console.log("Failed to create routes:", res.status);
@@ -484,6 +490,7 @@ function DriverRouting() {
         .catch((err) => {
           alert("ERROR:" + JSON.stringify(err.responseJSON.error));
         });
+      console.log('route id', user.current_route.id)
     } catch (error) {
       console.error("Error storing route:", error);
       enqueueSnackbar("Error storing route", { variant: "error" });
@@ -492,18 +499,21 @@ function DriverRouting() {
 
   const handleAbort = (routeObj) => {
     handleClose();
-    // delete route from DB
+    // update status of route in DB
+    let newData = {
+      status: 'Aborted'
+    }
     http
-      .delete("/driver/route/" + user.current_route.id)
+      .put("/driver/route/" + routeObj.id, newData)
       .then((res) => {
         if (res.status === 200) {
           console.log(res.data);
         } else {
-          console.log("Failed to abort routes:", res.status);
+          console.log("Failed to update Route:", res.status);
         }
       })
       .catch((err) => {
-        console.error("Error deleting route:", err);
+        console.error("Error updating route:", err);
         // Handle the error here, e.g., display an error message or take appropriate action
       });
     // Change Ride requests status from DB
@@ -546,6 +556,11 @@ function DriverRouting() {
         console.error("Error updating driver status:", err);
         // Handle the error here, e.g., display an error message or take appropriate action
       });
+    http.post(`/driver/chat/${routeObj.id}/message`, { message: 'Your ride has been cancelled by driver' }).then(res => {
+    }).catch(err => {
+      console.log(err)
+      enqueueSnackbar("Error sending message. " + err.response.data.message, { variant: "error" });
+    })
     clearRoute();
   };
 
@@ -601,7 +616,7 @@ function DriverRouting() {
         },
       });
       setSocket(newSocket);
-      console.log("socket data",socket);
+      console.log("socket data", socket);
       return () => newSocket.close();
     }
   }, [user]);
@@ -884,7 +899,7 @@ function DriverRouting() {
                 </div>
 
                 <Box className="" display={value == 1 ? "initial" : "none"}>
-                  {socket && (
+                  {socket?.connected == true && (
                     <DriverChatBox
                       socket={socket}
                       route={user.current_route.id}
