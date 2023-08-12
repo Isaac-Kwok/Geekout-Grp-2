@@ -43,43 +43,12 @@ function CreateProduct() {
   const [productFileUploads, setProductFileUploads] = useState([]);
   const [uploadedFilenames, setUploadedFilenames] = useState([]);
   const [descriptionValue, setDescriptionValue] = useState();
-  const [loadingPicture, setLoadingPicture] = useState(false);
-  const [changePictureDialog, setChangePictureDialog] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
-
-  const AspectRatioBox = ({ children }) => (
-    <div style={{
-      position: 'relative',
-      width: '100%',
-      height: 0,
-      paddingBottom: '56.25%', /* 16:9 Aspect Ratio (divide 9 by 16 = 0.5625 or 56.25%) */
-      overflow: 'hidden'
-    }}>
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%'
-      }}>
-        {children}
-      </div>
-    </div>
-  );
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
-
-  const handleChangePictureDialogClose = () => {
-    setChangePictureDialog(false);
-  }
-
-  const handleChangePictureDialogOpen = () => {
-    setChangePictureDialog(true);
-  }
 
   function handleChangeProductImage(e) {
     const fileList = Array.from(e.target.files);
@@ -134,7 +103,7 @@ function CreateProduct() {
       product_sub_category: Yup.string().trim().required("Sub Category is required"),
       pass_category_status: Yup.bool(),
       product_stock: Yup.number("Invalid number").integer().required("Product Stock is required"),
-      product_description: Yup.string().trim().min(3).max(1000).required("Product Description is required"),
+      product_description: Yup.string().trim("The description contains extra spaces. Please remove them and try again.").min(3).max(1000).required("Product Description is required"),
       product_picture: Yup.string(),
       product_price: Yup.number().min(0).integer().required("Product Price is required"),
       product_sale: Yup.bool(),
@@ -180,6 +149,8 @@ function CreateProduct() {
         }
       })
         .then((uploadRes) => {
+          data.product_description = descriptionValue;
+          data.product_description = data.product_description.trim();
           if (uploadRes.status === 200) {
             // Here, I'm assuming the server sends back an array of filenames for the uploaded images.
             data.product_picture = JSON.stringify(uploadRes.data.filenames);

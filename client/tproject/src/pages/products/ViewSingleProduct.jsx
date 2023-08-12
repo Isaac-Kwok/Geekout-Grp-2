@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { MobileStepper, Container, Typography, Card, CardContent, CardActions, Box, Stack, Checkbox, InputAdornment, TextField, Grid, FormControlLabel, FormControl, IconButton, InputLabel, Select, MenuItem, Button, Dialog, DialogContent, DialogActions, DialogContentText, DialogTitle, Link, Input } from '@mui/material'
+import { Paper, Container, Typography, Card, CardContent, CardActions, Box, Stack, Checkbox, InputAdornment, TextField, Grid, FormControlLabel, FormControl, IconButton, InputLabel, Select, MenuItem, Button, Dialog, DialogContent, DialogActions, DialogContentText, DialogTitle, Link, Input } from '@mui/material'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CardTitle from '../../components/CardTitle';
 import { useNavigate, useParams } from 'react-router-dom'
@@ -16,6 +16,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import Carousel from 'react-material-ui-carousel';
 import { useTheme } from '@mui/material/styles';
 
 
@@ -51,7 +52,9 @@ function ViewSingleProduct() {
     const [activeStep, setActiveStep] = useState(0);
     const theme = useTheme();
     const maxSteps = product && Array.isArray(product.product_picture) ? product.product_picture.length : 0;
-    
+    const shouldDisplayNavButtons = product && product.product_picture.length > 1;
+
+
     const handleNext = () => {
         setActiveStep((prevActiveStep) => Math.min(prevActiveStep + 1, maxSteps - 1));
     };
@@ -172,110 +175,133 @@ function ViewSingleProduct() {
 
 
     return (
-        <>{product && (
-            <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
-                <Card sx={{ margin: "auto" }}>
-                    <Box component="form">
+        <>
+            {product && (
+                <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
+                    <Card sx={{ margin: "auto" }}>
                         <CardContent>
-                            <CardTitle title="Product Information" icon={<CategoryIcon />} back="/products" />
-                            <Grid container spacing={2} sx={{ marginY: "1rem" }}>
-                                <Grid item xs={12} md={6}>
-                                <Box sx={{ width: '100%', flexGrow: 1 }}>
-
-                                        <img
-                                            src={`${productPath}${product.product_picture[activeStep].trim()}`}
-                                            alt={product.product_name}
-                                            style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
-                                        />
-                                        {maxSteps > 1 && (
-                                            <MobileStepper
-                                            steps={maxSteps}
-                                            position="static"
-                                            activeStep={activeStep}
-                                            sx={{ zIndex: 2, position: 'relative' }}  // Adjust this as required
-                                            nextButton={
-                                                <Button size="small" onClick={handleNext} disabled={activeStep === maxSteps - 1}>
-                                                    Next
-                                                    {theme.direction === 'rtl' ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
-                                                </Button>
+                            <Box display="flex" alignItems="center" mb={3}>
+                                {/* Navigation Button */}
+                                <Box>
+                                    <IconButton size="large" onClick={() => navigate("/products")}>
+                                        <ArrowBackIcon />
+                                    </IconButton>
+                                </Box>
+                                {/* Title on the Left */}
+                                <Box textAlign="left" ml={3}>
+                                    <Typography variant="h3" fontWeight="700" >{product.product_name}</Typography>
+                                    <Typography variant="subtitle1" color="textSecondary" >Category: {product.product_category}</Typography>
+                                </Box>
+                            </Box>
+                            <Grid container spacing={3}>
+                                {/* Product Picture */}
+                                <Grid item xs={12} md={9} container alignItems="flex-end" style={{ height: '100%' }}>
+                                    <Box position="relative" width="100%">
+                                        <Carousel
+                                            autoPlay={false}
+                                            indicators={false}
+                                            navButtonsAlwaysVisible={shouldDisplayNavButtons}
+                                            cycleNavigation={shouldDisplayNavButtons}
+                                            animation='slide'
+                                            navButtonsProps={{
+                                                style: {
+                                                    backgroundColor: 'rgba(255, 255, 255, 0.5) !important', // Translucent white with !important
+                                                    color: 'black !important',
+                                                    margin: '0 10px !important' // Optional: Added for spacing with !important
+                                                }
+                                            }}
+                                            navButtonsWrapperProps={{
+                                                style: {
+                                                    bottom: '0 !important',
+                                                    top: 'unset !important',
+                                                    position: 'absolute !important',  
+                                                    width: '100% !important'
+                                                }
+                                            }}
+                                        >
+                                            {
+                                                product.product_picture.map((picture, index) =>
+                                                    <Paper elevation={0} key={index} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                                                        <AspectRatioBox>
+                                                            <img
+                                                                src={`${productPath}${picture.trim()}`}
+                                                                alt={product.product_name}
+                                                                style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+                                                            />
+                                                        </AspectRatioBox>
+                                                    </Paper>
+                                                )
                                             }
-                                            backButton={
-                                                <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
-                                                    {theme.direction === 'rtl' ? <ArrowForwardIosIcon /> : <ArrowBackIosIcon />}
-                                                    Back
-                                                </Button>
-                                            }
-                                        />
-                                        
-                                        )}
+                                        </Carousel>
                                     </Box>
                                 </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <Typography variant="h6">Product Name: {product.product_name}</Typography>
-                                    <Typography variant="body1">Category: {product.product_category}</Typography>
-                                    <Typography variant="body1">
-                                        <span>Availability:&nbsp;</span>
-                                        <span style={{ color: product.product_status == 1 && product.product_stock ? "black" : "red" }}>
-                                            {product.product_status == 1 && product.product_stock ? "In Stock" : "Out of Stock"}
-                                        </span>
-                                    </Typography>
-                                    <Typography variant="body1" sx={{ display: "flex", alignItems: "center" }}>
-                                        <Typography variant="body1" component="span">
-                                            Price:
-                                        </Typography>
-                                        <Typography variant="body1" component="span" sx={{ textDecoration: product.product_sale ? "line-through" : "none" }}>
-                                            ${product.product_price ? product.product_price : "NIL"}
-                                        </Typography>
-                                        {product.product_sale && (
-                                            <Typography variant="body1" component="span" sx={{ color: "red", marginLeft: "0.5rem" }}>
-                                                ${((product.product_price * (1 - product.product_discounted_percent / 100)).toFixed(2))}
+
+                                {/* Product Details */}
+                                <Grid item xs={12} md={3} container alignItems="flex-end">
+                                    <Card variant="outlined" elevation={3} sx={{ width: '100%', boxShadow: 2 }}>
+                                        <CardContent>
+                                            <Typography variant="h5" fontWeight="bold" component="span">
+                                                Price:
                                             </Typography>
-                                        )}
-                                    </Typography>
-                                    {product.product_category === "Pass" && (
-                                        <Typography variant="body1">Duration of Pass: {product.duration_of_pass}</Typography>
-                                    )}
-                                    <Grid item xs={12} sm={6}>
-                                        <Typography variant="body1">Description: </Typography>
-                                        <MDEditor.Markdown
-                                            style={{ backgroundColor: "white", color: "black", fontFamily: "Poppins" }}
-                                            source={product.product_description} sx={{ whiteSpace: 'pre-wrap' }} />
-                                    </Grid>
-                                    {product.product_status == 1 && product.product_stock && (
-                                        <>
-                                            <Grid container spacing={2} alignItems="center">
-                                                <Grid item>
-                                                    <IconButton onClick={decreaseQuantity} disabled={quantity === 1}>
-                                                        <RemoveIcon />
-                                                    </IconButton>
-                                                </Grid>
-                                                <Grid item>
-                                                    <Typography>{quantity}</Typography>
-                                                </Grid>
-                                                <Grid item>
-                                                    <IconButton onClick={increaseQuantity}>
-                                                        <AddIcon />
-                                                    </IconButton>
-                                                </Grid>
-                                            </Grid>
-                                            <Button onClick={addToCart} variant="contained" color="primary">
-                                                Add to Cart
-                                            </Button>
-                                        </>)}
-                                    <IconButton
-                                        onClick={() => handleAddToWishlist(product.id)}
-                                    >
-                                        {inWishlist
-                                            ? <FavoriteIcon color="error" />
-                                            : <FavoriteBorderIcon />}
-                                    </IconButton>
+                                            <Typography variant="h5" fontWeight="bold" component="span" sx={{ textDecoration: product.product_sale ? "line-through" : "none" }}>
+                                                ${product.product_price ? product.product_price : "NIL"}
+                                            </Typography>
+                                            {product.product_sale && (
+                                                <Typography variant="h5" fontWeight="bold" component="span" sx={{ color: "red", marginLeft: "0.5rem" }}>
+                                                    ${((product.product_price * (1 - product.product_discounted_percent / 100)).toFixed(2))}
+                                                </Typography>
+                                            )}
+                                            <Typography variant="body1">
+                                                <span>Availability:&nbsp;</span>
+                                                <span style={{ color: product.product_status == 1 && product.product_stock ? "black" : "red" }}>
+                                                    {product.product_status == 1 && product.product_stock ? "In Stock" : "Out of Stock"}
+                                                </span>
+                                            </Typography>
+                                            <Box>
+                                                {product.product_status == 1 && product.product_stock && (
+                                                    <>
+                                                        <Grid container spacing={2} alignItems="center">
+                                                            <Grid item>
+                                                                <IconButton onClick={decreaseQuantity} disabled={quantity === 1}>
+                                                                    <RemoveIcon />
+                                                                </IconButton>
+                                                            </Grid>
+                                                            <Grid item>
+                                                                <Typography>{quantity}</Typography>
+                                                            </Grid>
+                                                            <Grid item>
+                                                                <IconButton onClick={increaseQuantity}>
+                                                                    <AddIcon />
+                                                                </IconButton>
+                                                            </Grid>
+                                                        </Grid>
+                                                        <Button onClick={addToCart} variant="contained" color="primary" sx={{ width: 'calc(100% - 50px)', marginRight: '10px' }}>
+                                                            Add to Cart
+                                                        </Button>
+                                                    </>)}
+                                                <IconButton onClick={() => handleAddToWishlist(product.id)}>
+                                                    {inWishlist ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
+                                                </IconButton>
+                                            </Box>
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+
+
+                                {/* Product Description */}
+                                <Grid item xs={12}>
+                                    <Typography variant="h5" fontWeight="bold" gutterBottom>Description</Typography>
+                                    <MDEditor.Markdown
+                                        style={{ backgroundColor: "white", color: "black", fontFamily: "Poppins" }}
+                                        source={product.product_description} />
                                 </Grid>
                             </Grid>
                         </CardContent>
-                    </Box>
-                </Card>
-            </Container>
-        )}</>
+                    </Card>
+                </Container>
+            )}
+        </>
+
     )
 }
 
