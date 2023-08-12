@@ -144,38 +144,44 @@ function LocationList() {
       field: "actions",
       type: "actions",
       width: 120,
-      getActions: (params) => [
-        <GridActionsCellItem
-          icon={<VisibilityIcon />}
-          label="View Location"
-          onClick={() => {
-            handleDetail(params.row.name);
-          }}
-        />,
-        <GridActionsCellItem
-          icon={<Edit />}
-          label="Edit Location"
-          onClick={() => {
-            handleEdit(params.row.name);
-          }}
-        />,
-        // <GridActionsCellItem
-        //   icon={<Delete />}
-        //   label={"Delete Location"}
-        //   onClick={() => {
-        //     // handleDelete(params.row.name);
-        //     handleOpen;
-        //   }}
-        // />,
-        <GridActionsCellItem
-          icon={<Delete />}
-          label={"Delete Location"}
-          onClick={() => {
-            // handleDelete(params.row.name);
-            handleOpen(params.row.name);
-          }}
-        />,
-      ],
+      getActions: (params) => {
+        const actions = [];
+
+        if (params.row.status !== "Pending") {
+          actions.push(
+            <GridActionsCellItem
+              icon={<VisibilityIcon />}
+              label="View Location"
+              onClick={() => handleDetail(params.row.name)}
+            />,
+            <GridActionsCellItem
+              icon={<Edit />}
+              label="Edit Location"
+              onClick={() => handleEdit(params.row.name)}
+            />,
+            <GridActionsCellItem
+              icon={<Delete />}
+              label={"Delete Location"}
+              onClick={() => handleOpen(params.row.name)}
+            />
+          );
+        } else {
+          actions.push(
+            <GridActionsCellItem
+              icon={<VisibilityIcon />}
+              label="Review request"
+              onClick={() => handleEdit(params.row.name)}
+            />,
+            <GridActionsCellItem
+              icon={<Delete />}
+              label={"Delete request"}
+              onClick={() => handleOpen(params.row.name)}
+            />
+          );
+        }
+
+        return actions;
+      },
     },
   ];
 
