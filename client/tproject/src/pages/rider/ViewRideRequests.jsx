@@ -191,8 +191,8 @@ function ViewRideRequests() {
 
   // Function to handle Rating a specific request
   const handleRate = (id) => {
-    navigate(`/riderequests/myrequests/${user?.id}/${id}`);
-    navigate(`/riderequests/completed/rate/${id}`);
+    // navigate(`/riderequests/myrequests/${user?.id}/${id}`);
+    navigate(`/riderequests/completed/rate/user/${user?.id}/request/${id}`);
   };
 
   // Tabs
@@ -304,30 +304,33 @@ function ViewRideRequests() {
         <TabContext value={value}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <TabList onChange={handleChange} aria-label="lab API tabs example">
-              <Tab label="All" value="1" />
-              <Tab label="Pending" value="2" />
-              <Tab label="Accepted" value="3" />
-              <Tab label="Completed" value="4" />
+              <Tab label="Pending" value="1" />
+              <Tab label="Accepted" value="2" />
+              <Tab label="Completed" value="3" />
+              <Tab label="Rated" value="4" />
             </TabList>
           </Box>
-          <TabPanel value="1">
+          {/* <TabPanel value="1">
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
-              {/* {renderRideRequestCards()} */}
-              {rideRequests
-                .filter((request) => request.status !== "Completed")
-                .map((rideRequest) => (
-                  <RideRequestCard
-                    key={rideRequest.requestId}
-                    rideRequest={rideRequest}
-                    handleDetail={handleDetail}
-                    handleEdit={handleEdit}
-                    handleOpen={handleOpen}
-                    handleRate={handleRate}
-                  />
-                ))}
+              {filterRideRequests("Pending", "Accepted").length === 0 ? (
+                <Typography>No pending or accepted ride requests.</Typography>
+              ) : (
+                rideRequests
+                  .filter((request) => request.status !== "Completed")
+                  .map((rideRequest) => (
+                    <RideRequestCard
+                      key={rideRequest.requestId}
+                      rideRequest={rideRequest}
+                      handleDetail={handleDetail}
+                      handleEdit={handleEdit}
+                      handleOpen={handleOpen}
+                      handleRate={handleRate}
+                    />
+                  ))
+              )}
             </Box>
-          </TabPanel>
-          <TabPanel value="2">
+          </TabPanel> */}
+          <TabPanel value="1">
             {filterRideRequests("Pending").length === 0 ? (
               <Typography>No pending ride requests.</Typography>
             ) : (
@@ -336,7 +339,7 @@ function ViewRideRequests() {
               </Box>
             )}
           </TabPanel>
-          <TabPanel value="3">
+          <TabPanel value="2">
             {filterRideRequests("Accepted").length === 0 ? (
               <Typography>No accepted ride requests.</Typography>
             ) : (
@@ -345,12 +348,21 @@ function ViewRideRequests() {
               </Box>
             )}
           </TabPanel>
-          <TabPanel value="4">
+          <TabPanel value="3">
             {filterRideRequests("Completed").length === 0 ? (
               <Typography>No completed ride requests.</Typography>
             ) : (
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
                 {renderFilteredRideRequestCards("Completed")}
+              </Box>
+            )}
+          </TabPanel>
+          <TabPanel value="4">
+            {filterRideRequests("Rated").length === 0 ? (
+              <Typography>No rated ride requests.</Typography>
+            ) : (
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+                {renderFilteredRideRequestCards("Rated")}
               </Box>
             )}
           </TabPanel>

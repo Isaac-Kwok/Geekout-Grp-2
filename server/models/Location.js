@@ -37,5 +37,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 0,
     },
   });
+
+  // No association established here despite having many ride requests. This is to prevent cascading deletion.
   return Location;
 };
