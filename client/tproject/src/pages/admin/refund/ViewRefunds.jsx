@@ -26,6 +26,12 @@ function ViewRefunds() {
     const [refunds, setRefunds] = useState([])
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
+    const [sortModel, setSortModel] = useState([
+        {
+            field: "id",
+            sort: "desc",
+        },
+    ]);
     
 
     const columns = [
@@ -92,12 +98,8 @@ function ViewRefunds() {
                     slots={{
                         LoadingOverlay: LoadingSkeleton
                     }}
-                    sortModel={[
-                        {
-                          field: "id",
-                          sort: "desc",
-                        },
-                      ]}
+                    sortModel={sortModel}
+                    onSortModelChange={(model) => setSortModel(model)}
                     loading={loading}
                     autoHeight
                     getRowId={(row) => row.id}

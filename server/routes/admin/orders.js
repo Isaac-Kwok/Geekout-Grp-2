@@ -63,9 +63,18 @@ router.get('/:id', validateAdmin, async (req, res) => {
     }
 
     order = order.toJSON();  
+
+    // Parsing product_picture if it's a string
+    order.OrderItems.forEach(orderItem => {
+        if (typeof orderItem.Product.product_picture === "string") {
+            orderItem.Product.product_picture = JSON.parse(orderItem.Product.product_picture);
+        }
+    });
+
     order.order_status = order_status[order.order_status];
     res.json(order);
 });
+
 
 
 // Update order status

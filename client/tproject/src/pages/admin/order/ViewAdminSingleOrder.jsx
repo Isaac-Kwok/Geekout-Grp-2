@@ -53,12 +53,17 @@ function ViewAdminSingleOrder() {
             <Typography variant="body1">Status of Order: {order.order_status}</Typography>
             <br /><Divider></Divider><br />
             <Typography variant="h6">Order Items:</Typography>
-            {order.OrderItems.map(item => (
+            {order.OrderItems.map(item => {
+              const productPictures = item.Product.product_picture && Array.isArray(item.Product.product_picture)
+              ? item.Product.product_picture
+              : JSON.parse(item.Product.product_picture || '[]');
+              return(
               <Card elevation={2} sx={{ display: 'flex', marginBottom: 2, border: '1px solid #ccc' }}>
                 <CardMedia
                   component="img"
                   sx={{ width: 140 }}  // Adjust the size as needed
-                  image={`${productPath}${item.Product.product_picture}`}// Assuming you have product_image field in Product
+                  image={`${productPath}${productPictures[0]}`}// Assuming you have product_image field in Product
+
                   alt={item.Product.product_name}
                 />
                 <CardContent sx={{ flex: '1 0 auto' }}>
@@ -82,7 +87,9 @@ function ViewAdminSingleOrder() {
                   </Typography>
                 </div>
               </Card>
-            ))}
+              );
+            }
+            )}
           </Paper>
         </Grid>
 

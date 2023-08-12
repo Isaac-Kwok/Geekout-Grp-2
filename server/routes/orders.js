@@ -71,6 +71,9 @@ router.get('/:orderId', validateToken, async (req, res) => {
                     model: User,
                     attributes: ["email"],
                 },
+                {
+                    model: Refund,
+                }
             ]
         });
 
@@ -78,7 +81,16 @@ router.get('/:orderId', validateToken, async (req, res) => {
             res.status(404).json({ error: 'Order not found' });
             return;
         }
+
         order = order.toJSON();
+
+        // Parsing product_picture if it's a string
+        order.OrderItems.forEach(orderItem => {
+            if (typeof orderItem.Product.product_picture === "string") {
+                orderItem.Product.product_picture = JSON.parse(orderItem.Product.product_picture);
+            }
+        });
+
         order.order_status = order_status[order.order_status];
 
         res.json(order);
@@ -87,6 +99,7 @@ router.get('/:orderId', validateToken, async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
 
 
 // Change transaction payment method
@@ -142,4 +155,37 @@ router.get('/refunds/:orderId', validateToken, async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+// Set the order status to "Received"
+router.put('/set-received/:orderId', validateToken, async (req, res) => {
+    try {
+        // Fetch the order by ID
+        const order = await Order.findOne({
+            where: {
+                id: req.params.orderId,
+                user_id: req.user.id // Ensure the order belongs to the user making the request
+            }
+        });
+
+        // Check if order exists
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        // Check if the order's current status is "Delivered"
+        if (order.order_status !== 3) {
+            return res.status(400).json({ message: 'Order status is not "Delivered". Can\'t set to "Received".' });
+        }
+
+        // Update the order status to "Received"
+        await order.update({ order_status: 4 });
+
+        res.json({ message: 'Order status set to Received', order });
+
+    } catch (error) {
+        console.log('Error setting order status to Received:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 module.exports = router;

@@ -40,15 +40,8 @@ function ViewRideRequests() {
 
   // Fetch ride requests when the component mounts
   useEffect(() => {
-    if (user) {
-      console.log("User Object:", user);
-      fetchRideRequests();
-    } else {
-      enqueueSnackbar("Please log in to view ride requests", {
-        variant: "error",
-      });
-      navigate("/login");
-    }
+    console.log("User Object:", user);
+    fetchRideRequests();
   }, [user]); // Make sure to include user as a dependency here
 
   useEffect(() => {
