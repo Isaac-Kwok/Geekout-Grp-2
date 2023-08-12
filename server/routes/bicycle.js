@@ -8,13 +8,11 @@ const bicycleSchema = yup.object().shape({
     bicycle_lat: yup
         .number()
         .min(-90)
-        .max(90)
-        .required(),
+        .max(90),
     bicycle_lng: yup
         .number()
         .min(-180)
-        .max(180)
-        .required(),
+        .max(180),
     disabled: yup.boolean(),
     reports: yup.number().integer().min(0),
     passkey: yup.string().nullable(),
@@ -42,7 +40,9 @@ const BicycleUsagesSchema = yup.object().shape({
     startPosition: yup 
         .string(),
     endPostion: yup
-        .string()
+        .string(),
+    transaction: yup
+        .number()
 });
 
 // Create a new bicycle
@@ -232,8 +232,45 @@ router.delete('/', async (req, res) => {
     }
 });
 
+// Similar routes for getting a specific bicycle usage by ID, updating, and deleting
 
-// Similar routes for getting a specific bicycle report by ID, updating, and deleting
+// Get a specific bicycle usage by USAGE ID
+router.get('/usages/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const usage = await BicycleUsages.findAll({
+            where: {
+                bike_id: id
+            }
+        });
+        if (!usage) {
+            return res.status(404).json({ message: 'Bicycle usage not found' });
+        }
+        res.json(usage);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// Get a specific bicycle usage by USER ID
+router.get('/usages/user/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const usage = await BicycleUsages.findAll({
+            where: {
+                user_id: id
+            }
+        });
+        if (!usage) {
+            return res.status(404).json({ message: 'Bicycle usage not found' });
+        }
+        res.json(usage);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 
 // Create a new bicycle usage
 router.post('/usages', async (req, res) => {
@@ -256,25 +293,6 @@ router.get('/usages', async (req, res) => {
     try {
         const usages = await BicycleUsages.findAll();
         res.json(usages);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
-
-// Get a specific bicycle usage by ID
-router.get('/usages/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const usage = await BicycleUsages.findAll({
-            where: {
-                bike_id: id
-            }
-        });
-        if (!usage) {
-            return res.status(404).json({ message: 'Bicycle usage not found' });
-        }
-        res.json(usage);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });

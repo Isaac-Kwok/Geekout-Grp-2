@@ -82,6 +82,50 @@ function BicycleAdmin() {
         ));
     }, [bicycle, filter]);
 
+    const renderMap = () => {
+        return (
+            <GoogleMap
+                mapContainerClassName="map-container"
+                center={center}
+                zoom={14}
+                mapContainerStyle={{ width: '100%', marginBottom: '1rem' }}
+                options={{
+                    restriction: {
+                        latLngBounds: bounds,
+                        strictBounds: true,
+                    },
+                }}
+            >
+                {markers}
+                {currentLocation && (
+                    <MarkerF position={currentLocation} onClick={() => handleMarkerClick({ id: 0, bicycle_lat: currentLocation.lat, bicycle_lng: currentLocation.lng, reports: 0 })} />
+                )}
+
+                {selectedSelf && (
+                    <InfoWindowF position={{ lat: currentLocation.lat, lng: currentLocation.lng }} onCloseClick={handleInfoWindowClose}>
+                        <div>
+                            <h3>Your Current Location</h3>
+                            <p>Latitude: {currentLocation.lat}</p>
+                            <p>Longitude: {currentLocation.lng}</p>
+                        </div>
+                    </InfoWindowF>
+                )}
+
+                {selectedMarker && (
+                    <InfoWindowF position={{ lat: selectedMarker.bicycle_lat, lng: selectedMarker.bicycle_lng }} onCloseClick={handleInfoWindowClose}>
+                        <div>
+                            <h3>Bicycle Information</h3>
+                            <p>Latitude: {selectedMarker.bicycle_lat}</p>
+                            <p>Longitude: {selectedMarker.bicycle_lng}</p>
+                            <p>Reports: {selectedMarker.reports}</p>
+                            <Link to={`details/${selectedMarker.id}`}>View Details</Link>
+                        </div>
+                    </InfoWindowF>
+                )}
+            </GoogleMap>
+        )
+    }
+
     const bounds = {
         north: 1.493,
         south: 1.129,
@@ -120,45 +164,7 @@ function BicycleAdmin() {
             {!isLoaded ? (
                 <h1>Loading...</h1>
             ) : (
-                <GoogleMap
-                    mapContainerClassName="map-container"
-                    center={center}
-                    zoom={14}
-                    mapContainerStyle={{ width: '100%', marginBottom: '1rem' }}
-                    options={{
-                        restriction: {
-                            latLngBounds: bounds,
-                            strictBounds: true,
-                        },
-                    }}
-                >
-                    {markers}
-                    {currentLocation && (
-                        <MarkerF position={currentLocation} onClick={() => handleMarkerClick({ id: 0, bicycle_lat: currentLocation.lat, bicycle_lng: currentLocation.lng, reports: 0 })} />
-                    )}
-
-                    {selectedSelf && (
-                        <InfoWindowF position={{ lat: currentLocation.lat, lng: currentLocation.lng }} onCloseClick={handleInfoWindowClose}>
-                            <div>
-                                <h3>Your Current Location</h3>
-                                <p>Latitude: {currentLocation.lat}</p>
-                                <p>Longitude: {currentLocation.lng}</p>
-                            </div>
-                        </InfoWindowF>
-                    )}
-
-                    {selectedMarker && (
-                        <InfoWindowF position={{ lat: selectedMarker.bicycle_lat, lng: selectedMarker.bicycle_lng }} onCloseClick={handleInfoWindowClose}>
-                            <div>
-                                <h3>Marker Information</h3>
-                                <p>Latitude: {selectedMarker.bicycle_lat}</p>
-                                <p>Longitude: {selectedMarker.bicycle_lng}</p>
-                                <p>Reports: {selectedMarker.reports}</p>
-                                <Link to={`details/${selectedMarker.id}`}>View Details</Link>
-                            </div>
-                        </InfoWindowF>
-                    )}
-                </GoogleMap>
+                renderMap()
             )}
         </Container>
     );

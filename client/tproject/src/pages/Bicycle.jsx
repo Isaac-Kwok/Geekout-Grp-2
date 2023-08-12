@@ -229,10 +229,10 @@ function Bicycle() {
         const usageData = {
             bike_id: selectedMarker.id,
             unlockedAt: date,
-            startPosition: (selectedMarker.bicycle_lat, selectedMarker.bicycle_lng),
+            startPosition: `${selectedMarker.bicycle_lat},${selectedMarker.bicycle_lng}`,
             endPosition: 0,
             user_id: user.id,
-            transaction: 0
+            transaction: 1.00
         }
 
         http.put("/bicycle/" + selectedMarker.id, data).then((res) => {
@@ -312,7 +312,7 @@ function Bicycle() {
         }
 
         const usageData = {
-            endPosition: (selectedMarker.bicycle_lat, selectedMarker.bicycle_lng),
+            endPosition: `${selectedMarker.bicycle_lat},${selectedMarker.bicycle_lng}`,
             transaction: price,
         }
 

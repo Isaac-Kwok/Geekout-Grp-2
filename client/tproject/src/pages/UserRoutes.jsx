@@ -13,6 +13,7 @@ import DriverRoutes from './driver/DriverRoutes'
 import SupportRoutes from './support/SupportRoutes'
 import Bicycle from './Bicycle'
 import ReportBicycle from './ReportBicycle'
+import BicycleHistory from './BicycleHistory'
 import ProductRoutes from './products/ProductRoutes'
 import CartRoutes from './cart/CartRoutes'
 import CreateRideRequest from './rider/CreateRideRequest'
@@ -46,6 +47,7 @@ function UserRoutes() {
             <Route path="/bicycle" element={<Bicycle />} />
             <Route path="/bicycle/report" element={<ReportBicycle />} />
             <Route path="/bicycle/report/:id" element={<ReportBicycle />} />
+            <Route path="/bicycle/usages" element={<BicycleHistory />} />
             <Route path="/products/*" element={<ProductRoutes />} />
             <Route path="/cart/*" element={<CartRoutes />} />
             <Route path="/riderequests/create" element={<CreateRideRequest />} />
