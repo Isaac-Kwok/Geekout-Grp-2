@@ -68,7 +68,7 @@ function EditBicycle() {
     return (
         <>
             <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
-                <AdminPageTitle title="Edit Bicycle" backbutton />
+                <AdminPageTitle title="Edit Bicycle" subtitle={"Bicycle ID: " + id} backbutton />
                 <LoadingButton
                     variant="contained"
                     color="primary"

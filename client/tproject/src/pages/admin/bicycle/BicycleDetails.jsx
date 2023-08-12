@@ -1,11 +1,12 @@
-// BicycleDetails.jsx
-
 import React, { useEffect, useState } from 'react'
-import { Container } from '@mui/material'
+import { Card, CardContent, Container, Box, Grid } from '@mui/material'
 import { useParams } from 'react-router-dom';
 import http from "../../../http";
 import AdminPageTitle from '../../../components/AdminPageTitle';
 import { DataGrid } from '@mui/x-data-grid';
+import CardTitle from '../../../components/CardTitle';
+import { AutoGraph, DirectionsBike, Warning } from '@mui/icons-material';
+import InfoBox from '../../../components/InfoBox';
 
 const BicycleDetails = () => {
     const { id } = useParams(); // Get the bicycle ID from the URL
@@ -15,9 +16,9 @@ const BicycleDetails = () => {
     const [loading, setLoading] = useState(true);
 
     const columnsReports = [
-        { field: "id", headerName: "ID", minWidth: 200 },
-        { field: "report", headerName: "Reports", minWidth: 50, flex: 1 },
-        { field: "reportAt", headerName: "Reported At", minWidth: 50, flex: 1 },
+        { field: "id", headerName: "ID", minWidth: 100 },
+        { field: "report", headerName: "Reports", minWidth: 300, flex: 1 },
+        { field: "createdAt", headerName: "Reported At", minWidth: 250, valueGetter: ({ value }) => value && new Date(value), type: 'dateTime', },
     ];
 
     const columnsUsages = [
@@ -52,7 +53,7 @@ const BicycleDetails = () => {
             .catch((error) => {
                 console.error("An error occurred while fetching bicycle reports:", error);
                 setLoading(false); // Set loading to false on error
-        });
+            });
     };
 
 
@@ -71,7 +72,7 @@ const BicycleDetails = () => {
             .catch((error) => {
                 console.error("An error occurred while fetching bicycle usages:", error);
                 setLoading(false); // Set loading to false on error
-        });
+            });
     };
 
     useEffect(() => {
@@ -85,30 +86,47 @@ const BicycleDetails = () => {
     return (
         <>
             <Container maxWidth="xl" sx={{ marginY: "1rem", minWidth: 0 }}>
-                <AdminPageTitle title="Bicycle Details" backbutton />
-                <div>
-                    <h2>Bicycle ID: {id}</h2>
-                    <hr />
-                    <p>Bicycle Latitude: {bicycle.bicycle_lat}</p>
-                    <p>Bicycle Longitude: {bicycle.bicycle_lng}</p>
-                    <hr />
-
-                    <h2>Reports</h2>
-
-                    <DataGrid
-                    rows={reports}
-                    columns={columnsReports}
-                    autoHeight
-                    />
-
-                    <h2>Usage Analytics</h2>
-
-                    <DataGrid
-                    rows={usages}
-                    columns={columnsUsages}
-                    autoHeight
-                    />
-                </div>
+                <AdminPageTitle title="Bicycle Details" subtitle={"Bicycle ID: " + id} backbutton />
+                <Box>
+                    <Card sx={{ marginBottom: "1rem" }}>
+                        <CardContent>
+                            <CardTitle title="Bicycle Details" icon={<DirectionsBike />} />
+                            <Grid container spacing={2} marginTop={"0.5rem"}>
+                                <Grid item xs={12} sm={6} md={4}>
+                                    <InfoBox title="Bicycle ID" value={id} />
+                                </Grid>
+                                <Grid item xs={12} sm={6} md={4}>
+                                    <InfoBox title="Bicycle Latitude" value={bicycle.bicycle_lat + " °N"} />
+                                </Grid>
+                                <Grid item xs={12} sm={6} md={4}>
+                                    <InfoBox title="Bicycle Longitude" value={bicycle.bicycle_lng + " °E"} />
+                                </Grid>
+                            </Grid>
+                        </CardContent>
+                    </Card>
+                    <Card sx={{ marginBottom: "1rem" }}>
+                        <CardContent>
+                            <CardTitle title="Bicycle Reports" icon={<Warning />} />
+                            <DataGrid
+                                rows={reports}
+                                columns={columnsReports}
+                                autoHeight
+                                sx={{ marginTop: "1rem" }}
+                            />
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardContent>
+                            <CardTitle title="Usage Analytics" icon={<AutoGraph />} />
+                            <DataGrid
+                                rows={usages}
+                                columns={columnsUsages}
+                                autoHeight
+                                sx={{ marginTop: "1rem" }}
+                            />
+                        </CardContent>
+                    </Card>
+                </Box>
             </Container>
 
         </>
