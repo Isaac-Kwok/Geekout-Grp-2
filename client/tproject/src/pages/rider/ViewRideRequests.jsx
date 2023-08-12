@@ -36,6 +36,7 @@ function ViewRideRequests() {
   const [imageFile, setImageFile] = useState(null);
   const { enqueueSnackbar } = useSnackbar();
   const [tempRequestId, setTempRequestId] = useState(null);
+  const [tempRouteId, setTempRouteId] = useState(null);
   console.log(user);
 
   // Fetch ride requests when the component mounts
@@ -71,6 +72,14 @@ function ViewRideRequests() {
     setTempRequestId(id);
   };
   const handleClose = () => setOpen(false);
+
+  const [openAbort, setOpenAbort] = useState(false);
+  const handleOpenAbort = (requestId, routeId) => {
+    setOpenAbort(true);
+    setTempRequestId(requestId);
+    setTempRouteId(routeId);
+  };
+  const handleCloseAbort = () => setOpenAbort(false);
 
   // End of modal attributes
 
@@ -139,6 +148,7 @@ function ViewRideRequests() {
         handleEdit={handleEdit}
         handleOpen={handleOpen}
         handleRate={handleRate}
+        handleOpenAbort={handleOpenAbort}
       />
     ));
   };
@@ -153,6 +163,7 @@ function ViewRideRequests() {
         handleEdit={handleEdit}
         handleOpen={handleOpen}
         handleRate={handleRate}
+        handleOpenAbort={handleOpenAbort}
       />
     ));
   };
@@ -186,6 +197,35 @@ function ViewRideRequests() {
   const handleRate = (id) => {
     // navigate(`/riderequests/myrequests/${user?.id}/${id}`);
     navigate(`/riderequests/completed/rate/user/${user?.id}/request/${id}`);
+  };
+
+  // Function to handle aborting a ride request
+  const handleAbort = (requestId, routeId) => {
+    http
+      .post(`/driver/chat/${routeId}/message`, {
+        message: "Rider has cancelled ride",
+      })
+      .then((res) => {})
+      .catch((err) => {
+        console.log(err);
+        enqueueSnackbar("Error sending message. " + err.response.data.message, {
+          variant: "error",
+        });
+      });
+    http
+      .put(
+        `/riderequests/abortrequest/requestId/${requestId}/routeId/${requestId}`
+      )
+      .then((res) => {
+        console.log(res.data);
+        // Update the ride request list after successful deletion
+        handleCloseAbort(); // close modal upon successful delete
+        navigate("/riderequests/myrequests");
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.error("Failed to update ride request:", error);
+      });
   };
 
   // Tabs
@@ -362,7 +402,7 @@ function ViewRideRequests() {
         </TabContext>
       </Box>
 
-      {/* Modal */}
+      {/* Modal for delete */}
       <Modal
         open={open}
         onClose={handleClose}
@@ -374,13 +414,45 @@ function ViewRideRequests() {
             Are you sure you want to delete ride request?
           </Typography>
           <Button
+            variant="contained"
+            color="success"
             onClick={() => {
               handleDelete(tempRequestId);
             }}
           >
             Yes
           </Button>
-          <Button onClick={handleClose}>No</Button>
+          &nbsp;&nbsp;&nbsp;
+          <Button onClick={handleClose} variant="contained" color="error">
+            No
+          </Button>
+        </Box>
+      </Modal>
+
+      {/* Modal for abort */}
+      <Modal
+        open={openAbort}
+        onClose={handleCloseAbort}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Are you sure you want to abort ride request?
+          </Typography>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={() => {
+              handleAbort(tempRequestId, tempRouteId);
+            }}
+          >
+            Yes
+          </Button>
+          &nbsp;&nbsp;&nbsp;
+          <Button onClick={handleCloseAbort} variant="contained" color="error">
+            No
+          </Button>
         </Box>
       </Modal>
       {/* Add pagination here */}

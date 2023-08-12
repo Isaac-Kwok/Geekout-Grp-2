@@ -21,13 +21,19 @@ import DriverChatBox from "../../components/DriverChatBox";
 import io from "socket.io-client";
 import { Edit, Delete, Visibility } from "@mui/icons-material";
 import Modal from "@mui/material/Modal";
+import { useNavigate } from "react-router-dom";
+import { useSnackbar } from "notistack";
 
 const RideRequestDetails = () => {
   const { userId, requestId } = useParams();
   const [rideRequest, setRideRequest] = useState(null);
+  const [route, setRoute] = useState(null);
+  const [routeId, setRouteId] = useState(null);
   const [pickUpLocation, setPickUpLocation] = useState(null); // State to store pickUp location details
   const [imageFile, setImageFile] = useState(null);
   const [socket, setSocket] = useState(null);
+  const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
   // Abortion modal
   const [open, setOpen] = useState(false);
@@ -57,7 +63,7 @@ const RideRequestDetails = () => {
     navigate(`/riderequests/${user?.id}/update/${id}`);
   };
 
-  // Function to handle deleting a ride request
+  // Function to handle aborting a ride request
   const handleAbort = () => {
     http
       .post(`/driver/chat/${rideRequest.routeId}/message`, {
@@ -78,6 +84,7 @@ const RideRequestDetails = () => {
         console.log(res.data);
         // Update the ride request list after successful deletion
         handleClose(); // close modal upon successful delete
+        navigate("/riderequests/myrequests");
       })
       .catch((error) => {
         console.error("Failed to update ride request:", error);
@@ -90,6 +97,23 @@ const RideRequestDetails = () => {
     navigate(`/riderequests/completed/rate/user/${user?.id}/request/${id}`);
   };
   // End of edit, delete etc
+
+  useEffect(() => {
+    // Fetch route data on component mount
+    console.log("Ride id for route fetching:", requestId);
+    http
+      .get(`/riderequests/routes/${requestId}`)
+      .then((res) => {
+        console.log("Route data:", res.data);
+        setRoute(res.data);
+      })
+      .catch((err) => {
+        console.error("Error:", err);
+        enqueueSnackbar("Failed to fetch route data!", {
+          variant: "error",
+        });
+      });
+  }, [requestId]);
 
   useEffect(() => {
     if (rideRequest) {
@@ -126,6 +150,7 @@ const RideRequestDetails = () => {
         console.log(res.data);
         setRideRequest(res.data);
         setPickUpLocation(res.data.pickUp);
+        setRouteId(res.data.routeId);
       });
   };
 
@@ -135,6 +160,20 @@ const RideRequestDetails = () => {
       setImageFile(res.data.imageFile);
       console.log("Imagefile test:", imageFile);
     });
+  };
+
+  const calculatePrice = (route) => {
+    const destinations = route.routes[0].destinationList.split("|");
+    const numberOfDestinations = destinations.length - 1; // Minus one because of the split
+    const pricePerPassenger = route.routes[0].total_cost / numberOfDestinations;
+
+    // If there's only one destination, final price is just total cost divided by number of passengers
+    if (numberOfDestinations === 1) {
+      return pricePerPassenger;
+    }
+
+    const finalPrice = pricePerPassenger * rideRequest.numberOfPassengers;
+    return finalPrice;
   };
 
   if (!rideRequest || !imageFile) {
@@ -150,7 +189,7 @@ const RideRequestDetails = () => {
         backbutton
       />
       <Grid container spacing={2}>
-        <Grid item lg={8}>
+        <Grid item lg={rideRequest.status === "Accepted" ? 8 : 12}>
           <Card sx={{ margin: "auto" }}>
             {/* Add the image here using CardMedia */}
             <CardMedia
@@ -170,6 +209,39 @@ const RideRequestDetails = () => {
               />
               <Grid container spacing={2} sx={{ marginY: "1rem" }}>
                 <Grid xs={12} lg={12} spacing={1} item container>
+                  {rideRequest.status === "Accepted" && (
+                    <Grid xs={12} lg={12} spacing={1} item container>
+                      <Grid item xs={6} sm={6}>
+                        {/* <InfoBox title="Price ($)" value={route.routes[0].total_cost} /> */}
+                        <InfoBox
+                          title="Price ($)"
+                          value={calculatePrice(route)}
+                        />
+                      </Grid>
+
+                      <Grid item xs={6} sm={6}>
+                        <InfoBox
+                          title="Duration"
+                          value={route.routes[0].duration}
+                        />
+                      </Grid>
+
+                      <Grid item xs={6} sm={6}>
+                        <InfoBox
+                          title="Distance"
+                          value={route.routes[0].distance}
+                        />
+                      </Grid>
+
+                      <Grid item xs={6} sm={6}>
+                        <InfoBox
+                          title="Destination(s)"
+                          value={route.routes[0].destination}
+                        />
+                      </Grid>
+                    </Grid>
+                  )}
+
                   <Grid item xs={6} sm={6}>
                     <InfoBox title="User ID" value={rideRequest.userId} />
                   </Grid>
@@ -194,9 +266,15 @@ const RideRequestDetails = () => {
                   </Grid>
 
                   <Grid item xs={6} sm={6}>
-                    <InfoBox title="Status" value={rideRequest.status} />
+                    <InfoBox
+                      title="No. of Passengers"
+                      value={rideRequest.numberOfPassengers}
+                    />
                   </Grid>
 
+                  <Grid item xs={6} sm={6}>
+                    <InfoBox title="Status" value={rideRequest.status} />
+                  </Grid>
                   <Grid item xs={12} sm={12}></Grid>
                   <Grid item xs={6} sm={6}></Grid>
                   {/* <IconButton
@@ -211,31 +289,36 @@ const RideRequestDetails = () => {
                   >
                     <Edit />
                   </IconButton> */}
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => {
-                      // handleDelete(params.row.requestId);
-                      handleOpen();
-                    }}
-                    title="Abort Request"
-                  >
-                    Abort Request
-                  </Button>
+                  {rideRequest.status === "Accepted" && (
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => {
+                        // handleDelete(params.row.requestId);
+                        handleOpen();
+                      }}
+                      title="Abort Request"
+                    >
+                      Abort Request
+                    </Button>
+                  )}
                 </Grid>
               </Grid>
             </CardContent>
           </Card>
         </Grid>
-        <Grid item lg={4}>
-          {socket && (
-            <DriverChatBox
-              socket={socket}
-              route={rideRequest?.routeId}
-              closed={false}
-            ></DriverChatBox>
-          )}
-        </Grid>
+
+        {rideRequest.status === "Accepted" && (
+          <Grid item lg={4}>
+            {socket && (
+              <DriverChatBox
+                socket={socket}
+                route={rideRequest?.routeId}
+                closed={false}
+              ></DriverChatBox>
+            )}
+          </Grid>
+        )}
       </Grid>
 
       {/* Modal */}
@@ -250,13 +333,18 @@ const RideRequestDetails = () => {
             Are you sure you want to abort ride request?
           </Typography>
           <Button
+            variant="contained"
+            color="success"
             onClick={() => {
               handleAbort();
             }}
           >
             Yes
           </Button>
-          <Button onClick={handleClose}>No</Button>
+          &nbsp;&nbsp;&nbsp;
+          <Button onClick={handleClose} variant="contained" color="error">
+            No
+          </Button>
         </Box>
       </Modal>
     </Container>
