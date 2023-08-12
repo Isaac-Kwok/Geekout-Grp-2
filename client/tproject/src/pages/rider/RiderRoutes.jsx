@@ -11,6 +11,7 @@ import CreateRideRating from '../riderating/CreateRideRating'
 
 function RiderRoutes() {
     const { enqueueSnackbar } = useSnackbar()
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (!validateUser()) {
