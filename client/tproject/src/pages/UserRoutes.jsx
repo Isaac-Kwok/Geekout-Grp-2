@@ -1,6 +1,5 @@
 import { useContext, useEffect } from 'react'
 import { Route, Routes, Navigate } from 'react-router-dom'
-
 import NotFound from './errors/NotFound'
 import Test from './Test'
 import App from './App'
@@ -11,19 +10,13 @@ import Reset from './Reset'
 import ProfileRoutes from './profile/ProfileRoutes'
 import DriverRoutes from './driver/DriverRoutes'
 import SupportRoutes from './support/SupportRoutes'
+import RiderRoutes from './rider/RiderRoutes'
 import Bicycle from './Bicycle'
 import ReportBicycle from './ReportBicycle'
 import ProductRoutes from './products/ProductRoutes'
 import CartRoutes from './cart/CartRoutes'
-import CreateRideRequest from './rider/CreateRideRequest'
-import EditRideRequests from './rider/EditRideRequests'
-import ViewRideRequests from './rider/ViewRideRequests'
 import Wishlist from './wishlist/ViewWishlist'
-
 import { UserContext } from '..'
-import ViewSpecificRequest from './rider/ViewSpecificRequest'
-import CreateLocationRequest from './rider/CreateLocationRequest'
-import CreateRideRating from './riderating/CreateRideRating'
 
 
 function UserRoutes() {
@@ -51,12 +44,7 @@ function UserRoutes() {
             <Route path="/bicycle/report/:id" element={<ReportBicycle />} />
             <Route path="/products/*" element={<ProductRoutes />} />
             <Route path="/cart/*" element={<CartRoutes />} />
-            <Route path="/riderequests/create" element={<CreateRideRequest />} />
-            <Route path="/riderequests/myrequests/" element={<ViewRideRequests />} />
-            <Route path="/riderequests/:userId/update/:id" element={<EditRideRequests />} />
-            <Route path="/riderequests/myrequests/:userId/:requestId" element={<ViewSpecificRequest />} />
-            <Route path="/riderequests/:userId/requestnewpickup/" element={<CreateLocationRequest />} />
-            <Route path="/riderequests/completed/rate/user/:userId/request/:requestId" element={<CreateRideRating />} />
+            <Route path="/riderequests/*" element={<RiderRoutes />} />
             <Route path="/wishlist" element={<Wishlist/>} />
         </Routes>
     )
