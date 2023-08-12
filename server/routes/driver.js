@@ -196,6 +196,24 @@ router.put("/ride/:id", validateToken, async (req, res) => {
         res.status(400).json({ message: error.errors })
     }
 })
+router.put("/route/:id", validateToken, async (req, res) => {
+    // Update route by id
+    let id = req.params.id;
+    let data = req.body;
+    try {
+        const route = await Route.findByPk(id)
+        if (!route) {
+            return res.status(404).json({ message: "Route not found" })
+        }
+
+        await route.update(data)
+
+        res.json(route)
+    } catch (error) {
+
+        res.status(400).json({ message: error.errors })
+    }
+})
 
 router.put("/complete", validateToken, async (req, res) => {
     // Update user by id
@@ -352,14 +370,10 @@ router.get("/chat/:id/message", validateToken, async (req, res) => {
     }
 })
 router.post("/chat/:id/notificationAccept", validateToken, async (req, res) => {
-    const schema = yup.object().shape({
-        message: yup.string().required(),
-    }).noUnknown()
 
     try {
         const { id } = req.params
         const { id: userId } = req.user
-        const { message } = await schema.validate(req.body)
 
         const route = await Route.findOne({
             where: { id: id, user_id: userId },
