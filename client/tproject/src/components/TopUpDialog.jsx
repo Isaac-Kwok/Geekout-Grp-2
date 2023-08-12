@@ -50,12 +50,27 @@ function TopUpDialog(props) {
 
     const appearance = {
         theme: "stripe",
+        variables: {
+            colorPrimary: '#0f6d51',
+            colorBackground: '#ffffff',
+            colorText: '#30313d',
+            colorDanger: '#df1b41',
+            fontFamily: 'Poppins, Ideal Sans, system-ui, sans-serif',
+            spacingUnit: '4px',
+            borderRadius: '4px',
+        },
     }
 
-    const options = {
-        appearance,
-        clientSecret
-    };
+    // Stripe element options with poppins font
+    const elementOptions = { 
+        clientSecret: clientSecret,
+        fonts: [
+            {
+                cssSrc: 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap',
+            },
+        ],
+        appearance: appearance,
+     };
 
 
     return (
@@ -93,7 +108,7 @@ function TopUpDialog(props) {
                     </Box>
                 }
                 {payment &&
-                    <Elements options={options} stripe={stripePromise}>
+                    <Elements options={elementOptions} stripe={stripePromise}>
                         <PaymentForm onClose={handleClose} clientSecret={clientSecret} />
                     </Elements>
                 }

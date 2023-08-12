@@ -29,7 +29,7 @@ export function Navbar() {
                                 <Divider orientation="vertical" flexItem sx={{ marginRight: "1rem", display: ["none", "none", "flex"] }} />
                                 <Stack spacing={2} direction="row" sx={{ display: ["none", "none", "flex"] }}>
                                     <Button startIcon={<HomeIcon/>} LinkComponent={Link} variant="text" color="inherit" to="/">Home</Button>
-                                    <Button startIcon={<DirectionsCarIcon/>} LinkComponent={Link} variant="text" color="inherit" to="/login">Car</Button>
+                                    <Button startIcon={<DirectionsCarIcon/>} LinkComponent={Link} variant="text" color="inherit" to="/riderequests/myrequests">Car</Button>
                                     <Button startIcon={<DirectionsBikeIcon/>} LinkComponent={Link} variant="text" color="inherit" to="/bicycle">Bicycles</Button>
                                     <Button startIcon={<StoreIcon/>} LinkComponent={Link} variant="text" color="inherit" to="/products">Shop</Button>
                                 </Stack>
