@@ -55,30 +55,36 @@ router.get("/myrequests/:userId", validateToken, async (req, res) => {
 });
 
 // get specific ride request
-router.get("/myrequests/:userId/specific/:requestId", validateToken, async (req, res) => {
-  const { userId, requestId } = req.params;
-  try {
-    // Check if the user exists in the User database
-    const user = await User.findByPk(userId);
-    if (!user) {
-      return res
-        .status(404)
-        .json({ message: `User of user ID: ${userId} does not exist.` });
-    }
+router.get(
+  "/myrequests/:userId/specific/:requestId",
+  validateToken,
+  async (req, res) => {
+    const { userId, requestId } = req.params;
+    try {
+      // Check if the user exists in the User database
+      const user = await User.findByPk(userId);
+      if (!user) {
+        return res
+          .status(404)
+          .json({ message: `User of user ID: ${userId} does not exist.` });
+      }
 
-    // If the user exists, retrieve their ride request with the specific requestId
-    const rideRequest = await RideRequest.findByPk(requestId);
-    if (!rideRequest) {
-      return res
-        .status(404)
-        .json({ message: `Ride request with ID: ${requestId} does not exist.` });
-    }
+      // If the user exists, retrieve their ride request with the specific requestId
+      const rideRequest = await RideRequest.findByPk(requestId);
+      if (!rideRequest) {
+        return res
+          .status(404)
+          .json({
+            message: `Ride request with ID: ${requestId} does not exist.`,
+          });
+      }
 
-    res.json(rideRequest);
-  } catch (error) {
-    res.status(400).json({ message: "Failed to retrieve ride request." });
+      res.json(rideRequest);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to retrieve ride request." });
+    }
   }
-});
+);
 
 // Update a ride request by ID (does not require token validation)
 router.put("/update/:requestId", async (req, res) => {
@@ -149,5 +155,36 @@ router.get("/allrequests", async (req, res) => {
     res.status(400).json({ message: "Failed to retrieve ride requests." });
   }
 });
+
+router.put("/abortrequest/requestId/:requestId/routeId/:routeId", async (req, res) => {
+  let requestId = req.params.requestId;
+  let routeId = req.params.routeId;
+  let data = req.body;
+  data.status = "Pending"
+
+  try {
+    const rideRequest = await RideRequest.findByPk(requestId);
+
+    if (!rideRequest) {
+      return res
+        .status(404)
+        .json({ message: `Ride request of ID: ${requestId} not found.` });
+    }
+
+    await rideRequest.update(data);
+    res.json({
+      message: `Ride request of ID: ${requestId} updated successfully.`,
+      updatedRideRequest: rideRequest,
+    });
+    req.app.io.to(`chat_${routeId}`).emit("riderAbort")
+  } catch (error) {
+    res.status(400).json({
+      message: `Failed to update ride request with ID: ${requestId}`,
+      errors: error.errors,
+    });
+  }
+});
+
+
 
 module.exports = router;

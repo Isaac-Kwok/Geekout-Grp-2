@@ -23,7 +23,7 @@ import Wishlist from './wishlist/ViewWishlist'
 import { UserContext } from '..'
 import ViewSpecificRequest from './rider/ViewSpecificRequest'
 import CreateLocationRequest from './rider/CreateLocationRequest'
-import CreateRideRating from './rider/CreateRideRating'
+import CreateRideRating from './riderating/CreateRideRating'
 
 
 function UserRoutes() {
@@ -56,7 +56,7 @@ function UserRoutes() {
             <Route path="/riderequests/:userId/update/:id" element={<EditRideRequests />} />
             <Route path="/riderequests/myrequests/:userId/:requestId" element={<ViewSpecificRequest />} />
             <Route path="/riderequests/:userId/requestnewpickup/" element={<CreateLocationRequest />} />
-            <Route path="/riderequests/completed/rate/:requestId" element={<CreateRideRating />} />
+            <Route path="/riderequests/completed/rate/user/:userId/request/:requestId" element={<CreateRideRating />} />
             <Route path="/wishlist" element={<Wishlist/>} />
         </Routes>
     )

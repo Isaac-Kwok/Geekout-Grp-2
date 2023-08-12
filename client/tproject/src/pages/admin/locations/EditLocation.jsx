@@ -145,6 +145,14 @@ function EditLocation() {
         data.premium = 0;
       }
 
+      if (data.status == "Pending") {
+        enqueueSnackbar("Location approval failed! Status is required.", {
+          variant: "error",
+        });
+        setLoading(false); // Stop loading
+        return; // Return early to prevent further execution
+      }
+
       // Check if the imageFile is still the placeholder value
       if (data.imageFile === "placeholderImageFileString") {
         enqueueSnackbar("Location approval failed! Image is required.", {
