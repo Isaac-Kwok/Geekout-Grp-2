@@ -4,14 +4,13 @@ import InfoBox from '../../components/InfoBox'
 import CardTitle from '../../components/CardTitle'
 import EnergySavingsLeafIcon from '@mui/icons-material/EnergySavingsLeaf';
 import PaymentsIcon from '@mui/icons-material/Payments';
-import { ProfileContext } from './ProfileRoutes'
 import TopUpDialog from '../../components/TopUpDialog'
-import http from '../../http'
+import useUser from '../../context/useUser'
 
 
 function ViewWallet() {
 
-    const { profile, setProfile } = useContext(ProfileContext)
+    const { user, refreshUser } = useUser()
     const [topupOpen, setTopupOpen] = useState(false)
 
     const handleTopupOpen = () => {
@@ -19,14 +18,8 @@ function ViewWallet() {
     }
 
     const handleTopupClose = () => {
+        refreshUser()
         setTopupOpen(false)
-    }
-
-    const handleOnPaymentSuccess = () => {
-        // Update user profile
-        http.get("/profile").then(res => {
-            setProfile(res.data)
-        })
     }
 
     useEffect(() => {
@@ -42,7 +35,7 @@ function ViewWallet() {
                         <Grid container marginTop={"1rem"} alignItems={"center"}>
                             <Grid item xs={12} sm marginBottom={["1rem", 0]}>
                                 <Box display="flex" alignItems={"center"}>
-                                    <InfoBox flexGrow={1} title="Cash Balance" value={<Typography variant='h5' fontWeight={700}>${profile.cash}</Typography>} />
+                                    <InfoBox flexGrow={1} title="Cash Balance" value={<Typography variant='h5' fontWeight={700}>${user?.cash}</Typography>} />
                                     <Button variant="text" color="primary"onClick={handleTopupOpen}>Top-up</Button>
                                 </Box>
                             </Grid>
@@ -66,7 +59,7 @@ function ViewWallet() {
                         <Grid container marginTop={"1rem"} alignItems={"center"}>
                             <Grid item xs={12} sm marginBottom={["1rem", 0]}>
                                 <Box display="flex" alignItems={"center"}>
-                                    <InfoBox flexGrow={1} title="GreenMiles Points" value={<Typography variant='h5' fontWeight={700}>{profile.points} GM</Typography>} />
+                                    <InfoBox flexGrow={1} title="GreenMiles Points" value={<Typography variant='h5' fontWeight={700}>{user?.points} GM</Typography>} />
                                 </Box>
                             </Grid>
                             <Divider orientation="vertical" sx={{ marginX: "1rem" }} flexItem />

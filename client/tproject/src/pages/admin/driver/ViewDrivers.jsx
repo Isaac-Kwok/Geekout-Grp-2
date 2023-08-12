@@ -13,6 +13,10 @@ import AdminPageTitle from '../../../components/AdminPageTitle';
 import ArticleIcon from '@mui/icons-material/Article';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import EmailIcon from '@mui/icons-material/Email';
+import PhoneIcon from '@mui/icons-material/Phone';
+import TimeToLeaveIcon from '@mui/icons-material/TimeToLeave';
+import WorkIcon from '@mui/icons-material/Work';
 
 
 
@@ -60,24 +64,29 @@ function ViewDriverApplications() {
 
     const handledeleteAllApplicationDialogOpen = () => {
         if (selectedRows.length == 0) {
-            enqueueSnackbar("Please select at least one application entry!", { variant: "danger" })
+            enqueueSnackbar("Please select at least one driver!", { variant: "danger" })
         }
         else {
             setDeleteAllApplicationDialog(true)
         }
     }
     // HTTP included methods
-    const handleGetDriverApplications = () => {
+    const handleGetDriverApplications = async () => {
         let drivers = []
-        http.get("/admin/driver/getalldriverapplications").then((res) => {
+        http.get("/admin/driver/getalldriverapplications").then(async (res) => {
             if (res.status === 200) {
                 for (let index = 0; index < res.data.length; index++) {
+                    let driverObject = {};
                     const driver = res.data[index];
                     if (driver.driver_status == "Approved") {
-                        drivers.push(driver)
-                    }     
+                        console.log('id', driver.user_id)
+                        const user = await http.get("/admin/users/" + driver.user_id)
+                        driverObject = Object.assign(driver, user.data);
+                        drivers.push(driverObject)
+                    }
                 }
                 setDriverApplications(drivers)
+                console.log('list', driverApplications)
             }
         })
     }
@@ -87,32 +96,45 @@ function ViewDriverApplications() {
         })
     }
     const deleteById = () => {
-        http.delete("/admin/driver/deletedriverapplicationbyID/" + deleteApplication.id).then((res) => {
+        let data = { account_type: 1 }
+        http.put("/admin/users/" + deleteApplication.user_id, data).then((res) => {
             if (res.status === 200) {
                 setDeleteApplicationDialog(false)
                 handleGetDriverApplications()
-                navigate('/admin/driver/viewdriverapplications');
-                enqueueSnackbar("Driver Application deleted successfully!", { variant: "success" });
+                navigate('/admin/driver/viewdrivers');
+                enqueueSnackbar("Driver deactivated successfully!", { variant: "success" });
+            }
+        })
+    }
+    const handleactivateuser = (object) => {
+        let data = { account_type: 2 }
+        http.put("/admin/users/" + object.user_id, data).then((res) => {
+            if (res.status === 200) {
+                handleGetDriverApplications()
+                navigate('/admin/driver/viewdrivers');
+                enqueueSnackbar("Driver Activated successfully!", { variant: "success" });
             }
         })
     }
     const bulkDelete = () => {
         console.log('rows', selectedRows)
         if (selectedRows.length == 0) {
-            enqueueSnackbar("No driver application entries are selected!", { variant: "danger" });
+            enqueueSnackbar("No drivers are selected!", { variant: "danger" });
         }
         else {
+            let data = { account_type: 1 }
             for (let index = 0; index < selectedRows.length; index++) {
                 let row = selectedRows[index];
-                http.delete("/admin/driver/deletedriverapplicationbyID/" + row.id).then((res) => {
+                http.put("/admin/users/" + row.user_id, data).then((res) => {
                     if (res.status === 200) {
+                        console.log(res.data)
                     }
                 })
             }
             setDeleteAllApplicationDialog(false);
             handleGetDriverApplications()
-            navigate('/admin/driver/viewdriverapplications');
-            enqueueSnackbar("Driver Applications deleted successfully!", { variant: "success" });
+            navigate('/admin/driver/viewdrivers');
+            enqueueSnackbar("Driver deleted successfully!", { variant: "success" });
         }
 
     }
@@ -132,50 +154,87 @@ function ViewDriverApplications() {
         {
             field: 'driver_nric_name',
             headerName: 'Full name',
-            width: 300,
-            flex: 1,
-        },
-        {
-            field: 'driver_nric_number',
-            headerName: 'NRIC number',
-            width: 200
-        },
-        {
-            field: 'driver_age',
-            headerName: 'Age',
-            width: 90,
-        },
-        {
-            field: 'driver_car_model',
-            headerName: 'Car model',
-            width: 350,
-        },
-        {
-            field: 'driver_car_license_plate',
-            headerName: 'Car license plate',
             width: 250,
         },
         {
-            field: 'driver_status',
-            headerName: 'Status',
-            width: 200,
+            field: 'driver_nric_number',
+            headerName: 'NRIC',
+            width: 200
         },
         {
-            field: 'actions', type: 'actions', headerName: "Actions", width: 100, getActions: (params) => [
+            field: 'on_duty',
+            headerName: 'On duty',
+            width: 120
+        }, {
+            field: 'completed_routes',
+            headerName: 'Total Routes',
+            width: 150
+        },
+        {
+            field: 'total_earned',
+            headerName: 'Total earned',
+            width: 150,
+            valueGetter: (params) => {
+                if (params.value) { return "$" + (params.value).toFixed(2) }
+            }
+        },
+        {
+            field: 'driven_distance',
+            headerName: 'Total distance',
+            width: 150,
+            valueGetter: (params) => {
+                if (params.value) { return (params.value / 1000).toFixed(2) + "KM" }
+            }
+        },
+        {
+            field: 'account_type',
+            headerName: 'Status',
+            width: 120,
+            valueGetter: (params) => {
+                if (params.value === 2) {
+                    return 'Active'
+                }
+                else {
+                    return 'Not Active'
+                }
+            }
+        },
+        {
+            field: 'actions', type: 'actions', headerName: "Actions", width: 120, getActions: (params) => [
                 <GridActionsCellItem
                     icon={<DeleteIcon />}
-                    label="Delete"
+                    label="Activate Driver"
+                    onClick={() => {
+                        handleactivateuser(params.row);
+                    }}
+                    showInMenu
+                />,
+                <GridActionsCellItem
+                    icon={<DeleteIcon />}
+                    label="Deactivate Driver"
                     onClick={() => {
                         setDeleteApplication(params.row)
                         handledeleteApplicationDialogOpen()
                     }}
+                    showInMenu
                 />,
                 <GridActionsCellItem
                     icon={<PreviewIcon />}
-                    label="View"
+                    label="View Driver"
                     onClick={() => {
-                        navigate('/admin/driver/EditDriverApplication/' + params.row.id)
+                        navigate('/admin/driver/viewDriverStatistics/' + params.row.id)
                     }}
+                    showInMenu
+                />,
+                <GridActionsCellItem
+                    icon={<EmailIcon />}
+                    label="Send E-mail"
+                    href={"mailto:" + params.row.email}
+                />,
+                <GridActionsCellItem
+                    icon={<PhoneIcon />}
+                    label="Call"
+                    href={"tel:" + params.row.phone_number}
                 />
             ]
         },
@@ -187,13 +246,16 @@ function ViewDriverApplications() {
     for (let index = 0; index < driverApplications.length; index++) {
         let driverApplication = driverApplications[index];
         rows.push(driverApplication)
-        if (driverApplication.driver_status == "Approved") {
+        if (driverApplication.account_type === 2) {
             approved.push(driverApplication)
         }
-        else if (driverApplication.driver_status == "Rejected") {
+        else if (driverApplication.account_type === 1) {
             rejected.push(driverApplication)
         }
-        else if (driverApplication.driver_status == "Pending") {
+    }
+    for (let index = 0; index < driverApplications.length; index++) {
+        let driverApplication = driverApplications[index];
+        if (driverApplication.on_duty === true) {
             pending.push(driverApplication)
         }
     }
@@ -217,7 +279,7 @@ function ViewDriverApplications() {
                                         color="text.secondary"
                                         variant="overline"
                                     >
-                                        Total Applications
+                                        Total Drivers
                                     </Typography>
                                     <Typography variant="h4">
                                         {driverApplications.length}
@@ -231,7 +293,7 @@ function ViewDriverApplications() {
                                     }}
                                 >
 
-                                    <ArticleIcon />
+                                    <TimeToLeaveIcon />
 
                                 </Avatar>
                             </Stack>
@@ -252,7 +314,7 @@ function ViewDriverApplications() {
                                         color="text.secondary"
                                         variant="overline"
                                     >
-                                        Approved Applications
+                                        Active Drivers
                                     </Typography>
                                     <Typography variant="h4">
                                         {approved.length}
@@ -287,7 +349,7 @@ function ViewDriverApplications() {
                                         color="text.secondary"
                                         variant="overline"
                                     >
-                                        Rejected Applications
+                                        Not Active Drivers
                                     </Typography>
                                     <Typography variant="h4">
                                         {rejected.length}
@@ -321,7 +383,7 @@ function ViewDriverApplications() {
                                         color="text.secondary"
                                         variant="overline"
                                     >
-                                        Pending Applications
+                                        On duty drivers
                                     </Typography>
                                     <Typography variant="h4">
                                         {pending.length}
@@ -335,7 +397,7 @@ function ViewDriverApplications() {
                                     }}
                                 >
 
-                                    <ArticleIcon />
+                                    <WorkIcon />
 
                                 </Avatar>
                             </Stack>
@@ -362,7 +424,7 @@ function ViewDriverApplications() {
                 <Button variant='contained' color='error' onClick={() => {
                     handledeleteAllApplicationDialogOpen()
                 }}>
-                    Delete All
+                    Deactivate All
                 </Button>
             </Box>
 
@@ -389,12 +451,12 @@ function ViewDriverApplications() {
                 autoHeight
             />
             <Dialog open={deleteApplicationDialog} onClose={handledeleteApplicationDialogClose}>
-                <DialogTitle>Delete Driver Application</DialogTitle>
+                <DialogTitle>Deactivate Driver </DialogTitle>
                 <DialogContent sx={{ paddingTop: 0 }}>
                     <DialogContentText>
-                        Are you sure you want to Delete this Application?
+                        Are you sure you want to Deactivate this Driver?
                         <br />
-                        Application Details:
+                        Driver Details:
                         <ul>
                             <li>Driver Name: {deleteApplication?.driver_nric_name}</li>
                             <li>User ID: {deleteApplication?.user_id}</li>
@@ -403,16 +465,16 @@ function ViewDriverApplications() {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handledeleteApplicationDialogClose} startIcon={<CloseIcon />}>Cancel</Button>
-                    <LoadingButton type="submit" loadingPosition="start" variant="text" color="error" startIcon={<DeleteIcon />} onClick={deleteById}>Delete</LoadingButton>
+                    <LoadingButton type="submit" loadingPosition="start" variant="text" color="error" startIcon={<DeleteIcon />} onClick={deleteById}>Deactivate</LoadingButton>
                 </DialogActions>
             </Dialog>
             <Dialog open={deleteAllApplicationDialog} onClose={handledeleteAllApplicationDialogClose}>
-                <DialogTitle>Delete Driver Applications</DialogTitle>
+                <DialogTitle>Deactivate Drivers</DialogTitle>
                 <DialogContent sx={{ paddingTop: 0 }}>
                     <DialogContentText>
-                        Are you sure you want to Delete these Applications?
+                        Are you sure you want to Deactivate these Drivers?
                         <br />
-                        Applications:
+                        Drivers:
                         <ul>
                             {
                                 selectedRows.map((row, i) => {
@@ -427,7 +489,7 @@ function ViewDriverApplications() {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handledeleteAllApplicationDialogClose} startIcon={<CloseIcon />}>Cancel</Button>
-                    <LoadingButton type="submit" loadingPosition="start" variant="text" color="error" startIcon={<DeleteIcon />} onClick={bulkDelete}>Delete</LoadingButton>
+                    <LoadingButton type="submit" loadingPosition="start" variant="text" color="error" startIcon={<DeleteIcon />} onClick={bulkDelete}>Deactivate</LoadingButton>
                 </DialogActions>
             </Dialog>
         </Container>

@@ -122,6 +122,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true
         },
+        bike_pass_expiry: {
+            type: DataTypes.DATE,
+            allowNull: true
+        },
     }, {
         indexes: [{ unique: true, fields: ["email"] }]
     });

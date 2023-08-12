@@ -3,3 +3,100 @@
     width: 80%;
     margin: auto;
 }
+
+.report-fault-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+}
+
+main {
+    display: flex;
+    justify-content: space-between;
+}
+
+.selection-box {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.notes-box {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+footer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.submit-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* I will fix this soon (Joseph) */
+/* h2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+} */
+
+/* Custom CSS for InfoWindow */
+.custom-info-window {
+    background-color: #ffcc00;
+    /* Set your desired background color here */
+    color: #000;
+    /* Set the text color */
+    padding: 10px;
+    /* Add padding to the content */
+}
+
+.small-rectangular-component {
+    position: fixed;
+    bottom: 60px;
+    /* Adjust this value to control the vertical position */
+    left: 35%;
+    /* Adjust this value to control the horizontal position */
+    width: 30%;
+    /* Adjust the width as needed */
+    height: 120px;
+    /* Adjust the height as needed */
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.top-left {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.top-right {
+    text-align: right;
+}
+
+.bottom-center {
+    text-align: center;
+}
+
+button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}

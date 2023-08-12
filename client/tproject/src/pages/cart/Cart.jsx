@@ -293,7 +293,7 @@ function ViewCart() {
                             )
                         }
                     </TableContainer>
-                    {!user.delivery_address && <>
+                    {!user?.delivery_address && <>
                         <Card sx={{ marginY: "1rem" }}>
                             <CardContent>
                                 <CardTitle title="No Delivery Address" icon={<WarningAmberIcon />} />

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Order, User, OrderItem, Product, Refund } = require('../models');
+const { Order, User, OrderItem, Product, Refund, Transaction } = require('../models');
 const { Op } = require('sequelize');
 const yup = require('yup');
 const { validateToken } = require('../middleware/validateToken');
@@ -100,6 +100,37 @@ router.get('/:orderId', validateToken, async (req, res) => {
     }
 });
 
+
+
+// Change transaction payment method
+router.put('/:orderId', validateToken, async (req, res) => {
+    const orderId = req.params.orderId;
+    const { payment_method } = req.body;
+    try {
+        let transaction = await Transaction.findOne({
+            where: {
+                user_id: req.user.id,
+                order_id: orderId
+            }
+        });
+
+        if (!transaction || transaction.status !== 'Pending') {
+            res.status(404).json({ error: 'Transaction not found' });
+            return;
+        }
+
+        transaction.payment_method = payment_method;
+        await transaction.save();
+
+        res.json({ message: 'Payment method updated' });
+    } catch (error) {
+        console.log('Error updating payment method:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+        
 
 router.get('/refunds/:orderId', validateToken, async (req, res) => {
     const orderId = req.params.orderId;

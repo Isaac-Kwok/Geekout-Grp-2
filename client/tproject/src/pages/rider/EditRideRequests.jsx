@@ -28,6 +28,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
 function EditRideRequests() {
   const [loading, setLoading] = useState(false);
@@ -40,8 +41,7 @@ function EditRideRequests() {
     requestId: 2,
     userId: 3,
     name: "",
-    date: "",
-    time: "",
+    dateTime: "",
     pickUp: "",
     destination: "",
     numberOfPassengers: 1,
@@ -50,13 +50,13 @@ function EditRideRequests() {
     updatedAt: "",
   });
 
-  const handleChangeDate = (date) => {
-    formik.setFieldValue("date", date); // Update the "date" field directly with the selected date
+  const handleChangeDate = (dateTime) => {
+    formik.setFieldValue("dateTime", dateTime); // Update the "dateTime" field directly with the selected dateTime
   };
 
-  const handleChangeTime = (time) => {
-    formik.setFieldValue("time", time);
-  };
+  // const handleChangeTime = (time) => {
+  //   formik.setFieldValue("time", time);
+  // };
 
   useEffect(() => {
     // Fetch ride request data on component mount
@@ -96,13 +96,12 @@ function EditRideRequests() {
     initialValues: {
       ...rideRequest,
       // Leave out time from initialValues, set it using useEffect
-      time: null,
-      date: null,
+      dateTime: null,
     },
     enableReinitialize: true,
 
     validationSchema: Yup.object({
-      date: Yup.string().required("Pleae provide date of pickup!"),
+      dateTime: Yup.string().required("Pleae provide date & time of pickup!"),
       time: Yup.string().required("Please provide time of pickup!"),
       pickUp: Yup.string().required("Please provide pick-up location!"),
       destination: Yup.string().required("Please provide destination!"),
@@ -112,16 +111,17 @@ function EditRideRequests() {
     }),
     onSubmit: (data) => {
       console.log("test submit");
-      console.log("time", data.time);
-      console.log("date", data.date);
+      console.log("dateTime", data.dateTime);
       setLoading(true);
       // data.date = format(selectedDate, "yyyy-MM-dd");
       // data.date = data.date.trim();
       // Convert the time value to the desired format "HH:mm:ss"
-      data.time = data.time.format("HH:mm:ss");
+      // data.time = data.time.format("HH:mm:ss");
       data.pickUp = data.pickUp.trim();
       data.destination = data.destination.trim();
       data.numberOfPassengers = Number(data.numberOfPassengers);
+      data.time = data.dateTime.format("HH:mm:ss");
+      data.date = data.dateTime.toISOString().split("T")[0];
 
       console.log("Data to be submitted:", data); // Log the data to be submitted
 
@@ -208,140 +208,8 @@ function EditRideRequests() {
                     />
                   </Grid> */}
 
-                  {/* Datepicker field for date */}
-
-                  {/* Datepicker field for date */}
-                  <Grid item xs={6} sm={6}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DatePicker
-                        label="Date"
-                        // slotProps={{
-                        //   textField: {
-                        //     helperText: "MM/DD/YYYY",
-                        //   },
-                        // }}
-                        slotProps={{ textField: { fullWidth: true } }}
-                        value={formik.values.date}
-                        onChange={handleChangeDate}
-                        renderInput={(params) => (
-                          <TextField {...params} variant="outlined" />
-                        )}
-                        error={
-                          formik.touched.date && Boolean(formik.errors.date)
-                        }
-                        helperText={formik.touched.date && formik.errors.date}
-                        sx={{ marginY: "1rem" }}
-                      />
-                    </LocalizationProvider>
-                  </Grid>
-
-                  {/* <Grid item xs={12} sm={6}>
-                    <Grid container spacing={0} alignItems="center">
-                      <Grid item xs={6} sm={6}>
-                        Date
-                      </Grid>
-                      <Grid item xs={6} sm={6}>
-                        <Box width="100%">
-                          <DatePicker
-                            selected={selectedDate}
-                            onChange={(date) => {
-                              handleDateChange(date)
-                              console.log("Selected date:", date);
-                            }}
-                            customInput={
-                              <TextField fullWidth variant="outlined" />
-                            }
-                            placeholderText="Select Date"
-                            name="date"
-                            isClearable
-                            scrollableYearDropdown
-                            minDate={new Date()} // Set the maximum date to the current date
-                            // Add the dateFormat attribute here for display in the TextField
-                            dateFormat="yyyy-MM-dd" // Example: "2023-08-01"
-                            showYearDropdown
-                            yearDropdownItemNumber={15}
-                          />
-                        </Box>
-                      </Grid>
-                    </Grid>
-                  </Grid> */}
-
                   {/* Time */}
-                  {/* Hours and minutes split code */}
-                  {/* <Grid item xs={12} sm={6}>
-                    <Grid container spacing={1} alignItems="center">
-                      <Grid item xs={12} sm={4}>
-                        <label
-                          htmlFor="hour"
-                          style={{
-                            fontSize: "1rem",
-                            fontWeight: 500,
-                          }}
-                        >
-                          Time ( Hour || Minute )
-                        </label>
-                      </Grid>
-                      <Grid item xs={6} sm={4}>
-                        <TextField
-                          select
-                          id="hour"
-                          name="hour"
-                          value={formik.values.hour}
-                          onChange={formik.handleChange}
-                          fullWidth
-                          variant="outlined"
-                        >
-                          <MenuItem value="">
-                            <em>Select hour</em>
-                          </MenuItem>
-                          {hours.map((hour) => (
-                            <MenuItem key={hour} value={hour}>
-                              {hour}
-                            </MenuItem>
-                          ))}
-                        </TextField>
-                      </Grid>
-                      <Grid item xs={6} sm={4}>
-                        <TextField
-                          select
-                          id="minute"
-                          name="minute"
-                          value={formik.values.minute}
-                          onChange={formik.handleChange}
-                          fullWidth
-                          variant="outlined"
-                        >
-                          <MenuItem value="">
-                            <em>Select minute</em>
-                          </MenuItem>
-                          {minutes.map((minute) => (
-                            <MenuItem key={minute} value={minute}>
-                              {minute}
-                            </MenuItem>
-                          ))}
-                        </TextField>
-                      </Grid>
-                    </Grid>
-                  </Grid> */}
-
-                  {/* <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      id="pickUp"
-                      name="pickUp"
-                      label="Pick Up"
-                      variant="outlined"
-                      value={formik.values.pickUp}
-                      onChange={formik.handleChange}
-                      error={
-                        formik.touched.pickUp && Boolean(formik.errors.pickUp)
-                      }
-                      helperText={formik.touched.pickUp && formik.errors.pickUp}
-                      sx={{ marginY: "1rem" }}
-                    />
-                  </Grid> */}
-
-                  <Grid item xs={6} sm={6}>
+                  {/* <Grid item xs={6} sm={6}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <TimePicker
                         fullWidth
@@ -354,6 +222,7 @@ function EditRideRequests() {
                         //   },
                         // }}
                         slotProps={{ textField: { fullWidth: true } }}
+                        disablePast
                         value={formik.values.time}
                         onChange={handleChangeTime}
                         renderInput={(params) => (
@@ -366,24 +235,9 @@ function EditRideRequests() {
                         sx={{ marginY: "1rem" }}
                       />
                     </LocalizationProvider>
-                  </Grid>
-
-                  {/* Normal text field code for time */}
-                  {/* <Grid item xs={6} sm={6}>
-                    <TextField
-                      fullWidth
-                      id="time"
-                      name="time"
-                      label="Time"
-                      variant="outlined"
-                      value={formik.values.time}
-                      onChange={formik.handleChange}
-                      error={formik.touched.time && Boolean(formik.errors.time)}
-                      helperText={formik.touched.time && formik.errors.time}
-                      sx={{ marginY: "1rem" }}
-                    />
                   </Grid> */}
 
+                  {/* Location pickup */}
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
@@ -404,36 +258,40 @@ function EditRideRequests() {
                         alignItems: "center",
                       }}
                     >
-                      {/* Add an initial option for "Select Pick Up" */}
                       <MenuItem value="">
                         <em>Select Pick Up</em>
                       </MenuItem>
-                      {/* Map over the locations array to display each location as a custom menu item */}
-                      {locations.map((location) => (
-                        <MenuItem key={location.name} value={location.name}>
-                          <Box display="flex" alignItems="center">
-                            {location.imageFile && (
-                              <img
-                                src={
-                                  import.meta.env.VITE_API_URL +
-                                  "/admin/locations/images/" +
-                                  location.imageFile
-                                }
-                                alt={location.name}
-                                style={{
-                                  width: "50px",
-                                  height: "50px",
-                                  marginRight: "8px",
-                                  borderRadius: "5px",
-                                }}
-                              />
-                            )}
-                            {location.name}
-                          </Box>
-                        </MenuItem>
-                      ))}
+                      {locations.map(
+                        (location) =>
+                          // Only include locations with an active status
+                          location.status === "Active" && (
+                            <MenuItem key={location.name} value={location.name}>
+                              <Box display="flex" alignItems="center">
+                                {location.imageFile && (
+                                  <img
+                                    src={
+                                      import.meta.env.VITE_API_URL +
+                                      "/admin/locations/images/" +
+                                      location.imageFile
+                                    }
+                                    alt={location.name}
+                                    style={{
+                                      width: "50px",
+                                      height: "50px",
+                                      marginRight: "8px",
+                                      borderRadius: "5px",
+                                    }}
+                                  />
+                                )}
+                                {location.name}
+                              </Box>
+                            </MenuItem>
+                          )
+                      )}
                     </TextField>
                   </Grid>
+
+                  {/* Destination */}
 
                   <Grid item xs={12} sm={6}>
                     <TextField
@@ -455,12 +313,42 @@ function EditRideRequests() {
                     />
                   </Grid>
 
-                  <Grid item xs={12} sm={12}>
+                  {/* Datepicker field for dateTime */}
+                  <Grid item xs={6} sm={6}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DateTimePicker
+                        label="Date & Time"
+                        // slotProps={{
+                        //   textField: {
+                        //     helperText: "MM/DD/YYYY",
+                        //   },
+                        // }}
+                        slotProps={{ textField: { fullWidth: true } }}
+                        disablePast
+                        value={formik.values.dateTime}
+                        onChange={handleChangeDate}
+                        renderInput={(params) => (
+                          <TextField {...params} variant="outlined" />
+                        )}
+                        error={
+                          formik.touched.dateTime &&
+                          Boolean(formik.errors.dateTime)
+                        }
+                        helperText={
+                          formik.touched.dateTime && formik.errors.dateTime
+                        }
+                        sx={{ marginY: "1rem" }}
+                      />
+                    </LocalizationProvider>
+                  </Grid>
+
+                  <Grid item xs={6} sm={6}>
                     <TextField
                       fullWidth
                       id="numberOfPassengers"
                       name="numberOfPassengers"
                       label="Number Of Passengers"
+                      select
                       variant="outlined"
                       value={formik.values.numberOfPassengers}
                       onChange={formik.handleChange}
@@ -473,7 +361,12 @@ function EditRideRequests() {
                         formik.errors.numberOfPassengers
                       }
                       sx={{ marginY: "1rem" }}
-                    />
+                    >
+                      <MenuItem value="">Select number of passengers</MenuItem>
+                      <MenuItem value="1">1</MenuItem>
+                      <MenuItem value="2">2</MenuItem>
+                      <MenuItem value="3">3</MenuItem>
+                    </TextField>
                   </Grid>
                 </Grid>
               </Grid>
