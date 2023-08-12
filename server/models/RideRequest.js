@@ -50,7 +50,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
     },
     routeId: {
-      type: DataTypes.TIME,
+      type: DataTypes.INTEGER,
       allowNull: true,
     },
   });
