@@ -899,7 +899,7 @@ function DriverRouting() {
                 </div>
 
                 <Box className="" display={value == 1 ? "initial" : "none"}>
-                  {socket && (
+                  {socket?.connected == true && (
                     <DriverChatBox
                       socket={socket}
                       route={user.current_route.id}

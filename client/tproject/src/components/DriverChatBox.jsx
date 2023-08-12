@@ -16,7 +16,6 @@ import useUser from '../context/useUser';
 
 function DriverChatBox({ socket, route, closed }) {
 
-    const [connected, setConnected] = useState(false)
     const [sendLoading, setSendLoading] = useState(false)
     const { enqueueSnackbar } = useSnackbar()
     const [messages, setMessages] = useState([])
@@ -32,16 +31,10 @@ function DriverChatBox({ socket, route, closed }) {
     }
 
     useEffect(() => {
+        console.log('socket data', socket)
         getMessages()
         console.log(messages)
 
-        socket.on("connect", () => {
-            setConnected(true)
-        })
-
-        socket.on("disconnect", () => {
-            setConnected(false)
-        })
 
         socket.on("chat_message", (newMessage) => {
             console.log(newMessage)
@@ -106,7 +99,7 @@ function DriverChatBox({ socket, route, closed }) {
                     />
                     <LoadingButton disabled={closed} type='submit' loading={sendLoading} startIcon={<SendIcon />} variant="contained" sx={{ marginLeft: "1rem" }}>Send</LoadingButton>
                 </Box>
-                {connected ? <>
+                {socket.connected ? <>
                     <Box display={"flex"} alignItems={"center"} marginTop={"1rem"} color={"green"}>
                         <LinkIcon sx={{ marginRight: "0.5rem" }} />
                         <Typography variant="body2">Connected</Typography>
