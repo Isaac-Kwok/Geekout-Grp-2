@@ -47,6 +47,9 @@ function DriverChatBox({ socket, route, closed }) {
             console.log(newMessage)
             setMessages(prev => [...prev, newMessage])
         })
+        socket.on("connect_error", (err) => {
+            console.log(`connect_error due to ${err.message}`);
+          });
     }, [])
 
     const sendFormik = useFormik({

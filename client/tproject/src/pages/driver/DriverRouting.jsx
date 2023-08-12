@@ -435,6 +435,7 @@ function DriverRouting() {
       newObj.company_profit = (((totalDistance / 1000) * 2) * 0.35)
       newObj.total_cost = ((totalDistance / 1000) * 2)
       newObj.rideDirections = results
+      newObj.status = "Accepted"
 
       // Change Ride requests status from DB
       const rideIdsList = originalObj.rideIds.split(","); // Split the string by commas
