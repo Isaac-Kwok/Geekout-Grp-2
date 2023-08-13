@@ -104,7 +104,7 @@ function CreateProduct() {
       product_sub_category: Yup.string().trim().required("Sub Category is required"),
       pass_category_status: Yup.bool(),
       product_stock: Yup.number("Invalid number").integer().required("Product Stock is required"),
-      product_description: Yup.string().trim("The description contains extra spaces. Please remove them and try again.").min(3).max(1000).required("Product Description is required"),
+      product_description: Yup.string().trim("The description contains extra spaces. Please remove them and try again.").min(3).required("Product Description is required"),
       product_picture: Yup.string(),
       product_price: Yup.number().min(0).integer().required("Product Price is required"),
       product_sale: Yup.bool(),
