@@ -4,7 +4,7 @@ import { Box, Typography } from '@mui/material'
 function MessageBox({ message, sender }) {
     return (
         <Box sx={{ display: "flex", justifyContent: sender ? "flex-end" : "flex-start" }}>
-            <Box sx={{ backgroundColor: sender ? "primary.main" : "secondary.main", color: "white", padding: "0.5rem", borderRadius: "0.5rem", display: "flex", flexDirection: "column", alignItems: sender ? "flex-end" : "flex-start" }}>
+            <Box sx={{ backgroundColor: sender ? "primary.main" : "secondary.main", color: "white.main", padding: "0.5rem", borderRadius: "0.5rem", display: "flex", flexDirection: "column", alignItems: sender ? "flex-end" : "flex-start" }}>
                 <Typography fontSize={12} fontWeight={700}>{message.User.name}</Typography>
                 <Typography variant="body1" textAlign={sender ? "right": "left"}>
                     {message.message}
