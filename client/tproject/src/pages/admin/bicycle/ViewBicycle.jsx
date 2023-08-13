@@ -30,6 +30,13 @@ function ViewBicycle() {
         {
             field: 'actions', type: 'actions', width: 80, getActions: (params) => [
                 <GridActionsCellItem
+                    icon={<Visibility />}
+                    label="View Bicycle Details"
+                    onClick={() => {
+                        navigate("/admin/bicycle/details/" + params.row.id)
+                    }}
+                />,
+                <GridActionsCellItem
                     icon={<EditIcon />}
                     label="Edit Bicycle"
                     onClick={() => {
@@ -47,13 +54,7 @@ function ViewBicycle() {
                     }}
                     showInMenu
                 />,
-                <GridActionsCellItem
-                    icon={<Visibility />}
-                    label="View Bicycle Details"
-                    onClick={() => {
-                        navigate("/admin/bicycle/details" + params.row.id)
-                    }}
-                />
+                
             ]
         },
 

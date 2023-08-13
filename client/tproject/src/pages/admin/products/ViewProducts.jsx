@@ -326,7 +326,7 @@ function ViewProducts() {
                     </Tabs>
 
                     {['all', 'onSale', 'active', 'deactivated', 'outOfStock'].map(tab => (
-                        <TabPanel key={tab} value={tab}>
+                        <TabPanel key={tab} value={tab} sx={{p: 0, mt: "1rem"}}>
                             <DataGrid
                                 rows={filteredProducts(tab)}
                                 columns={columns}

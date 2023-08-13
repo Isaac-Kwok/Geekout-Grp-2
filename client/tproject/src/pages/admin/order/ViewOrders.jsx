@@ -324,27 +324,27 @@ function ViewOrders() {
                             <Tab label="Cancelled" value="5" />
                         </Tabs>
                     </Box>
-                    <TabPanel value="all">
+                    <TabPanel value="all" sx={{p: 0, mt: "1rem"}}>
                         <DataGrid rows={orders} columns={columns} pageSize={10} slots={{ LoadingOverlay: LoadingSkeleton }} sortModel={sortModel} onSortModelChange={(model) => setSortModel(model)} loading={loading} autoHeight getRowId={(row) => row.id} />
                     </TabPanel>
 
-                    <TabPanel value="1">
+                    <TabPanel value="1" sx={{p: 0, mt: "1rem"}}>
                         <DataGrid rows={filteredOrders()} columns={columns} pageSize={10} slots={{ LoadingOverlay: LoadingSkeleton }} sortModel={sortModel} onSortModelChange={(model) => setSortModel(model)} loading={loading} autoHeight getRowId={(row) => row.id} />
                     </TabPanel>
 
-                    <TabPanel value="2">
+                    <TabPanel value="2" sx={{p: 0, mt: "1rem"}}>
                         <DataGrid rows={filteredOrders()} columns={columns} pageSize={10} slots={{ LoadingOverlay: LoadingSkeleton }} sortModel={sortModel} onSortModelChange={(model) => setSortModel(model)} loading={loading} autoHeight getRowId={(row) => row.id} />
                     </TabPanel>
 
-                    <TabPanel value="3">
+                    <TabPanel value="3" sx={{p: 0, mt: "1rem"}}>
                         <DataGrid rows={filteredOrders()} columns={columns} pageSize={10} slots={{ LoadingOverlay: LoadingSkeleton }} sortModel={sortModel} onSortModelChange={(model) => setSortModel(model)} loading={loading} autoHeight getRowId={(row) => row.id} />
                     </TabPanel>
 
-                    <TabPanel value="4">
+                    <TabPanel value="4" sx={{p: 0, mt: "1rem"}}>
                         <DataGrid rows={filteredOrders()} columns={columns} pageSize={10} slots={{ LoadingOverlay: LoadingSkeleton }} sortModel={sortModel} onSortModelChange={(model) => setSortModel(model)} loading={loading} autoHeight getRowId={(row) => row.id} />
                     </TabPanel>
 
-                    <TabPanel value="5">
+                    <TabPanel value="5" sx={{p: 0, mt: "1rem"}}>
                         <DataGrid rows={filteredOrders()} columns={columns} pageSize={10} slots={{ LoadingOverlay: LoadingSkeleton }} sortModel={sortModel} onSortModelChange={(model) => setSortModel(model)} loading={loading} autoHeight getRowId={(row) => row.id} />
                     </TabPanel>
                 </TabContext>

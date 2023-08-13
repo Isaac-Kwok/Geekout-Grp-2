@@ -171,7 +171,7 @@ function ViewAllRequests() {
               <Tab label="Completed" value="4" />
             </TabList>
           </Box>
-          <TabPanel value="1">
+          <TabPanel value="1" sx={{p: 0, mt: "1rem"}}>
             {/* Display the ride requests in a DataGrid */}
             <DataGrid
               rows={rideRequests}
