@@ -25,11 +25,12 @@ function TopUpDialog(props) {
                 amount: "",
             },
             validationSchema: yup.object({
-                amount: yup.number().required("Amount is required").min(1, "Amount must be greater than 0").typeError("Amount must be a number"),
+                amount: yup.number().required("Amount is required").min(1, "Amount must be greater than 0").max(1000, "Cannot top-up above S$1000").typeError("Amount must be a number"),
             }),
             onSubmit: (data) => {
                 setLoading(true);
                 data.amount = data.amount.trim();
+                data.amount = parseFloat(data.amount).toFixed(2)
                 http.post("/payment/topup", data).then((res) => {
                     if (res.status === 200) {
                         setClientSecret(res.data.clientSecret);

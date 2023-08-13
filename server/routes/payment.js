@@ -161,6 +161,42 @@ router.post("/topup", validateToken, async (req, res) => {
     }
 })
 
+router.post("/withdraw", validateToken, async (req, res) => {
+    // Withdraw
+    // find user and check if user has enough cash
+
+    const schema = yup.object().shape({
+        amount: yup.number().required().min(1),
+    })
+
+    try {
+        await schema.validate(req.body, { abortEarly: false })
+        const { amount } = req.body
+        const user = await User.findByPk(req.user.id)
+
+        if (parseFloat(user.cash) < parseFloat(amount)) {
+            res.status(400).json({ message: "Insufficient funds." })
+            return
+        }
+
+        user.cash = parseFloat(user.cash) - parseFloat(amount)
+
+        await Transaction.create({
+            amount: amount,
+            type: "withdraw",
+            status: "Succeeded",
+            user_id: req.user.id,
+            operator: "-"
+        })
+
+        await user.save()
+
+        res.status(200).json({ message: "Withdrawal successful." })
+    } catch (err) {
+        res.status(400).json({ message: err.errors[0] })
+    }
+})
+
 router.post("/purchase/stripe", validateToken, async (req, res) => {
     // Top up
     // Create a PaymentIntent

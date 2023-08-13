@@ -99,12 +99,12 @@ function CreateProduct() {
       product_status: true,
     },
     validationSchema: Yup.object({
-      product_name: Yup.string().trim().min(3).max(100).required("Product Name is required"),
+      product_name: Yup.string().trim().min(3).required("Product Name is required"),
       product_category: Yup.string().trim().required("Product Category is required"),
       product_sub_category: Yup.string().trim().required("Sub Category is required"),
       pass_category_status: Yup.bool(),
       product_stock: Yup.number("Invalid number").integer().required("Product Stock is required"),
-      product_description: Yup.string().trim("The description contains extra spaces. Please remove them and try again.").min(3).max(1000).required("Product Description is required"),
+      product_description: Yup.string().trim("The description contains extra spaces. Please remove them and try again.").min(3).required("Product Description is required"),
       product_picture: Yup.string(),
       product_price: Yup.number().min(0).integer().required("Product Price is required"),
       product_sale: Yup.bool(),
@@ -133,7 +133,6 @@ function CreateProduct() {
 
       console.log(productFileUploads);
       console.log(productFileUploads.length);
-      // Loop through the productFileUploads and append each to the form data
       productFileUploads.forEach((file) => {
         formData.append('product_picture', file);
       });
@@ -153,7 +152,6 @@ function CreateProduct() {
           data.product_description = descriptionValue;
           data.product_description = data.product_description.trim();
           if (uploadRes.status === 200) {
-            // Here, I'm assuming the server sends back an array of filenames for the uploaded images.
             data.product_picture = JSON.stringify(uploadRes.data.filenames);
             setUploadedFilenames(uploadRes.data.filenames);
             console.log(data);
@@ -182,12 +180,10 @@ function CreateProduct() {
     updatedFiles.splice(index, 1);
     setProductFiles(updatedFiles);
 
-    // Update the productFileUploads state (assuming this is where you hold the actual File objects)
     const updatedFileUploads = [...productFileUploads];
     updatedFileUploads.splice(index, 1);
     setProductFileUploads(updatedFileUploads);
 
-    // Since we're not making an HTTP request, directly show a success snackbar
     enqueueSnackbar("Image deleted successfully.", { variant: "success" });
   }
 

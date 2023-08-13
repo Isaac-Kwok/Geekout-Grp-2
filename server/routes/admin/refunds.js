@@ -98,7 +98,6 @@ router.put('/:id', validateAdmin, async (req, res) => {
         const link = process.env.CLIENT_URL + `/profile/orders/${order.id}`;
 
         if (body.refund_status === 'Approved') {
-            // Render email content using EJS template
             const html = await ejs.renderFile("templates/refundAcceptReply.ejs", {
                 name: user.name,
                 refund_id: refund.id,
@@ -133,7 +132,7 @@ router.put('/:id', validateAdmin, async (req, res) => {
             order: order
         });
     } catch (error) {
-        console.error(error);  // Log the error to get more details
+        console.error(error);  
         if (error instanceof yup.ValidationError) {
             res.status(400).json({ message: error.errors });
         } else {

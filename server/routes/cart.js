@@ -133,24 +133,21 @@ router.get("/productImage/:filename", (req, res) => {
 
 // Remove multiple items from cart
 router.post("/removeItems", validateToken, async (req, res) => {
-    const { itemsToRemove } = req.body; // expect itemsToRemove to be an array of ids
+    const { itemsToRemove } = req.body; 
     const userId = req.user.id;
 
     try {
-        // Find the cart items first before deleting
         const itemsInCart = await Cart.findAll({ where: { id: itemsToRemove, user_id: userId } });
 
-        // Decrement quantity in Product for each cart item
         for (let item of itemsInCart) {
             const product = await Product.findByPk(item.product_id);
             if (product && product.product_stock > 0) {
                 let newQuantity = product.product_stock - item.quantity;
-                if (newQuantity < 0) newQuantity = 0; // prevent quantity from going below zero
+                if (newQuantity < 0) newQuantity = 0; 
                 await Product.update({ product_stock: newQuantity }, { where: { id: product.id } });
             }
         }
 
-        // Delete cart items after adjusting product quantity
         await Cart.destroy({ where: { id: itemsToRemove, user_id: userId } });
 
         return res.json({ message: "Items removed from cart" });
@@ -165,7 +162,6 @@ router.delete("/", validateToken, async (req, res) => {
     const userId = req.user.id;
 
     try {
-        // Find and delete all cart items associated with the user
         await Cart.destroy({ where: { user_id: userId } });
 
         return res.json({ message: "All items removed from cart" });
@@ -180,7 +176,7 @@ router.delete("/", validateToken, async (req, res) => {
 router.post('/checkout/confirm', async (req, res) => {
     const { order, orderItems } = req.body;
     
-    console.log('Request body:', req.body); // Prints the incoming request body
+    console.log('Request body:', req.body); 
 
     try {
         // Create order
@@ -193,7 +189,7 @@ router.post('/checkout/confirm', async (req, res) => {
 
         res.status(201).json({ orderId: newOrder.id, orderItems: newOrderItems });
     } catch (error) {
-        console.error('Error:', error); // Prints any errors that occur
+        console.error('Error:', error); 
         res.status(500).send('An error occurred while creating the order.');
     }
 });

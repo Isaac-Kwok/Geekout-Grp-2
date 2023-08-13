@@ -13,6 +13,7 @@ import SupportRoutes from './support/SupportRoutes'
 import RiderRoutes from './rider/RiderRoutes'
 import Bicycle from './Bicycle'
 import ReportBicycle from './ReportBicycle'
+import BicycleHistory from './BicycleHistory'
 import ProductRoutes from './products/ProductRoutes'
 import CartRoutes from './cart/CartRoutes'
 import Wishlist from './wishlist/ViewWishlist'
@@ -42,6 +43,7 @@ function UserRoutes() {
             <Route path="/bicycle" element={<Bicycle />} />
             <Route path="/bicycle/report" element={<ReportBicycle />} />
             <Route path="/bicycle/report/:id" element={<ReportBicycle />} />
+            <Route path="/bicycle/usages" element={<BicycleHistory />} />
             <Route path="/products/*" element={<ProductRoutes />} />
             <Route path="/cart/*" element={<CartRoutes />} />
             <Route path="/riderequests/*" element={<RiderRoutes />} />

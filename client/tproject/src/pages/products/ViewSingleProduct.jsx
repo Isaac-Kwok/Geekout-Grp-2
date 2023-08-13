@@ -148,7 +148,7 @@ function ViewSingleProduct() {
             if (res.status === 200) {
                 setProduct(res.data);
                 console.log("Product data:", res.data);
-                loadWishlistItems(res.data);  // Pass the product object directly here
+                loadWishlistItems(res.data); 
             } else {
                 enqueueSnackbar("Product retrieval failed!.", { variant: "error" });
                 console.log("Product retrieval failed with status:", res.status);
@@ -188,9 +188,9 @@ function ViewSingleProduct() {
                                             animation='slide'
                                             navButtonsProps={{
                                                 style: {
-                                                    backgroundColor: 'rgba(255, 255, 255, 0.5) !important', // Translucent white with !important
+                                                    backgroundColor: 'rgba(255, 255, 255, 0.5) !important', 
                                                     color: 'black !important',
-                                                    margin: '0 10px !important' // Optional: Added for spacing with !important
+                                                    margin: '0 10px !important' 
                                                 }
                                             }}
                                             navButtonsWrapperProps={{
