@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { Container, Typography, Chip, Button, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, fabClasses } from '@mui/material'
 import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
-import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, GridToolbarExport } from '@mui/x-data-grid';
 import { useNavigate, Link } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
 import http from "../../../http";
 import AdminPageTitle from '../../../components/AdminPageTitle';
+import { Visibility } from '@mui/icons-material';
 
 function ViewBicycle() {
 
@@ -34,6 +35,7 @@ function ViewBicycle() {
                     onClick={() => {
                         navigate("/admin/bicycle/" + params.row.id)
                     }}
+                    showInMenu
                 />
                 ,
                 <GridActionsCellItem
@@ -42,6 +44,14 @@ function ViewBicycle() {
                     onClick={() => {
                         setDeleteBicycle(params.row)
                         handleDeleteBicycleDialogOpen()
+                    }}
+                    showInMenu
+                />,
+                <GridActionsCellItem
+                    icon={<Visibility />}
+                    label="View Bicycle Details"
+                    onClick={() => {
+                        navigate("/admin/bicycle/details" + params.row.id)
                     }}
                 />
             ]
@@ -77,6 +87,12 @@ function ViewBicycle() {
         })
     }
 
+    const customToolbar = () => {
+        return (
+            <GridToolbarExport />
+        );
+    }
+
     useEffect(() => {
         document.title = "EnviroGo - View Bicycle"
         handleGetBicycle()
@@ -92,6 +108,8 @@ function ViewBicycle() {
                     rows={bicycle}
                     columns={columns}
                     autoHeight
+                    loading={loading}
+                    slots={{ toolbar: customToolbar }}
                 />
             </Container>
             <Dialog open={deleteBicycleDialog} onClose={handleDeleteBicycleDialogClose}>

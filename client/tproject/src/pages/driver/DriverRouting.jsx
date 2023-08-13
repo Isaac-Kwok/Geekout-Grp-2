@@ -243,11 +243,11 @@ function DriverRouting() {
     googleMapsReverseGeocoder
       .get(
         "json?latlng=" +
-        position.coords.latitude +
-        "," +
-        position.coords.longitude +
-        "&key=" +
-        import.meta.env.VITE_DRIVER_GOOGLE_API_KEY
+          position.coords.latitude +
+          "," +
+          position.coords.longitude +
+          "&key=" +
+          import.meta.env.VITE_DRIVER_GOOGLE_API_KEY
       )
       .then((res) => {
         if (res.status === 200) {
@@ -439,15 +439,46 @@ function DriverRouting() {
 
       // Convert destination to a string
       newObj.destination = newObj.destination.toString();
-      newObj.distance = formattedTotalDistance
-      newObj.distance_value = totalDistance
-      newObj.duration = formattedTotalDuration
-      newObj.driver_profit = (((totalDistance / 1000) * 2) * 0.65)
-      newObj.company_profit = (((totalDistance / 1000) * 2) * 0.35)
-      newObj.total_cost = ((totalDistance / 1000) * 2)
-      newObj.rideDirections = results
-      newObj.status = "Accepted"
+      newObj.distance = formattedTotalDistance;
+      newObj.distance_value = totalDistance;
+      newObj.duration = formattedTotalDuration;
+      newObj.driver_profit = (totalDistance / 1000) * 2 * 0.65;
+      newObj.company_profit = (totalDistance / 1000) * 2 * 0.35;
+      newObj.total_cost = (totalDistance / 1000) * 2;
+      newObj.rideDirections = results;
+      newObj.status = "Accepted";
 
+      const rId = await http
+        .post("/driver/createRoute", newObj)
+        .then((res) => {
+          if (res.status === 200) {
+            console.log(res.data);
+            refreshUser();
+            setrouteObj(user.current_route);
+
+            http
+              .post(`/driver/chat/${res.data.id}/message`, {
+                message:
+                  "Hello, I have accepted your ride request, I am on my way.",
+              })
+              .then((res) => {})
+              .catch((err) => {
+                console.log(err);
+                enqueueSnackbar(
+                  "Error sending message. " + err.response.data.message,
+                  { variant: "error" }
+                );
+              });
+            enqueueSnackbar("You have accepted Route!", { variant: "success" });
+            return res.data.id;
+          } else {
+            console.log("Failed to create routes:", res.status);
+          }
+        })
+        .catch((err) => {
+          alert("ERROR:" + JSON.stringify(err.responseJSON.error));
+        });
+      console.log("route id", rId);
       // Change Ride requests status from DB
       const rideIdsList = originalObj.rideIds.split(","); // Split the string by commas
       console.log("list", rideIdsList);
@@ -455,6 +486,7 @@ function DriverRouting() {
         const rideId = rideIdsList[index];
         let data = {
           status: "Accepted",
+          routeId: rId,
         };
         http
           .put("/driver/ride/" + rideId, data)
@@ -470,39 +502,18 @@ function DriverRouting() {
             // Handle the error here, e.g., display an error message or take appropriate action
           });
       }
-      http
-        .post("/driver/createRoute", newObj)
-        .then((res) => {
-          if (res.status === 200) {
-            console.log(res.data);
-            refreshUser();
-            setrouteObj(user.current_route);
-            http.post(`/driver/chat/${res.data.id}/message`, { message: 'Hello, I have accepted your ride request, I am on my way.' }).then(res => {
-            }).catch(err => {
-              console.log(err)
-              enqueueSnackbar("Error sending message. " + err.response.data.message, { variant: "error" });
-            })
-            enqueueSnackbar("You have accepted Route!", { variant: "success" });
-          } else {
-            console.log("Failed to create routes:", res.status);
-          }
-        })
-        .catch((err) => {
-          alert("ERROR:" + JSON.stringify(err.responseJSON.error));
-        });
-      console.log('route id', user.current_route.id)
     } catch (error) {
       console.error("Error storing route:", error);
       enqueueSnackbar("Error storing route", { variant: "error" });
     }
   };
 
-  const handleAbort = (routeObj) => {
-    handleClose();
+  const handleAbortSocket = (routeObj) => {
+    console.log('reacheddd')
     // update status of route in DB
     let newData = {
-      status: 'Aborted'
-    }
+      status: "Aborted",
+    };
     http
       .put("/driver/route/" + routeObj.id, newData)
       .then((res) => {
@@ -556,11 +567,67 @@ function DriverRouting() {
         console.error("Error updating driver status:", err);
         // Handle the error here, e.g., display an error message or take appropriate action
       });
-    http.post(`/driver/chat/${routeObj.id}/message`, { message: 'Your ride has been cancelled by driver' }).then(res => {
-    }).catch(err => {
-      console.log(err)
-      enqueueSnackbar("Error sending message. " + err.response.data.message, { variant: "error" });
-    })
+    clearRoute();
+  };
+  const handleAbort = (routeObj) => {
+    handleClose();
+    // update status of route in DB
+    let newData = {
+      status: "Aborted",
+    };
+    http
+      .put("/driver/route/" + routeObj.id, newData)
+      .then((res) => {
+        if (res.status === 200) {
+          console.log(res.data);
+        } else {
+          console.log("Failed to update Route:", res.status);
+        }
+      })
+      .catch((err) => {
+        console.error("Error updating route:", err);
+        // Handle the error here, e.g., display an error message or take appropriate action
+      });
+    // Change Ride requests status from DB
+    const rideIdsList = routeObj.rideIds.split(","); // Split the string by commas
+    for (let index = 0; index < rideIdsList.length; index++) {
+      const rideId = rideIdsList[index];
+      let data = {
+        status: "Pending",
+      };
+      http
+        .put("/driver/ride/" + rideId, data)
+        .then((res) => {
+          if (res.status === 200) {
+            console.log(res.data);
+          } else {
+            console.log("Failed to update rides:", res.status);
+          }
+        })
+        .catch((err) => {
+          console.error("Error updating rides:", err);
+          // Handle the error here, e.g., display an error message or take appropriate action
+        });
+    }
+    // updating the driver status
+    http
+      .put("/driver/abort")
+      .then((res) => {
+        if (res.status === 200) {
+          console.log(res.data);
+          refreshUser();
+          // Reload the page
+          window.location.reload();
+
+          enqueueSnackbar("You have aborted Route!", { variant: "warning" });
+        } else {
+          console.log("Failed to abort routes:", res.status);
+        }
+      })
+      .catch((err) => {
+        console.error("Error updating driver status:", err);
+        // Handle the error here, e.g., display an error message or take appropriate action
+      });
     clearRoute();
   };
 
@@ -623,6 +690,7 @@ function DriverRouting() {
       setSocket(newSocket);
       console.log("socket data", socket);
       return () => newSocket.close();
+      refreshUser()
     }
   }, [user]);
 
@@ -909,6 +977,7 @@ function DriverRouting() {
                       socket={socket}
                       route={user.current_route.id}
                       closed={false}
+                      abort={() => {handleAbortSocket(user.current_route)}}
                     ></DriverChatBox>
                   )}
                 </Box>

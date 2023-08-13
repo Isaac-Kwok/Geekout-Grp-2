@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Container, Typography, Card, CardContent, CardActions, Box, Stack, Checkbox, InputAdornment, TextField, Grid, FormControlLabel, FormControl, IconButton, InputLabel, Select, MenuItem, Button, Dialog, DialogContent, DialogActions, DialogContentText, DialogTitle, Link, Input } from '@mui/material'
+import { MobileStepper, Container, Typography, Card, CardContent, CardActions, Box, Stack, Checkbox, InputAdornment, TextField, Grid, FormControlLabel, FormControl, IconButton, InputLabel, Select, MenuItem, Button, Dialog, DialogContent, DialogActions, DialogContentText, DialogTitle, Link, Input } from '@mui/material'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CardTitle from '../../components/CardTitle';
 import { useNavigate, useParams } from 'react-router-dom'
@@ -14,6 +14,10 @@ import CategoryIcon from '@mui/icons-material/Category';
 import { useSnackbar } from 'notistack';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import { useTheme } from '@mui/material/styles';
+
 
 
 const AspectRatioBox = ({ children }) => (
@@ -44,6 +48,18 @@ function ViewSingleProduct() {
     const { enqueueSnackbar } = useSnackbar();
     const productPath = `${import.meta.env.VITE_API_URL}/admin/products/productImage/`
     const [quantity, setQuantity] = useState(1);
+    const [activeStep, setActiveStep] = useState(0);
+    const theme = useTheme();
+    const maxSteps = product && Array.isArray(product.product_picture) ? product.product_picture.length : 0;
+    
+    const handleNext = () => {
+        setActiveStep((prevActiveStep) => Math.min(prevActiveStep + 1, maxSteps - 1));
+    };
+
+    const handleBack = () => {
+        setActiveStep((prevActiveStep) => Math.max(prevActiveStep - 1, 0));
+    };
+
 
     function increaseQuantity() {
         setQuantity(prevQuantity => prevQuantity + 1);
@@ -164,9 +180,35 @@ function ViewSingleProduct() {
                             <CardTitle title="Product Information" icon={<CategoryIcon />} back="/products" />
                             <Grid container spacing={2} sx={{ marginY: "1rem" }}>
                                 <Grid item xs={12} md={6}>
-                                    <AspectRatioBox>
-                                        <img src={`${productPath}${product.product_picture}`} alt={product.product_name} style={{ width: '100%', height: 'auto', objectFit: 'cover' }} />
-                                    </AspectRatioBox>
+                                <Box sx={{ width: '100%', flexGrow: 1 }}>
+
+                                        <img
+                                            src={`${productPath}${product.product_picture[activeStep].trim()}`}
+                                            alt={product.product_name}
+                                            style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
+                                        />
+                                        {maxSteps > 1 && (
+                                            <MobileStepper
+                                            steps={maxSteps}
+                                            position="static"
+                                            activeStep={activeStep}
+                                            sx={{ zIndex: 2, position: 'relative' }}  // Adjust this as required
+                                            nextButton={
+                                                <Button size="small" onClick={handleNext} disabled={activeStep === maxSteps - 1}>
+                                                    Next
+                                                    {theme.direction === 'rtl' ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
+                                                </Button>
+                                            }
+                                            backButton={
+                                                <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+                                                    {theme.direction === 'rtl' ? <ArrowForwardIosIcon /> : <ArrowBackIosIcon />}
+                                                    Back
+                                                </Button>
+                                            }
+                                        />
+                                        
+                                        )}
+                                    </Box>
                                 </Grid>
                                 <Grid item xs={12} md={6}>
                                     <Typography variant="h6">Product Name: {product.product_name}</Typography>

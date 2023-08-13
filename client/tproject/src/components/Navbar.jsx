@@ -1,12 +1,11 @@
 import { useState, useContext } from "react"
-import { AppBar, Box, Container, Toolbar, IconButton, List, ListItem, ListItemIcon, ListItemText, ListItemButton, Typography, Divider, Drawer, Stack } from "@mui/material"
+import { AppBar, Box, Container, Toolbar, IconButton, List, ListItem, ListItemIcon, ListItemText, ListItemButton, Typography, Divider, Drawer, Stack, Button } from "@mui/material"
 import MenuIcon from "@mui/icons-material/Menu"
 import HomeIcon from "@mui/icons-material/Home"
 import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import StoreIcon from '@mui/icons-material/Store';
 import LoginIcon from '@mui/icons-material/Login';
-import Button from "@mui/material/Button"
 import { Link } from "react-router-dom"
 import { UserContext } from ".."
 import { NavbarProfile } from "./NavbarProfile";
@@ -25,7 +24,8 @@ export function Navbar() {
                         <Toolbar>
                             <Box sx={{ flexGrow: 1, display: "flex", alignItems: "center" }}>
                                 <IconButton color="inherit" sx={{ marginRight: "1rem", display: ["flex", "flex", "none"] }} onClick={() => setIsDrawerOpen(true)}><MenuIcon /></IconButton>
-                                <Typography variant="h6" component="div" sx={{ marginRight: "1rem", fontFamily: "'caveat brush'" }}>EnviroGo</Typography>
+                                {/* <Typography variant="h6" component="div" sx={{ marginRight: "1rem", fontFamily: "'caveat brush'" }}>EnviroGo</Typography> */}
+                                <Button color="inherit" variant="text" LinkComponent={Link} to="/" sx={{ marginRight: "1rem", fontFamily: "'caveat brush'", textTransform: "none", fontSize: "18px", padding: "0" }}>EnviroGo</Button>
                                 <Divider orientation="vertical" flexItem sx={{ marginRight: "1rem", display: ["none", "none", "flex"] }} />
                                 <Stack spacing={2} direction="row" sx={{ display: ["none", "none", "flex"] }}>
                                     <Button startIcon={<HomeIcon/>} LinkComponent={Link} variant="text" color="inherit" to="/">Home</Button>
@@ -45,7 +45,7 @@ export function Navbar() {
                     <Toolbar>
                         <Box sx={{ flexGrow: 1, display: "flex", alignItems: "center" }}>
                             <IconButton color="inherit" sx={{ marginRight: "1rem", display: ["flex", "flex", "none"] }} onClick={() => setIsAdminDrawerOpen(true)}><MenuIcon /></IconButton>
-                            <Typography variant="h6" component="div" sx={{ marginRight: "1rem", fontFamily: "'caveat brush'" }}>EnviroGo</Typography>
+                            <Button color="inherit" variant="text" LinkComponent={Link} to="/" sx={{ marginRight: "1rem", fontFamily: "'caveat brush'", textTransform: "none", fontSize: "18px", padding: "0" }}>EnviroGo</Button>
                             <Divider orientation="vertical" flexItem sx={{ marginRight: "1rem" }} />
                             <Typography variant="h6" component="div" sx={{ marginRight: "1rem" }}>Admin Panel</Typography>
                         </Box>
@@ -71,7 +71,7 @@ export function Navbar() {
                         </ListItemButton>
                     </ListItem>
                     <ListItem key={"Car"} disablePadding>
-                        <ListItemButton component={Link} to="/" onClick={() => setIsDrawerOpen(false)}>
+                        <ListItemButton component={Link} to="/riderequests/myrequests" onClick={() => setIsDrawerOpen(false)}>
                             <ListItemIcon><DirectionsCarIcon /></ListItemIcon>
                             <ListItemText primary={"Car"} />
                         </ListItemButton>

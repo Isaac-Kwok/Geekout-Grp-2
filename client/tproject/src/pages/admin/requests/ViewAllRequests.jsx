@@ -140,7 +140,7 @@ function ViewAllRequests() {
 
   return (
     <Container sx={{ marginTop: "1rem", minWidth: 0 }} maxWidth="xl">
-      <AdminPageTitle title="View All Ride Requests" />
+      <AdminPageTitle title="Ride Requests" />
       <Box sx={{ display: "flex", mb: "1rem" }}>
         {/* Add any relevant buttons or actions here */}
         {/* <Button

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext, useMemo } from 'react'
-import { Box, Accordion, AccordionSummary, AccordionDetails, Paper, FormControlLabel, FormGroup, Container, Grid, Checkbox, Typography, Card, CardContent, CardMedia, CardActions, Chip, Button } from '@mui/material'
+import { MobileStepper, Box, Accordion, AccordionSummary, AccordionDetails, Paper, FormControlLabel, FormGroup, Container, Grid, Checkbox, Typography, Card, CardContent, CardMedia, CardActions, Chip, Button } from '@mui/material'
 import { useNavigate } from 'react-router-dom';
 import http from "../../http";
 import { ProductContext } from './ProductRoutes'
@@ -12,18 +12,33 @@ import { styled } from '@mui/system';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import PageTitle from '../../components/PageTitle';
-
-
+import { useTheme } from '@mui/material/styles';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 function ProductCard({ product }) {
     const navigate = useNavigate();
-    const productPath = `${import.meta.env.VITE_API_URL}/admin/products/productImage/`
+    const productPath = `${import.meta.env.VITE_API_URL}/admin/products/productImage/`;
     const { enqueueSnackbar } = useSnackbar();
     const [wishlistItems, setWishlistItems] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const productsPerPage = 6;
+    const theme = useTheme();
+    const [activeStep, setActiveStep] = useState(0);
+
+    const productPictures = Array.isArray(product.product_picture)
+        ? product.product_picture
+        : JSON.parse(product.product_picture);
+
+    const maxSteps = productPictures.length;
+    const imageName = productPictures[activeStep].trim();
 
 
+    const handleNext = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    };
+
+    const handleBack = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    };
 
     const loadWishlistItems = async () => {
         try {
@@ -67,14 +82,13 @@ function ProductCard({ product }) {
     };
 
 
-
     useEffect(() => {
         loadWishlistItems();
     }, []);
 
-
     return (
         <Card sx={{ position: 'relative' }} elevation={3}>
+            {/* On Sale chip */}
             {product.product_sale && (
                 <Chip
                     label="On Sale"
@@ -91,13 +105,51 @@ function ProductCard({ product }) {
                     }}
                 />
             )}
-            <CardMedia
-                component="img"
-                height="140"
-                image={`${productPath}${product.product_picture}`}
-                alt={product.product_name}
-            />
-
+            {/* Image box */}
+            <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: 400 }, flexGrow: 1 }}>
+                {maxSteps > 1 ? (
+                    <>
+                        <CardMedia
+                            component="img"
+                            height="140"
+                            image={`${productPath}${imageName}`}
+                            alt={product.product_name}
+                            sx={{ width: '100%', objectFit: 'cover' }}
+                        />
+                        {/* Carousel stepper */}
+                        <MobileStepper
+                            steps={maxSteps}
+                            position="static"
+                            activeStep={activeStep}
+                            nextButton={
+                                <Button
+                                    size="small"
+                                    onClick={handleNext}
+                                    disabled={activeStep === maxSteps - 1}
+                                >
+                                    Next
+                                    {theme.direction === 'rtl' ? <ArrowForwardIosIcon /> : <ArrowForwardIosIcon />}
+                                </Button>
+                            }
+                            backButton={
+                                <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+                                    {theme.direction === 'rtl' ? <ArrowBackIosIcon /> : <ArrowBackIosIcon />}
+                                    Back
+                                </Button>
+                            }
+                        />
+                    </>
+                ) : (
+                    <CardMedia
+                        component="img"
+                        height="188"
+                        image={`${productPath}${productPictures[0].trim()}`}
+                        alt={product.product_name}
+                        sx={{ width: '100%', objectFit: 'cover' }}
+                    />
+                )}
+            </Box>
+            {/* Card content */}
             <CardContent>
                 <Typography variant="h5">{product.product_name}</Typography>
                 <Typography variant="h6" sx={{ display: "flex", alignItems: "center" }}>
@@ -122,6 +174,7 @@ function ProductCard({ product }) {
                     On Sale: {product.product_sale ? "Yes" : "No"}
                 </Typography>
             </CardContent>
+            {/* Card actions */}
             <CardActions>
                 <Grid container alignItems="center">
                     <Grid item xs>
@@ -139,13 +192,8 @@ function ProductCard({ product }) {
                 </Grid>
             </CardActions>
         </Card>
-    )
-
+    );
 }
-
-
-
-
 
 const categories = {
     'Health and Beauty': ['Bath', 'Disinfectant', 'Feminine Care', 'Hair', 'Oral Care'],

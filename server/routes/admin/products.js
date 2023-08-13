@@ -8,6 +8,7 @@ const ejs = require("ejs")
 const { emailSender } = require("../../middleware/emailSender")
 const { validateAdmin } = require("../../middleware/validateAdmin");
 const { upload_picture } = require('../../middleware/upload');
+const fs = require('fs');
 
 router.get("/", validateAdmin, async (req, res) => {
     try {
@@ -22,17 +23,15 @@ router.get("/", validateAdmin, async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
-// Get file
-router.get("/productImage/:filename", (req, res) => {
-    const fileName = req.params.filename;
-    const directoryPath = path.join(__dirname, "../../public/uploads/products/");
-    
-    res.sendFile(directoryPath + fileName, fileName);
-})
-// Upload file
-router.post('/upload',validateAdmin, upload_picture, (req, res) => {
-    res.json({ filename: req.file.filename });
+
+router.post('/upload', validateAdmin, upload_picture, (req, res) => {
+    if (!req.files || req.files.length === 0) {
+        return res.status(400).json({ message: "No files uploaded" });
+    }
+    const filenames = req.files.map(file => file.filename);
+    res.json({ filenames: filenames });
 });
+
 
 
 router.post("/create", validateAdmin,upload_picture,  async (req, res) => {
@@ -45,7 +44,7 @@ router.post("/create", validateAdmin,upload_picture,  async (req, res) => {
         pass_category_status: yup.bool(),
         product_stock: yup.number().integer().required(),
         product_description: yup.string().trim().min(3).max(1000).required(),
-        product_picture: yup.string(),
+        product_picture: yup.string().required(),
         product_price: yup.number().min(0).integer().required(),
         product_sale: yup.bool(),
         product_discounted_percent: yup.number().min(0).integer().required(),
@@ -79,17 +78,29 @@ router.post("/create", validateAdmin,upload_picture,  async (req, res) => {
 
 
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", validateAdmin, async (req, res) => {
     let id = req.params.id;
-    let product = await Product.findByPk(id, {
-    });
+    let product = await Product.findByPk(id, {});
     // Check id not found
     if (!product) {
         res.sendStatus(404);
         return;
     }
+
+    // If product_picture is stored as a JSON string, parse it
+    if (typeof product.product_picture === "string") {
+        product.product_picture = JSON.parse(product.product_picture);
+    }
+
     res.json(product);
 });
+
+router.get("/productImage/:filename", (req, res) => {
+    const fileName = req.params.filename;
+    const directoryPath = path.join(__dirname, "../../public/uploads/products/");
+    
+    res.sendFile(directoryPath + fileName, fileName);
+})
 
 router.put("/status/:id", validateAdmin, async (req, res) => {
     try {
@@ -148,24 +159,24 @@ router.put("/:id", validateAdmin, async (req, res) => {
 
 });
 
-router.post("/:id/upload", validateAdmin, async (req, res) => {
-    // Upload profile pictures
-    const product = await Product.findByPk(req.params.id);
-    if (!product) {
-        return res.status(404).json({message: "Product not found"});
-    } else {
-        await uploadProductPicture(req, res);
+router.delete("/productImage/:filename", validateAdmin, (req, res) => {
+    const fileName = req.params.filename;
+    const directoryPath = path.join(__dirname, "../../public/uploads/products/");
+
+    // Check if file exists
+    if (!fs.existsSync(directoryPath + fileName)) {
+        return res.status(404).json({ message: "File not found" });
     }
-    
-    // Assume product.product_pictures is an array of picture URLs
-    product.product_pictures = req.files.map(file => "//" + req.headers.host + `/uploads/products/${product.id}-${file.filename}`);
-    product.product_picture_type = "local";
-    await product.save();
-    
-    res.json(product);
+
+    // Delete the file
+    fs.unlink(directoryPath + fileName, (err) => {
+        if (err) {
+            console.error("Error deleting the file:", err);
+            return res.status(500).json({ message: "Internal server error" });
+        }
+        res.json({ message: "File successfully deleted" });
+    });
 });
-
-
 
 
 module.exports = router;
