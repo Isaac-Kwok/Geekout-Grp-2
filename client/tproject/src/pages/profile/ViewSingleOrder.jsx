@@ -199,7 +199,7 @@ function ViewSingleOrder() {
                   }
 
                   {
-                    order.order_status === "Delivered" && (order.order_payment_method === "Wallet" || order.order_payment_method === "Stripe") && (
+                    order.order_status === "Delivered" && (
                       <Grid container alignItems="center">
                         <Grid item xs>
                           <Button variant="contained" color="primary" fullWidth onClick={changeStatus}>Received</Button>
