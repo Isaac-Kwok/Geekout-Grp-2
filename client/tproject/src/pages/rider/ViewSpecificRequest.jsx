@@ -209,7 +209,9 @@ const RideRequestDetails = () => {
               />
               <Grid container spacing={2} sx={{ marginY: "1rem" }}>
                 <Grid xs={12} lg={12} spacing={1} item container>
-                  {["Accepted", "Completed", "Rated"].includes(rideRequest.status) && (
+                  {["Accepted", "Completed", "Rated"].includes(
+                    rideRequest.status
+                  ) && (
                     <Grid xs={12} lg={12} spacing={1} item container>
                       <Grid item xs={6} sm={6}>
                         {/* <InfoBox title="Price ($)" value={route.routes[0].total_cost} /> */}
@@ -319,6 +321,8 @@ const RideRequestDetails = () => {
             )}
           </Grid>
         )}
+
+        <Box>&nbsp;</Box>
       </Grid>
 
       {/* Modal */}
