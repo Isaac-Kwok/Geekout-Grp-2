@@ -8,6 +8,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 import useUser from "../context/useUser";
+import { Avatar, Drawer, List, ListItem, ListItemIcon, ListItemText, AppBar, IconButton, Toolbar, Typography } from '@mui/material';
+import { AccountCircle, ConnectingAirportsOutlined, DirectionsBike, History, Map, Payment, Report, Star } from '@mui/icons-material';
+import MenuIcon from '@mui/icons-material/Menu';
 import PageTitle from "../components/PageTitle";
 
 const libraries = ['geometry'];
@@ -20,7 +23,7 @@ const bounds = {
     east: 104.131,
 };
 
-function CombinedComponent({ distance, proximity, isUserOwner, isBikeUnlocked, handleLock, handleUnlock, handleReportBike }) {
+function CombinedComponent({ distance, proximity, isUserOwner, isBikeUnlocked, handleLock, handleUnlock, handleReportBike, handleBikePass }) {
     return (
         <div className="small-rectangular-component">
             <div className="top-left">Find a Bike</div>
@@ -29,7 +32,9 @@ function CombinedComponent({ distance, proximity, isUserOwner, isBikeUnlocked, h
                     Bike missing?
                 </button>
             </div>
-            <div className="bottom-left">$1.00/30min</div>
+            <div className="bottom-left">
+                {handleBikePass ? 'Bike Pass Active' : '$1.00/30min'}
+            </div>
             <div className="bottom-center">
                 {isUserOwner ? (
                     <button className="circular-button" onClick={handleLock}>
@@ -64,7 +69,12 @@ function Bicycle() {
     const [isLocked, setIsLocked] = useState(false);
     const { enqueueSnackbar } = useSnackbar();
     const { user, refreshUser } = useUser();
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const navigate = useNavigate();
+
+    const handleSidebarToggle = () => {
+        setIsSidebarOpen(!isSidebarOpen);
+    };
 
     // Function to reload the LoadScript
     const reloadLoadScript = () => {
@@ -229,10 +239,10 @@ function Bicycle() {
         const usageData = {
             bike_id: selectedMarker.id,
             unlockedAt: date,
-            startPosition: (selectedMarker.bicycle_lat, selectedMarker.bicycle_lng),
+            startPosition: `${selectedMarker.bicycle_lat},${selectedMarker.bicycle_lng}`,
             endPosition: 0,
             user_id: user.id,
-            transaction: 0
+            transaction: 1.00
         }
 
         http.put("/bicycle/" + selectedMarker.id, data).then((res) => {
@@ -298,8 +308,20 @@ function Bicycle() {
         const timeDifferenceInHours = getTimeDifference(unlockedAt, currentTime) / (1000 * 60 * 60);
         console.log("Time Difference in Hours:", timeDifferenceInHours);
 
-        const price = Math.max(Math.round(timeDifferenceInHours / 2), 1)
-        enqueueSnackbar("$" + price + " has been credited from your wallet");
+        if (user) {
+            if (user.bike_pass_expiry >= getDateTime()) {
+                console.log("Bike pass active");
+                // Set price to 0 if bike pass is active
+                var price = Math.max(Math.round(timeDifferenceInHours / 2), 1);
+                enqueueSnackbar("Your bike pass saved you $"+price)
+                var price = 0;
+            } else {
+                console.log("Bike pass not active");
+                // Calculate price based on timeDifferenceInHours
+                var price = Math.max(Math.round(timeDifferenceInHours / 2), 1);
+                enqueueSnackbar("$" + price + " has been credited from your wallet");
+            }
+        }
 
         const data = {
             bicycle_lat: selectedMarker.bicycle_lat,
@@ -312,7 +334,7 @@ function Bicycle() {
         }
 
         const usageData = {
-            endPosition: (selectedMarker.bicycle_lat, selectedMarker.bicycle_lng),
+            endPosition: `${selectedMarker.bicycle_lat},${selectedMarker.bicycle_lng}`,
             transaction: price,
         }
 
@@ -378,6 +400,16 @@ function Bicycle() {
             reportBike();
         };
 
+        const handleBikePass = () => {
+            if (user) {
+                if (user.bike_pass_expiry >= getDateTime()) {
+                    return true
+                } else {
+                    return false
+                }
+            }
+        }
+
         if (selectedMarker) {
             return (
                 <CombinedComponent
@@ -388,9 +420,53 @@ function Bicycle() {
                     handleLock={handleLock}
                     handleUnlock={handleUnlock}
                     handleReportBike={handleReportBike}
+                    handleBikePass={handleBikePass}
                 />
             );
         }
+    };
+
+    const Sidebar = ({ isOpen, onClose }) => {
+        const userInfo = user ? {
+            name: user.name,
+            avatarUrl: user.profile_picture,
+            distance: 150, // in kilometers
+            caloriesBurnt: 800, // in calories
+        }
+            :
+            {
+                name: "John",
+                avatarUrl: "-",
+                distance: 150, // in kilometers
+                caloriesBurnt: 800, // in calories;
+            }
+
+        const menuItems = [
+            { text: 'Profile', icon: <AccountCircle />, onClick: () => navigate("/profile") },
+            { text: 'Trip History', icon: <History />, onClick: () => navigate("/bicycle/usages") },
+            { text: 'Payment', icon: <Payment />, onClick: () => console.log('Payment clicked') },
+            { text: 'Report', icon: <Report />, onClick: () => navigate("/bicycle/report") },
+            { text: 'Challenges', icon: <Star />, onClick: () => console.log('Rewards clicked') },
+        ];
+
+        return (
+            <Drawer anchor="left" open={isOpen} onClose={onClose}>
+                <div style={{ padding: '1rem', textAlign: 'center' }}>
+                    <Avatar alt="User Avatar" src={userInfo.avatarUrl} style={{ width: '5rem', height: '5rem', marginBottom: '1rem' }} />
+                    <Typography variant="h6">{userInfo.name}</Typography>
+                    <Typography>{userInfo.distance} km travelled</Typography>
+                    <Typography>{userInfo.caloriesBurnt} calories burnt</Typography>
+                </div>
+                <List>
+                    {menuItems.map((item, index) => (
+                        <ListItem button key={index} onClick={item.onClick}>
+                            <ListItemIcon>{item.icon}</ListItemIcon>
+                            <ListItemText primary={item.text} />
+                        </ListItem>
+                    ))}
+                </List>
+            </Drawer>
+        );
     };
 
     const currentLocationMarkerUrl = "../currentlocation.png"
@@ -467,10 +543,12 @@ function Bicycle() {
     };
 
     useEffect(() => {
-        document.title = 'EnviroGo - View Map';
-        handleGetBicycle();
-        handleGetLocation(setCurrentLocation);
-    }, []);
+        if (user) {
+            document.title = 'EnviroGo - View Map';
+            handleGetBicycle();
+            handleGetLocation(setCurrentLocation);
+        }
+    }, [user]);
 
     useEffect(() => {
         // Check if currentLocation is available and map is loaded
@@ -480,19 +558,25 @@ function Bicycle() {
     }, [currentLocation, isLoaded]);
 
     return (
-        <>
-            <PageTitle title="View Map" subtitle="Find a bicycle near you" />
-            <Container maxWidth="xl" sx={{ marginTop: '1rem' }}>
-                {isLoaded && mapLoaded ? (
-                    renderMap()
-                ) : (
-                    <h1>Loading...</h1>
-                )}
-                <CombinedComponentWrapper />
-                <ToastContainer />
-            </Container>
-        </>
-
+        <Container maxWidth="xl" sx={{ marginTop: '1rem' }}>
+            <AppBar position="static">
+                <Toolbar>
+                    <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleSidebarToggle}>
+                        <MenuIcon />
+                    </IconButton>
+                    <Typography variant="h6">Bicycle Sharing App</Typography>
+                </Toolbar>
+            </AppBar>
+            <Sidebar isOpen={isSidebarOpen} onClose={handleSidebarToggle} />
+            {/* Main content of your app */}
+            {isLoaded && mapLoaded ? (
+                renderMap()
+            ) : (
+                <h1>Loading...</h1>
+            )}
+            <CombinedComponentWrapper />
+            <ToastContainer />
+        </Container>
     );
 }
 
