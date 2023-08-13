@@ -145,6 +145,23 @@ router.get('/GetdriverApplicationbyId/:id', validateAdmin, async (req, res) => {
     }
     res.json(driver);
 })
+
+// route to get Driver Application data by ID
+router.get('/GetdriverApplicationbyUserId/:id', validateAdmin, async (req, res) => {
+    let id = req.params.id;
+    let driver = await DriverApplication.findOne({
+        where: { user_id: id },
+        include: { model: User, as: "User", attributes: ["email", "phone_number"] }
+    });
+    // Check if ID is not found
+    if (!driver) {
+        res.send("ID: " + id + " is not found")
+        // res.sendStatus(404);
+        return
+    }
+    res.json(driver);
+})
+
 router.delete("/deleteDriverApplicationById/:id", validateAdmin, async (req, res) => {
     let id = req.params.id;
     let num = await DriverApplication.destroy({

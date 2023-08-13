@@ -145,7 +145,7 @@ function DriverStatistics() {
 
 
     function getDriverApplication() {
-        http.get("/admin/driver/getDriverApplicationById/" + id).then((res) => {
+        http.get("/admin/driver/GetdriverApplicationbyUserId/" + id).then((res) => {
             if (res.status === 200) {
                 setDriverApplication(res.data);
             } else {
