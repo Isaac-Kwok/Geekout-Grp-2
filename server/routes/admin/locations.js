@@ -132,6 +132,33 @@ router.put("/edit/:id", async (req, res) => {
   }
 });
 
+// Edit location data (Staff)
+router.put("/editdeparture/:id", async (req, res) => {
+  let id = req.params.id;
+  const locationId = req.params.id;
+  let data = req.body;
+
+  // image deletion code
+  // Fetch the location details
+  const location = await Location.findByPk(locationId);
+  if (!location) {
+    return res.status(404).json({ message: "Location not found" });
+  }
+
+  let num = await Location.update(data, {
+    where: { name: id },
+  });
+  if (num == 1) {
+    res.json({
+      message: `Location ${id} updated successfully.`,
+    });
+  } else {
+    res.status(400).json({
+      message: `Cannot update location named ${id}`,
+    });
+  }
+});
+
 // router.delete("/delete/:id", async (req, res) => {
 //   let id = req.params.id;
 //   let num = await Location.destroy({

@@ -74,7 +74,7 @@ function RideRequestCard({
         >
           <Visibility />
         </IconButton>
-        {!["Completed", "Rated", "Accepted"].includes(rideRequest.status) && (
+        {!["Completed", "Rated", "Accepted", "Paid"].includes(rideRequest.status) && (
           <IconButton
             onClick={() => handleEdit(rideRequest.requestId)}
             title="Edit Request"
@@ -83,7 +83,7 @@ function RideRequestCard({
           </IconButton>
         )}
 
-        {!["Completed", "Rated", "Accepted"].includes(rideRequest.status) && (
+        {!["Completed", "Rated", "Accepted", "Paid"].includes(rideRequest.status) && (
           <IconButton
             onClick={() => handleOpen(rideRequest.requestId)}
             title="Delete Request"
@@ -103,7 +103,7 @@ function RideRequestCard({
           </IconButton>
         )}
 
-        {rideRequest.status === "Completed" && (
+        {rideRequest.status === "Paid" && (
           <IconButton
             onClick={() => handleRate(rideRequest.requestId)}
             title="Rate ride"

@@ -229,4 +229,59 @@ router.put(
   }
 );
 
+router.put("/minuscash/user/:userId", validateToken, async (req, res) => {
+  let userId = req.params.userId;
+  let routeId = req.params.routeId;
+  let data = req.body;
+
+  try {
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: `User of ID: ${userId} not found.` });
+    }
+
+    await user.update(data);
+    res.json({
+      message: `User of ID: ${userId} updated successfully.`,
+      updatedUser: user,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: `Failed to update user with ID: ${userId}`,
+      errors: error.errors,
+    });
+  }
+});
+
+// Update a ride request by ID (does not require token validation)
+router.put("/updatestatus/:requestId", async (req, res) => {
+  let id = req.params.requestId;
+  let data = req.body;
+
+  try {
+    const rideRequest = await RideRequest.findByPk(id);
+
+    if (!rideRequest) {
+      return res
+        .status(404)
+        .json({ message: `Ride request of ID: ${id} not found.` });
+    }
+
+    await rideRequest.update(data);
+    res.json({
+      message: `Ride request of ID: ${id} updated successfully.`,
+      updatedRideRequest: rideRequest,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: `Failed to update ride request with ID: ${id}`,
+      errors: error.errors,
+    });
+  }
+});
+
+
 module.exports = router;

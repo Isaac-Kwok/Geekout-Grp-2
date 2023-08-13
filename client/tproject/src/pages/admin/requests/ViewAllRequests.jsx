@@ -169,6 +169,8 @@ function ViewAllRequests() {
               <Tab label="Pending" value="2" />
               <Tab label="Accepted" value="3" />
               <Tab label="Completed" value="4" />
+              <Tab label="Paid" value="5" />
+              <Tab label="Rated & Paid" value="6" />
             </TabList>
           </Box>
           <TabPanel value="1" sx={{p: 0, mt: "1rem"}}>
@@ -203,6 +205,24 @@ function ViewAllRequests() {
           <TabPanel value="4">
             <DataGrid
               rows={filterRideRequests("Completed")}
+              columns={columns}
+              pageSize={10}
+              autoHeight
+              getRowId={(row) => row.requestId}
+            />
+          </TabPanel>
+          <TabPanel value="5">
+            <DataGrid
+              rows={filterRideRequests("Paid")}
+              columns={columns}
+              pageSize={10}
+              autoHeight
+              getRowId={(row) => row.requestId}
+            />
+          </TabPanel>
+          <TabPanel value="6">
+            <DataGrid
+              rows={filterRideRequests("Rated")}
               columns={columns}
               pageSize={10}
               autoHeight

@@ -64,7 +64,7 @@ function ViewAllRatings() {
     <Container maxWidth="xl" sx={{ marginTop: "2rem" }}>
       <AdminPageTitle title="All Ratings" backbutton />
       <Grid container spacing={3}>
-        {currentRatings.length === 0 ? (
+        {ratings.length === 0 ? (
           <Grid container justifyContent="center" alignItems="center" xs={12}>
             <Paper
               elevation={3}

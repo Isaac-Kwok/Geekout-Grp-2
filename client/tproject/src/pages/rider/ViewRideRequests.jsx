@@ -350,7 +350,8 @@ function ViewRideRequests() {
               <Tab label="Pending" value="1" />
               <Tab label="Accepted" value="2" />
               <Tab label="Completed" value="3" />
-              <Tab label="Rated" value="4" />
+              <Tab label="Paid" value="4" />
+              <Tab label="Rated & Paid" value="5" />
             </TabList>
           </Box>
           {/* <TabPanel value="1">
@@ -401,6 +402,15 @@ function ViewRideRequests() {
             )}
           </TabPanel>
           <TabPanel value="4">
+            {filterRideRequests("Paid").length === 0 ? (
+              <Typography>No paid ride requests.</Typography>
+            ) : (
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+                {renderFilteredRideRequestCards("Paid")}
+              </Box>
+            )}
+          </TabPanel>
+          <TabPanel value="5">
             {filterRideRequests("Rated").length === 0 ? (
               <Typography>No rated ride requests.</Typography>
             ) : (
