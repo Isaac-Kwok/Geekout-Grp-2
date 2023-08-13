@@ -560,6 +560,7 @@ function DriverRouting() {
           if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition);
           }
+          handleGetRideRequests()
         } else {
           console.log("Failed to abort routes:", res.status);
         }

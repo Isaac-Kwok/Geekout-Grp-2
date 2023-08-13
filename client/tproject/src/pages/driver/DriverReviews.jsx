@@ -116,7 +116,7 @@ function DriverReviews() {
     <Container maxWidth="lg" sx={{ marginBottom: 8 }}>
       <AdminPageTitle title="Review Statistics" backbutton />
       <Grid container spacing={2} sx={{ marginBottom: 2, marginTop: 3 }}>
-        <Grid item lg={4}>
+        <Grid item lg={4} sm={12}>
           <Card>
             <CardContent>
               <Stack
@@ -152,21 +152,23 @@ function DriverReviews() {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item lg={8} sx={{ marginBottom: "2rem" }}>
+        <Grid item lg={8} sm={12} sx={{ marginBottom: "2rem" }}>
+          {reviewStars != [] &&
           <PieChart
-            series={[
-              {
-                data: reviewStars,
-              },
-            ]}
-            height={220}
-            sx={{
-              "--ChartsLegend-rootOffsetX": "-5rem",
-              padding: 0,
-            }}
-          />
+          series={[
+            {
+              data: reviewStars,
+            },
+          ]}
+          height={220}
+          sx={{
+            "--ChartsLegend-rootOffsetX": "-5rem",
+            padding: 0,
+          }}
+        />}
+        
         </Grid>
-        <Grid item lg={6}>
+        <Grid item lg={5}>
             {/* Search Bar here */}
             <TextField
             label="Search by Route ID or Comment"
