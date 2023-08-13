@@ -1,8 +1,10 @@
 const express = require("express")
 const yup = require("yup")
-const { DriverApplication, Sequelize, User, Route, RideRequest } = require("../models")
+const { DriverApplication, Sequelize, User, Route, RideRequest, Message } = require("../models")
 const router = express.Router()
 require('dotenv').config();
+const axios = require('axios');
+
 
 const { upload } = require('../middleware/upload');
 
@@ -88,8 +90,8 @@ router.post("/createRoute", validateToken, async (req, res) => {
     console.log('route dat:', data)
     // Validate request body
     let validationSchema = yup.object().shape({
-        names: yup.string().trim().matches(/^[a-z ,.'-]+$/i)
-            .min(3).max(50).required(),
+        names: yup.string().trim()
+            .min(2).max(50).required(),
         pickUp: yup.string().trim().required(),
         destination: yup.string().trim().required(),
         wayPoints: yup.string().trim(),
@@ -142,6 +144,18 @@ router.get("/getRoutes", validateToken, async (req, res) => {
         res.status(500).json({ message: error.message })
     }
 })
+
+// Get the routes based on the id
+router.get("/getRoutesById/:id", async (req, res) => {
+    try {
+        const id = req.params.id
+        const routes = await Route.findAll({ where: { user_id: id } })
+        console.log('routes:', routes)
+        res.json(routes)
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
 router.put("/abort", validateToken, async (req, res) => {
     // Update user by id
     try {
@@ -158,6 +172,43 @@ router.put("/abort", validateToken, async (req, res) => {
         })
 
         res.json(user)
+    } catch (error) {
+
+        res.status(400).json({ message: error.errors })
+    }
+})
+
+router.put("/ride/:id", validateToken, async (req, res) => {
+    // Update ride by id
+    let id = req.params.id;
+    let data = req.body;
+    try {
+        const ride = await RideRequest.findByPk(id)
+        if (!ride) {
+            return res.status(404).json({ message: "Ride not found" })
+        }
+
+        await ride.update(data)
+
+        res.json(ride)
+    } catch (error) {
+
+        res.status(400).json({ message: error.errors })
+    }
+})
+router.put("/route/:id", validateToken, async (req, res) => {
+    // Update route by id
+    let id = req.params.id;
+    let data = req.body;
+    try {
+        const route = await Route.findByPk(id)
+        if (!route) {
+            return res.status(404).json({ message: "Route not found" })
+        }
+
+        await route.update(data)
+
+        res.json(route)
     } catch (error) {
 
         res.status(400).json({ message: error.errors })
@@ -224,4 +275,162 @@ router.delete("/ride/:id", async (req, res) => {
         res.status(400).json({ message: "Failed to delete ride request." });
     }
 });
+
+router.post('/getDistanceMatrix', async (req, res) => {
+    try {
+      const origin = req.body.origin;
+      const destinations = req.body.destinations;
+      const apiKey = process.env.VITE_DRIVER_GOOGLE_API_KEY; 
+  
+      const convertedDestinations = destinations.join('|');
+      const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(
+        origin
+      )}&destinations=${encodeURIComponent(convertedDestinations)}&key=${apiKey}`;
+  
+      const response = await axios.get(url);
+  
+      res.json(response.data);
+    } catch (error) {
+      res.status(500).json({ error: 'Error fetching distance matrix data' });
+    }
+  });
+
+  router.post("/chat/:id/message", validateToken, async (req, res) => {
+    const schema = yup.object().shape({
+        message: yup.string().required(),
+    }).noUnknown()
+
+    try {
+        const { id } = req.params
+        const { id: userId } = req.user
+        const { message } = await schema.validate(req.body)
+
+        const route = await Route.findOne({
+            where: { id: id },
+        })
+
+        if (!route) {
+            return res.status(404).json({ message: "Route not found" })
+        }
+
+        const rideIds = route.rideIds.split(", ")
+        const rideRequest = await RideRequest.findAll({
+            where: {
+                requestId: rideIds
+            }
+        })
+        console.log('list of ride requests:', rideRequest)
+        var riders = []
+        rideRequest.forEach(request => {
+            riders.push(request.userId)
+        });
+
+        if (route.user_id !== userId && !riders.includes(userId)) {
+            return res.status(403).json({ message: "You are not allowed to reply to this Chat" })
+        }
+
+        const newMessage = await Message.create({
+            message,
+            chat_id: id,
+            user_id: userId
+        })
+
+        const sendingMessage = await Message.findByPk(newMessage.id, {
+            include: {
+                model: User,
+                attributes: ["id", "name", "account_type"]
+            }
+        })
+
+
+        req.app.io.to(`chat_${route.id}`).emit("chat_message", sendingMessage)
+        res.status(201).json(newMessage)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
+router.get("/chat/:id/message", validateToken, async (req, res) => {
+    try {
+        const { id } = req.params
+        const { id: userId } = req.user
+
+        const route = await Route.findOne({
+            where: { id: id },
+        })
+
+        const rideIds = route.rideIds.split(", ")
+        const rideRequest = await RideRequest.findAll({
+            where: {
+                requestId: rideIds
+            }
+        })
+        console.log('list of ride requests:', rideRequest)
+        var riders = []
+        rideRequest.forEach(request => {
+            riders.push(request.userId)
+        });
+
+        if (!route) {
+            return res.status(404).json({ message: "Route not found" })
+        }
+
+        if (route.user_id !== userId && !riders.includes(userId)) {
+            return res.status(403).json({ message: "You are not allowed to view this Chat" })
+        }
+
+        const messages = await Message.findAll({
+            where: { chat_id: id },
+            include: {
+                model: User,
+                attributes: ["id", "name", "account_type"]
+            }
+        })
+
+        res.status(200).json(messages)
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
+router.post("/chat/:id/notificationAccept", validateToken, async (req, res) => {
+
+    try {
+        const { id } = req.params
+        const { id: userId } = req.user
+
+        const route = await Route.findOne({
+            where: { id: id, user_id: userId },
+        })
+
+        if (!route) {
+            return res.status(404).json({ message: "Route not found" })
+        }
+
+        if (route.user_id !== userId) {
+            return res.status(403).json({ message: "You are not allowed to reply to this Chat" })
+        }
+
+        const newMessage = await Message.create({
+            message: "Hello, I have accepted your ride request, I am on my way.",
+            chat_id: id,
+            user_id: userId
+        })
+
+        const sendingMessage = await Message.findByPk(newMessage.id, {
+            include: {
+                model: User,
+                attributes: ["id", "name", "account_type"]
+            }
+        })
+
+
+        req.app.io.to(`chat_${route.id}`).emit("chat_message", sendingMessage)
+        res.status(201).json(newMessage)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
 module.exports = router;

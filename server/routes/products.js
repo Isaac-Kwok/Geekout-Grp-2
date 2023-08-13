@@ -27,6 +27,10 @@ router.get("/:id", async (req, res) => {
         res.sendStatus(404);
         return;
     }
+    if (typeof product.product_picture === "string") {
+        product.product_picture = JSON.parse(product.product_picture);
+    }
+
     res.json(product);
 });
 

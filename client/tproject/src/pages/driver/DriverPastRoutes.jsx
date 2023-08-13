@@ -35,8 +35,7 @@ function DriverPastRoutes() {
         { field: 'driver_profit', headerName: 'Profit', width: 120 },
         { field: 'names', headerName: 'Rider names', width: 300 },
         { field: 'pickUp', headerName: 'Pick Up', width: 200 },
-        { field: 'wayPoints', headerName: 'Way Points', width: 400 },
-        { field: 'destination', headerName: 'Destination', width: 200 },
+        { field: 'destinationList', headerName: 'Destinations', width: 800 },
 
     ];
 
@@ -45,7 +44,8 @@ function DriverPastRoutes() {
             return []; // Return an empty array if there are no waypoints
         }
 
-        const locations = waypointsString.split(',').map((location) => location.trim());
+        const locations = waypointsString.split('|').map((location) => location.trim());
+        locations.pop(0);
 
         const waypointsArray = locations.map((location) => ({
             location: location,
@@ -57,8 +57,7 @@ function DriverPastRoutes() {
 
 
     const handleRowClick = (params) => {
-        let wayPoints = convertWaypointsStringToArray(params.row.wayPoints)
-        console.log('test w:', wayPoints)
+        let wayPoints = convertWaypointsStringToArray(params.row.destinationList)
         originRef.current.value = params.row.pickUp
         configureDestination(wayPoints, params.row.destination)
     };
@@ -71,7 +70,6 @@ function DriverPastRoutes() {
                 origin: originRef.current.value,
                 destination: destination,
                 waypoints: waypoints,
-                optimizeWaypoints: true,
                 // eslint-disable-next-line no-undef
                 travelMode: google.maps.TravelMode.DRIVING,
             });

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext, useMemo } from 'react'
-import { Box, Accordion, AccordionSummary, AccordionDetails, Paper, FormControlLabel, FormGroup, Container, Grid, Checkbox, Typography, Card, CardContent, CardMedia, CardActions, Chip, Button } from '@mui/material'
+import { MobileStepper, Box, Accordion, AccordionSummary, AccordionDetails, Paper, FormControlLabel, FormGroup, Container, Grid, Checkbox, Typography, Card, CardContent, CardMedia, CardActions, Chip, Button } from '@mui/material'
 import { useNavigate } from 'react-router-dom';
 import http from "../../http";
 import { ProductContext } from './ProductRoutes'
@@ -12,18 +12,49 @@ import { styled } from '@mui/system';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import PageTitle from '../../components/PageTitle';
-
-
+import { useTheme } from '@mui/material/styles';
+import Carousel from 'react-material-ui-carousel'
 
 function ProductCard({ product }) {
     const navigate = useNavigate();
-    const productPath = `${import.meta.env.VITE_API_URL}/admin/products/productImage/`
+    const productPath = `${import.meta.env.VITE_API_URL}/admin/products/productImage/`;
     const { enqueueSnackbar } = useSnackbar();
     const [wishlistItems, setWishlistItems] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const productsPerPage = 6;
+    const theme = useTheme();
+    const [activeStep, setActiveStep] = useState(0);
 
 
+    let productPictures;
+    if (Array.isArray(product.product_picture)) {
+        productPictures = product.product_picture;
+    } else {
+        try {
+            productPictures = JSON.parse(product.product_picture);
+        } catch (error) {
+            productPictures = [];
+        }
+    }
+    const shouldDisplayNavButtons =  productPictures > 1;
+
+    const AspectRatioBox = ({ children }) => (
+        <div style={{
+            position: 'relative',
+            width: '100%',
+            height: 0,
+            paddingBottom: '56.25%', /* 16:9 Aspect Ratio (divide 9 by 16 = 0.5625 or 56.25%) */
+            overflow: 'hidden'
+        }}>
+            <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%'
+            }}>
+                {children}
+            </div>
+        </div>
+    );
 
     const loadWishlistItems = async () => {
         try {
@@ -67,14 +98,13 @@ function ProductCard({ product }) {
     };
 
 
-
     useEffect(() => {
         loadWishlistItems();
     }, []);
 
-
     return (
         <Card sx={{ position: 'relative' }} elevation={3}>
+            {/* On Sale chip */}
             {product.product_sale && (
                 <Chip
                     label="On Sale"
@@ -91,15 +121,48 @@ function ProductCard({ product }) {
                     }}
                 />
             )}
-            <CardMedia
-                component="img"
-                height="140"
-                image={`${productPath}${product.product_picture}`}
-                alt={product.product_name}
-            />
+            {/* Image box */}
+            <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: 400 }, flexGrow: 1 }}>
+                <Carousel
+                    autoPlay={false}
+                    indicators={false}
+                    navButtonsAlwaysVisible={shouldDisplayNavButtons}
+                    cycleNavigation={shouldDisplayNavButtons}
+                    animation='slide'
+                    navButtonsProps={{
+                        style: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.5) !important',
+                            color: 'black !important',
+                            margin: '0 10px !important'
+                        }
+                    }}
+                    navButtonsWrapperProps={{
+                        style: {
+                            bottom: '0 !important',
+                            top: 'unset !important',
+                            position: 'absolute !important',
+                            width: '100% !important'
+                        }
+                    }}
+                >
+                    {productPictures.map((picture, index) =>
+                        <Paper elevation={0} key={index} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                            <AspectRatioBox>
+                                <img
+                                    src={`${productPath}${picture.trim()}`}
+                                    alt={product.product_name}
+                                    style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+                                />
+                            </AspectRatioBox>
+                        </Paper>
+                    )}
+                </Carousel>
+            </Box>
 
+
+            {/* Card content */}
             <CardContent>
-                <Typography variant="h5">{product.product_name}</Typography>
+                <Typography variant="h5" fontWeight="bold">{product.product_name}</Typography>
                 <Typography variant="h6" sx={{ display: "flex", alignItems: "center" }}>
                     <span style={{ textDecoration: product.product_sale ? "line-through" : "none" }}>
                         ${product.product_price ? product.product_price : "NIL"}
@@ -119,9 +182,9 @@ function ProductCard({ product }) {
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                     GreenMiles: {product.product_price_greenmiles}<br />
-                    On Sale: {product.product_sale ? "Yes" : "No"}
                 </Typography>
             </CardContent>
+            {/* Card actions */}
             <CardActions>
                 <Grid container alignItems="center">
                     <Grid item xs>
@@ -139,13 +202,8 @@ function ProductCard({ product }) {
                 </Grid>
             </CardActions>
         </Card>
-    )
-
+    );
 }
-
-
-
-
 
 const categories = {
     'Health and Beauty': ['Bath', 'Disinfectant', 'Feminine Care', 'Hair', 'Oral Care'],

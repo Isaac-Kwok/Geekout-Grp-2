@@ -19,6 +19,12 @@ import { useNavigate } from "react-router-dom";
 import AdminPageTitle from "../../../components/AdminPageTitle";
 import { UserContext } from "../../../index";
 
+// MUI React Tabs component
+import Tab from "@mui/material/Tab";
+import TabContext from "@mui/lab/TabContext";
+import TabList from "@mui/lab/TabList";
+import TabPanel from "@mui/lab/TabPanel";
+
 function ViewAllRequests() {
   const [rideRequests, setRideRequests] = useState([]);
   const navigate = useNavigate();
@@ -80,6 +86,19 @@ function ViewAllRequests() {
       });
   };
 
+  // Tabs
+  const [value, setValue] = useState("1");
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  // Filter for tabs
+  // Function to filter ride requests based on status
+  const filterRideRequests = (status) => {
+    return rideRequests.filter((request) => request.status === status);
+  };
+
   // Define columns for the DataGrid
   const columns = [
     { field: "requestId", headerName: "Request ID", width: 100 },
@@ -121,7 +140,7 @@ function ViewAllRequests() {
 
   return (
     <Container sx={{ marginTop: "1rem", minWidth: 0 }} maxWidth="xl">
-      <AdminPageTitle title="View Ride Requests" />
+      <AdminPageTitle title="Ride Requests" />
       <Box sx={{ display: "flex", mb: "1rem" }}>
         {/* Add any relevant buttons or actions here */}
         {/* <Button
@@ -140,14 +159,58 @@ function ViewAllRequests() {
           Create Ride Request
         </Button> */}
       </Box>
-      {/* Display the ride requests in a DataGrid */}
-      <DataGrid
-        rows={rideRequests}
-        columns={columns}
-        pageSize={10}
-        autoHeight
-        getRowId={(row) => row.requestId}
-      />
+
+      {/* Tabs */}
+      <Box sx={{ width: "100%", typography: "body1" }}>
+        <TabContext value={value}>
+          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+            <TabList onChange={handleChange} aria-label="lab API tabs example">
+              <Tab label="All" value="1" />
+              <Tab label="Pending" value="2" />
+              <Tab label="Accepted" value="3" />
+              <Tab label="Completed" value="4" />
+            </TabList>
+          </Box>
+          <TabPanel value="1">
+            {/* Display the ride requests in a DataGrid */}
+            <DataGrid
+              rows={rideRequests}
+              columns={columns}
+              pageSize={10}
+              autoHeight
+              getRowId={(row) => row.requestId}
+            />
+          </TabPanel>
+          <TabPanel value="2">
+            {/* Display the ride requests in a DataGrid */}
+            <DataGrid
+              rows={filterRideRequests("Pending")}
+              columns={columns}
+              pageSize={10}
+              autoHeight
+              getRowId={(row) => row.requestId}
+            />
+          </TabPanel>
+          <TabPanel value="3">
+            <DataGrid
+              rows={filterRideRequests("Accepted")}
+              columns={columns}
+              pageSize={10}
+              autoHeight
+              getRowId={(row) => row.requestId}
+            />
+          </TabPanel>
+          <TabPanel value="4">
+            <DataGrid
+              rows={filterRideRequests("Completed")}
+              columns={columns}
+              pageSize={10}
+              autoHeight
+              getRowId={(row) => row.requestId}
+            />
+          </TabPanel>
+        </TabContext>
+      </Box>
     </Container>
   );
 }

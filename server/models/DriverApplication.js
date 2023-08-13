@@ -41,6 +41,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
+        driver_date_joined: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
         driver_car_model: {
             type: DataTypes.STRING,
             allowNull: false

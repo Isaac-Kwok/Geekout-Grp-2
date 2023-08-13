@@ -37,6 +37,7 @@ import ViewTicket from './support/ViewTicket'
 import ViewDriverApplications from './driver/ViewDriverApplications'
 import EditDriverApplication from './driver/EditDriverApplication'
 import ViewDrivers from './driver/ViewDrivers'
+import DriverStatistics from './driver/DriverStatistics'
 
 import { UserContext } from '../..'
 import AdminNavList from '../../components/AdminNavList'
@@ -88,12 +89,14 @@ function AdminRoutes() {
                 <Route path="/orders/editstatus/:id" element= {<EditOrderStatus/>}/>
                 <Route path="/refunds" element={<ViewRefunds />} />
                 <Route path="/refunds/editstatus/:id" element={<ViewAdminSingleRefund />} />
+                <Route path="/requests" element={<ViewAllRequests />} />
 
 
                 {/* Driver Paths */}
                 <Route path="/driver/viewDriverApplications" element={<ViewDriverApplications />} />
                 <Route path="/driver/EditDriverApplication/:id" element={<EditDriverApplication />} />
                 <Route path="/driver/viewDrivers" element={<ViewDrivers />} />
+                <Route path="/driver/viewDriverStatistics/:id" element={<DriverStatistics />} />
 
                 {/* Support Paths */}
                 <Route path="/support/article/create" element={<CreateArticle />} />

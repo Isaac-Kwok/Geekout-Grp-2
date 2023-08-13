@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Container, Typography, Chip, Button, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions} from '@mui/material'
+import { Container, Typography, Chip, Button, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions } from '@mui/material'
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
@@ -22,8 +22,21 @@ function ViewProducts() {
     const [activateProductDialog, setActivateProductDialog] = useState(false)
     const [activateProduct, setActivateProduct] = useState(null)
     const navigate = useNavigate()
+    const [sortModel, setSortModel] = useState([
+        {
+            field: "id",
+            sort: "desc",
+        },
+    ]);
+    
 
     const columns = [
+        {
+            field: 'id',
+            headerName: 'ID',
+            width: 90,
+            sortable: true,
+        },
         { field: 'product_name', headerName: 'Product Name', flex: 1, minWidth: 250 },
         { field: 'product_category', headerName: 'Category', minWidth: 200 },
         { field: 'product_stock', headerName: 'Stock', width: 200 },
@@ -46,13 +59,13 @@ function ViewProducts() {
                     showInMenu
                 />,
                 <GridActionsCellItem
-                    icon={params.row.product_status ? <DeleteIcon />: <AddIcon />}
-                    label={params.row.product_status ? "De-activate Product": "Activate Product"}
+                    icon={params.row.product_status ? <DeleteIcon /> : <AddIcon />}
+                    label={params.row.product_status ? "De-activate Product" : "Activate Product"}
                     onClick={() => {
                         if (params.row.product_status) {
                             setDeactivateProduct(params.row)
                             handleDeactivateProductDialogOpen()
-                        } else if(!params.row.product_status && params.row.product_stock > 0){
+                        } else if (!params.row.product_status && params.row.product_stock > 0) {
                             setActivateProduct(params.row)
                             handleActivateProductDialogOpen()
                         }
@@ -73,7 +86,7 @@ function ViewProducts() {
 
     const handleDeactivateProduct = () => {
         setDeactivateLoading(true)
-        http.put("/admin/products/status/" + deactivateProduct.id, {product_status: false} ).then((res) => {
+        http.put("/admin/products/status/" + deactivateProduct.id, { product_status: false }).then((res) => {
             if (res.status === 200) {
                 setDeactivateLoading(false)
                 setDeactivateProductDialog(false)
@@ -92,7 +105,7 @@ function ViewProducts() {
 
     const handleActivateProduct = () => {
         setActivateLoading(true)
-        http.put("/admin/products/status/" + activateProduct.id, {product_status: true} ).then((res) => {
+        http.put("/admin/products/status/" + activateProduct.id, { product_status: true }).then((res) => {
             if (res.status === 200) {
                 setActivateLoading(false)
                 setActivateProductDialog(false)
@@ -131,10 +144,13 @@ function ViewProducts() {
                     slots={{
                         LoadingOverlay: LoadingSkeleton
                     }}
+                    sortModel={sortModel}
+                    onSortModelChange={(model) => setSortModel(model)}
                     loading={loading}
                     autoHeight
                     getRowId={(row) => row.id}
                 />
+
             </Container>
             <Dialog open={deactivateProductDialog} onClose={handleDeactivateProductDialogClose}>
                 <DialogTitle>Deactivate Product</DialogTitle>

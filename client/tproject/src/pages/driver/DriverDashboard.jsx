@@ -1,5 +1,5 @@
 import { React, useEffect, useState } from 'react'
-import { Link, Box, Card, CardContent, Stack, Avatar, Typography, Grid, Container, Button, CardActions } from '@mui/material'
+import { Box, Card, CardContent, Stack, Avatar, Typography, Grid, Container, Button, CardActions } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid';
 import CardTitle from '../../components/CardTitle';
 import useUser from '../../context/useUser';
@@ -9,7 +9,8 @@ import SocialDistanceIcon from '@mui/icons-material/SocialDistance';
 import ReviewsIcon from '@mui/icons-material/Reviews';
 import TimeToLeaveIcon from '@mui/icons-material/TimeToLeave';
 import http from '../../http'
-import { Margin } from '@mui/icons-material';
+import { Link } from 'react-router-dom';
+
 
 function DriverDashboard() {
   const { user, refreshUser } = useUser();
@@ -89,8 +90,7 @@ function DriverDashboard() {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button size="large">Top-Up</Button>
-                <Button size="large">Withdraw</Button>
+                <Button to='/profile/wallet' LinkComponent={Link} size="large">Withdraw</Button>
               </CardActions>
             </Card>
           </Grid>
@@ -108,7 +108,7 @@ function DriverDashboard() {
                       color="text.secondary"
                       variant="h5"
                     >
-                      Total Drives
+                      Accepted Drives
                     </Typography>
                     <Typography variant="h4">
                       {user?.accepted_routes}
@@ -127,11 +127,11 @@ function DriverDashboard() {
                   </Avatar>
                 </Stack>
                 <Typography variant="body2" color="text.secondary" sx={{ marginTop: '0.5rem' }}>
-                  This shows your total driven routes and their details
+                  This shows your total Accepted routes and their details
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button size="large" href='/driver/pastRoutes'>View all</Button>
+                <Button size="large" to='/driver/pastRoutes' LinkComponent={Link}>View all</Button>
               </CardActions>
             </Card>
           </Grid>
@@ -215,11 +215,11 @@ function DriverDashboard() {
             </Card>
           </Grid>
         </Grid>
-        <Grid container spacing={2} sx={{marginTop:"1rem", marginBottom:"2rem"}}>
-          <Grid item xl={6} lg={6} md={6} sm={12} xs={12}>
+        <Grid container spacing={2} sx={{ marginTop: "1rem", marginBottom: "2rem" }}>
+          <Grid item xl={7} lg={7} md={7} sm={12} xs={12}>
             <div style={{ height: 400, width: '100%', }}>
               <DataGrid
-              sx={{backgroundColor:"white"}}
+                sx={{ backgroundColor: "white" }}
                 rows={allRoutes}
                 columns={columns}
                 initialState={{
@@ -228,19 +228,29 @@ function DriverDashboard() {
                   },
                 }}
                 pageSizeOptions={[5, 10]}
-             
+
 
               />
             </div>
           </Grid>
-          <Grid item xl={6} lg={6} md={6} sm={12} xs={12}>
-            <Card>
-              <CardContent>
-                <CardTitle icon={<TimeToLeaveIcon />} title="Time to drive" />
-                <p>Start Accepting route requests and start driving to earn some money!</p>
-                <Button href="/driver/routes" variant='contained' >Start Driving</Button>
-              </CardContent>
-            </Card>
+          <Grid item xl={5} lg={5} md={5} sm={12} xs={12}>
+            {user?.account_type === 2 &&
+              <Card>
+                <CardContent>
+                  <CardTitle icon={<TimeToLeaveIcon />} title="Time to drive" />
+                  <p>Greatness awaits, Get excited and start up your vehicle and start Accepting route requests and start driving to earn some money!</p>
+                  <Button to="/driver/routes" LinkComponent={Link} variant='contained' >Start Driving</Button>
+                </CardContent>
+              </Card>}
+            {user?.account_type === 1 &&
+                          <Card>
+                          <CardContent>
+                            <CardTitle icon={<TimeToLeaveIcon />} title="Your Driver account has been deactivated" />
+                            <p>Oh No!, Your driver account has been deactivated, you can still access your driver information, but cannot accept routes and drive others, please visit our support and launch a support ticket to reactivate your account.</p>
+                            <Button to="/support" LinkComponent={Link} variant='contained' >Support</Button>
+                            
+                          </CardContent>
+                        </Card>}
           </Grid>
         </Grid>
       </Container>

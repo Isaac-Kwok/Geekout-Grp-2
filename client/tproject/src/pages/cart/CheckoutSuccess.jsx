@@ -5,6 +5,7 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CloseIcon from '@mui/icons-material/Close';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { CartContext } from './CartRoutes';
+import useUser from '../../context/useUser';
 import http from '../../http';
 
 const CheckoutSuccess = () => {
@@ -12,6 +13,7 @@ const CheckoutSuccess = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const { enqueueSnackbar } = useSnackbar();
     const [success, setSuccess] = useState(false);
+    const { refreshUser } = useUser();
 
     const removeItemsFromCart = async () => {
         http.get('/cart')
@@ -48,9 +50,10 @@ const CheckoutSuccess = () => {
         // Check if order was successful
         // If successful, remove items from cart
         // If not, do nothing
+        refreshUser();
         http.get("/orders/" + (searchParams.get("orderId"))).then(res => {
             if (res.status === 200) {
-                if (res.data.order_status != "Pending") {
+                if (res.data.order_status != "Pending" || searchParams.get("redirect_status") === "succeeded") {
                     setSuccess(true);
                     removeItemsFromCart();
                 }

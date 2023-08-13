@@ -2,7 +2,6 @@ import { GoogleMap, MarkerF, useLoadScript, InfoWindowF, DirectionsService, Dire
 import { Button, Container, Stack, Divider } from '@mui/material';
 import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import { Link } from 'react-router-dom';
-import '../bicycle.css';
 import http from "../http";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -12,6 +11,7 @@ import useUser from "../context/useUser";
 import { Avatar, Drawer, List, ListItem, ListItemIcon, ListItemText, AppBar, IconButton, Toolbar, Typography } from '@mui/material';
 import { AccountCircle, ConnectingAirportsOutlined, DirectionsBike, History, Map, Payment, Report, Star } from '@mui/icons-material';
 import MenuIcon from '@mui/icons-material/Menu';
+import PageTitle from "../components/PageTitle";
 
 const libraries = ['geometry'];
 
@@ -531,17 +531,7 @@ function Bicycle() {
     }, [currentLocation, isLoaded]);
 
     return (
-
         <Container maxWidth="xl" sx={{ marginTop: '1rem' }}>
-            <AppBar position="static">
-                <Toolbar>
-                    <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleSidebarToggle}>
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography variant="h6">Bicycle Sharing</Typography>
-                </Toolbar>
-            </AppBar>
-            <Sidebar isOpen={isSidebarOpen} onClose={handleSidebarToggle} />
             {isLoaded && mapLoaded ? (
                 renderMap()
             ) : (

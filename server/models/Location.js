@@ -9,9 +9,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    // status: {
+    //   type: DataTypes.STRING,
+    //   allowNull: false,
+    // },
     status: {
-      type: DataTypes.STRING,
+      type: DataTypes.ENUM("Pending", "Active", "Inactive"),
       allowNull: false,
+      defaultValue: "Active",
     },
     premium: {
       type: DataTypes.DECIMAL(10, 2),
@@ -32,5 +37,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 0,
     },
   });
+
+  // No association established here despite having many ride requests. This is to prevent cascading deletion.
   return Location;
 };

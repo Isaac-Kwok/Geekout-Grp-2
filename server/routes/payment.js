@@ -1,13 +1,13 @@
-const { Order, User, Transaction } = require("../models")
+const { Order, User, Transaction, OrderItem, Product } = require("../models")
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 const express = require("express");
 const router = express.Router()
 const yup = require("yup");
+const moment = require("moment")
 const { validateToken } = require("../middleware/validateToken");
 
 router.post("/webhook", async (req, res) => {
     // Handle webhook
-    console.log(req.body)
     // PayementIntent object
     const data = req.body.data.object
 
@@ -32,6 +32,35 @@ router.post("/webhook", async (req, res) => {
                 await user.save()
             } else if (transaction.type === "purchase") {
                 const order = await Order.findByPk(transaction.order_id)
+                const orderItems = await OrderItem.findAll({
+                    where: {
+                        order_id: order.id
+                    },
+                    include: {
+                        model: Product,
+                        attributes: ["pass_category_status", "duration_of_pass"]
+                    }
+                })
+
+                console.log(orderItems)
+
+                for (let i = 0; i < orderItems.length; i++) {
+                    const orderItem = orderItems[i]
+
+                    // Check if the product is a pass
+                    if (orderItem.Product.pass_category_status) {
+                        // Add days to the user's pass expiry date times the quantity
+                        console.log("boom")
+                        const user = await User.findByPk(order.user_id)
+                        if (user.bike_pass_expiry < new Date()) {
+                            user.bike_pass_expiry = moment(user.bike_pass_expiry || new Date()).add(orderItem.Product.duration_of_pass * orderItem.quantity, "days").toDate()
+                        } else {
+                            user.bike_pass_expiry = moment(user.bike_pass_expiry).add(orderItem.Product.duration_of_pass * orderItem.quantity, "days").toDate()
+                        }
+                        await user.save()
+                    }
+                }
+
                 order.order_status = 1
                 await order.save()
             }
@@ -105,6 +134,173 @@ router.post("/purchase/stripe", validateToken, async (req, res) => {
     } catch (err) {
         console.log(err)
         res.status(400).json({ message: err.errors[0] })
+    }
+})
+
+router.get("/purchase/wallet/settle/:id", validateToken, async (req, res) => {
+    // Get Order
+    try {
+        const { id } = req.params
+
+        const order = await Order.findOne({
+            where: {
+                id: id,
+                user_id: req.user.id
+            }
+        })
+
+        const transaction = await Transaction.findOne({
+            where: {
+                order_id: id
+            }
+        })
+
+        if (!order) {
+            res.status(404).json({ message: "Order not found." })
+            return
+        }
+
+        if (!transaction) {
+            res.status(404).json({ message: "Transaction not found." })
+            return
+        }
+
+        if (order.order_status > 0) {
+            res.status(400).json({ message: "Order has already been settled." })
+            return
+        }
+
+        const user = await User.findByPk(req.user.id)
+
+        if (parseFloat(user.cash) < parseFloat(order.total_amount)) {
+            res.status(400).json({ message: "Insufficient funds." })
+            return
+        }
+
+        user.cash = parseFloat(user.cash) - parseFloat(order.total_amount)
+        await user.save()
+
+        const orderItems = await OrderItem.findAll({
+            where: {
+                order_id: order.id
+            },
+            include: {
+                model: Product,
+                attributes: ["pass_category_status", "duration_of_pass"]
+            }
+        })
+
+        console.log(orderItems)
+
+        for (let i = 0; i < orderItems.length; i++) {
+            const orderItem = orderItems[i]
+
+            // Check if the product is a pass
+            if (orderItem.Product.pass_category_status) {
+                // Add days to the user's pass expiry date times the quantity
+                const user = await User.findByPk(order.user_id)
+                if (user.bike_pass_expiry < new Date()) {
+                    user.bike_pass_expiry = moment(user.bike_pass_expiry || new Date()).add(orderItem.Product.duration_of_pass * orderItem.quantity, "days").toDate()
+                } else {
+                    user.bike_pass_expiry = moment(user.bike_pass_expiry).add(orderItem.Product.duration_of_pass * orderItem.quantity, "days").toDate()
+                }
+                await user.save()
+            }
+        }
+
+        order.order_status = 1
+        await order.save()
+
+        transaction.status = "Succeeded"
+        await transaction.save()
+
+        res.status(200).json({ message: "Order settled." })
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
+})
+
+router.get("/purchase/point/settle/:id", validateToken, async (req, res) => {
+    // Get Order
+    try {
+        const { id } = req.params
+
+        const order = await Order.findOne({
+            where: {
+                id: id,
+                user_id: req.user.id
+            }
+        })
+
+        const transaction = await Transaction.findOne({
+            where: {
+                order_id: id
+            }
+        })
+
+        if (!order) {
+            res.status(404).json({ message: "Order not found." })
+            return
+        }
+
+        if (!transaction) {
+            res.status(404).json({ message: "Transaction not found." })
+            return
+        }
+
+        if (order.order_status > 0) {
+            res.status(400).json({ message: "Order has already been settled." })
+            return
+        }
+
+        const user = await User.findByPk(req.user.id)
+        const p = (order.total_amount * 100).toFixed(0)
+
+        if (user.points < p) {
+            res.status(400).json({ message: "Insufficient funds." })
+            return
+        }
+
+        user.points = parseFloat(user.points) - parseFloat(p)
+        await user.save()
+
+        const orderItems = await OrderItem.findAll({
+            where: {
+                order_id: order.id
+            },
+            include: {
+                model: Product,
+                attributes: ["pass_category_status", "duration_of_pass"]
+            }
+        })
+
+        console.log(orderItems)
+
+        for (let i = 0; i < orderItems.length; i++) {
+            const orderItem = orderItems[i]
+
+            // Check if the product is a pass
+            if (orderItem.Product.pass_category_status) {
+                // Add days to the user's pass expiry date times the quantity
+                const user = await User.findByPk(order.user_id)
+                if (user.bike_pass_expiry < new Date()) {
+                    user.bike_pass_expiry = moment(user.bike_pass_expiry || new Date()).add(orderItem.Product.duration_of_pass * orderItem.quantity, "days").toDate()
+                } else {
+                    user.bike_pass_expiry = moment(user.bike_pass_expiry).add(orderItem.Product.duration_of_pass * orderItem.quantity, "days").toDate()
+                }
+                await user.save()
+            }
+        }
+
+        transaction.status = "Succeeded"
+        await transaction.save()
+
+        order.order_status = 1
+        await order.save()
+
+        res.status(200).json({ message: "Order settled." })
+    } catch (err) {
+        res.status(400).json({ message: err.message })
     }
 })
 

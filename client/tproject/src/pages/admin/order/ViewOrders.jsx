@@ -50,6 +50,12 @@ function ViewOrders() {
         7: "Refund Approved",
         8: "Refund Denied"
     };
+    const [sortModel, setSortModel] = useState([
+        {
+            field: "id",
+            sort: "desc",
+        },
+    ]);
 
     const columns = [
         { field: 'id', headerName: 'Order Number', minWidth: 150 },
@@ -115,12 +121,8 @@ function ViewOrders() {
                     slots={{
                         LoadingOverlay: LoadingSkeleton
                     }}
-                    sortModel={[
-                        {
-                          field: "id",
-                          sort: "desc",
-                        },
-                      ]}
+                    sortModel={sortModel}
+                    onSortModelChange={(model) => setSortModel(model)}
                     loading={loading}
                     autoHeight
                     getRowId={(row) => row.id}

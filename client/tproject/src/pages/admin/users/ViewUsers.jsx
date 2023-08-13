@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Container, Chip, Button, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions } from '@mui/material'
 import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
-import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, GridToolbarExport } from '@mui/x-data-grid';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import http from "../../../http";
@@ -108,6 +108,12 @@ function ViewUsers() {
         })
     }
 
+    const customToolbar = () => {
+        return (
+            <GridToolbarExport />
+        );
+    }
+
     useEffect(() => {
         document.title = "EnviroGo - View Users"
         handleGetUsers()
@@ -124,6 +130,7 @@ function ViewUsers() {
                     loading={loading}
                     autoHeight
                     getRowId={(row) => row.email}
+                    slots={{ toolbar: customToolbar }}
                 />
             </Container>
             <Dialog open={deactivateUserDialog} onClose={handleDeactivateUserDialogClose}>

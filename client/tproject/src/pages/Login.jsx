@@ -19,7 +19,6 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import http from "../http";
 import { UserContext } from "..";
-import axios from "axios";
 
 function Login() {
     const [loading, setLoading] = useState(false);
@@ -336,7 +335,7 @@ function Login() {
                                 <Typography variant="body2" sx={{ marginTop: 2 }}>
                                     For other issues such as 2FA, please contact us via the support page.
                                 </Typography>
-                                <Button sx={{ marginTop: 2 }} variant="outlined" color="primary" LinkComponent={<Link />}>Go to support</Button>
+                                <Button sx={{ marginTop: 2 }} variant="outlined" color="primary" LinkComponent={Link} to="/support">Go to support</Button>
                             </CardContent>
                         </Card>
                     </Grid>

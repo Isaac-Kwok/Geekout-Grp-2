@@ -87,7 +87,7 @@ function ViewDriverInformation() {
                                     <Button LinkComponent={Link} to="/driver/register" variant="text" color="primary" startIcon={<EditIcon />}>Re-Register Application</Button>
                                 }
                                 {driverApplication.driver_status == "Approved" &&
-                                    <Button LinkComponent={Link} to="/driver/register" variant="text" color="primary" startIcon={<DriveEta />}>Driver Dashboard</Button>
+                                    <Button LinkComponent={Link} to="/driver/dashboard" variant="text" color="primary" startIcon={<DriveEta />}>Driver Dashboard</Button>
                                 }
                             </Box>
 

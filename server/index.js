@@ -4,7 +4,15 @@ var cookieParser = require("cookie-parser");
 const cors = require("cors");
 var MyInfoConnector = require("myinfo-connector-v4-nodejs");
 const fs = require("fs");
-const app = express();
+const app = module.exports.app = express();
+const server = require("http").createServer(app);
+const jwt = require("jsonwebtoken")
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  },
+});
 
 const db = require("./models/index.js")
 require("dotenv").config()
@@ -48,7 +56,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({ limit: "100mb", extended: true }));
 app.use(function (err, req, res, next) {
   console.error(err.stack);
-  res.status(500).send({"message":"Something broke! Check console for details"});
+  res.status(500).send({ "message": "Something broke! Check console for details" });
 })
 
 // Main Route (Status check)
@@ -194,6 +202,27 @@ app.post("/generateCodeChallenge", async function (req, res, next) {
   }
 });
 
+io.on("connection", (socket) => {
+  const token = socket.handshake.query.token
+  const room = socket.handshake.query.room
+
+  try {
+    const decoded = jwt.verify(token, process.env.APP_SECRET)
+    socket.join(room)
+    console.log("a user connected");
+    console.log(socket.rooms)
+  } catch (error) {
+    socket.emit('error', 'Invalid token')
+    socket.disconnect()
+  }
+
+  io.on("disconnect", () => {
+    console.log("user disconnected");
+  });
+});
+
+
+
 // Routes
 const userRoutes = require("./routes/user.js")
 const adminUsersRoutes = require("./routes/admin/users.js")
@@ -216,6 +245,7 @@ const refundRoutes = require('./routes/refunds.js');
 const adminSupportRoutes = require("./routes/admin/support");
 const supportRoutes = require("./routes/support");
 const rideRequestRoutes = require("./routes/rideRequests");
+const rideRatingRoutes = require("./routes/rideRatings");
 app.use("/file", fileRoute);
 
 app.use(express.urlencoded({ extended: false }));
@@ -243,24 +273,27 @@ app.use("/refunds", refundRoutes)
 app.use("/admin/support", adminSupportRoutes);
 app.use("/support", supportRoutes);
 app.use("/riderequests", rideRequestRoutes);
-
+app.use("/riderating", rideRatingRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack)
   res.status(500).send('Something broke!')
 })
 
-app.get('*', function(req, res){
-  res.status(404).send({message: 'Endpoint not implemented'});
+app.get('*', function (req, res) {
+  res.status(404).send({ message: 'Endpoint not implemented' });
 });
 
+app.io = io
+
+let port = process.env.APP_PORT
+server.listen(port, () => {
+  console.clear()
+  console.log(`The server has been started on port ${port}\nIf you made changes to the database, please continue waiting till 'Database synced' appears.`)
+})
 
 db.sequelize.sync({ alter: true }).then(() => {
-  let port = process.env.APP_PORT
-  app.listen(port, () => {
-    console.clear()
-    console.log(`The server has been started on port ${port}`)
-  })
+  console.log('Database synced')
 })
 
 module.exports = app;

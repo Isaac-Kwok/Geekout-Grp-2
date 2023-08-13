@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         product_stock:{
-            type: DataTypes.TINYINT,
+            type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue:0
         },
@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 0.00
         },
         product_discounted_percent: {
-            type: DataTypes.TINYINT,
+            type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 0
         },
@@ -46,21 +46,21 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: false
         },
         product_price_greenmiles: {
-            type: DataTypes.TINYINT,
+            type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 1
         },
         product_discounted_price_greenmiles: {
-            type: DataTypes.TINYINT,
+            type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 1
         },
         
         //Duration of pass
         duration_of_pass: {
-            type: DataTypes.TINYINT,
+            type: DataTypes.INTEGER,
             allowNull: false,
-            defaultValue: 1
+            defaultValue: 7
         },
         // Product status
         product_status: {

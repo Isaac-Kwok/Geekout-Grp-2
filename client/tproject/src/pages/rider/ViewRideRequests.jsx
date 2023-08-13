@@ -12,16 +12,21 @@ import {
   IconButton,
   Button,
 } from "@mui/material";
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import { Edit, Delete, Visibility } from "@mui/icons-material";
 import http from "../../http"; // Make sure you have an HTTP module to handle API requests
 import { useNavigate } from "react-router-dom";
 import AdminPageTitle from "../../components/AdminPageTitle";
 import { UserContext } from "../../index";
-
+import { useSnackbar } from "notistack";
+import Modal from "@mui/material/Modal";
 import RideRequestCard from "../../components/RideRequestCard"; // Adjust the path as per your folder structure
+
+// MUI React Tabs component
+import Tab from "@mui/material/Tab";
+import TabContext from "@mui/lab/TabContext";
+import TabList from "@mui/lab/TabList";
+import TabPanel from "@mui/lab/TabPanel";
 
 function ViewRideRequests() {
   const [rideRequests, setRideRequests] = useState([]);
@@ -29,14 +34,14 @@ function ViewRideRequests() {
   const { user } = useContext(UserContext);
   const [pickUpLocation, setPickUpLocation] = useState(null); // State to store pickUp location details
   const [imageFile, setImageFile] = useState(null);
+  const { enqueueSnackbar } = useSnackbar();
+  const [tempRequestId, setTempRequestId] = useState(null);
   console.log(user);
 
   // Fetch ride requests when the component mounts
   useEffect(() => {
-    if (user) {
-      console.log("User Object:", user);
-      fetchRideRequests();
-    }
+    console.log("User Object:", user);
+    fetchRideRequests();
   }, [user]); // Make sure to include user as a dependency here
 
   useEffect(() => {
@@ -45,6 +50,29 @@ function ViewRideRequests() {
       fetchLocationDetails();
     }
   }, [pickUpLocation]);
+
+  // Modal attributes
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 400,
+    bgcolor: "background.paper",
+    // border: "2px solid #888",
+    borderRadius: 2,
+    boxShadow: 24,
+    p: 4,
+  };
+
+  const [open, setOpen] = useState(false);
+  const handleOpen = (id) => {
+    setOpen(true);
+    setTempRequestId(id);
+  };
+  const handleClose = () => setOpen(false);
+
+  // End of modal attributes
 
   const fetchRideRequests = () => {
     const apiUrl = `/riderequests/myrequests/${user?.id}`;
@@ -95,6 +123,12 @@ function ViewRideRequests() {
   //   navigate(`/riderequests/${id}`);
   // };
 
+  // Filter for tabs
+  // Function to filter ride requests based on status
+  const filterRideRequests = (status) => {
+    return rideRequests.filter((request) => request.status === status);
+  };
+
   // Function to render ride request cards
   const renderRideRequestCards = () => {
     return rideRequests.map((rideRequest) => (
@@ -103,7 +137,22 @@ function ViewRideRequests() {
         rideRequest={rideRequest}
         handleDetail={handleDetail}
         handleEdit={handleEdit}
-        handleDelete={handleDelete}
+        handleOpen={handleOpen}
+        handleRate={handleRate}
+      />
+    ));
+  };
+
+  const renderFilteredRideRequestCards = (status) => {
+    const filteredRideRequests = filterRideRequests(status);
+    return filteredRideRequests.map((rideRequest) => (
+      <RideRequestCard
+        key={rideRequest.requestId}
+        rideRequest={rideRequest}
+        handleDetail={handleDetail}
+        handleEdit={handleEdit}
+        handleOpen={handleOpen}
+        handleRate={handleRate}
       />
     ));
   };
@@ -126,10 +175,24 @@ function ViewRideRequests() {
         console.log(res.data);
         // Update the ride request list after successful deletion
         fetchRideRequests();
+        handleClose(); // close modal upon successful delete
       })
       .catch((error) => {
         console.error("Failed to delete ride request:", error);
       });
+  };
+
+  // Function to handle Rating a specific request
+  const handleRate = (id) => {
+    // navigate(`/riderequests/myrequests/${user?.id}/${id}`);
+    navigate(`/riderequests/completed/rate/user/${user?.id}/request/${id}`);
+  };
+
+  // Tabs
+  const [value, setValue] = useState("1");
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
   };
 
   // Define columns for the DataGrid
@@ -160,7 +223,10 @@ function ViewRideRequests() {
             <Edit />
           </IconButton>
           <IconButton
-            onClick={() => handleDelete(params.row.requestId)}
+            onClick={() => {
+              // handleDelete(params.row.requestId);
+              handleOpen(params.row.requestId);
+            }}
             title="Delete Request"
           >
             <Delete />
@@ -201,7 +267,6 @@ function ViewRideRequests() {
     // </Container>
 
     // Tabs
-    
 
     <Container sx={{ marginTop: "1rem", minWidth: 0 }} maxWidth="xl">
       <AdminPageTitle title="View Ride Requests" />
@@ -214,11 +279,110 @@ function ViewRideRequests() {
         >
           Create Ride Request
         </Button>
+        <div>&nbsp;&nbsp;&nbsp;</div>
+
+        {/* Button to create request for new pickup location  */}
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate(`/riderequests/${user.id}/requestnewpickup`)}
+        >
+          Request new pick up location
+        </Button>
         {/* ... (your code) */}
       </Box>
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
-        {renderRideRequestCards()}
+
+      {/* Tabs */}
+      <Box sx={{ width: "100%", typography: "body1" }}>
+        <TabContext value={value}>
+          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+            <TabList onChange={handleChange} aria-label="lab API tabs example">
+              <Tab label="Pending" value="1" />
+              <Tab label="Accepted" value="2" />
+              <Tab label="Completed" value="3" />
+              <Tab label="Rated" value="4" />
+            </TabList>
+          </Box>
+          {/* <TabPanel value="1">
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+              {filterRideRequests("Pending", "Accepted").length === 0 ? (
+                <Typography>No pending or accepted ride requests.</Typography>
+              ) : (
+                rideRequests
+                  .filter((request) => request.status !== "Completed")
+                  .map((rideRequest) => (
+                    <RideRequestCard
+                      key={rideRequest.requestId}
+                      rideRequest={rideRequest}
+                      handleDetail={handleDetail}
+                      handleEdit={handleEdit}
+                      handleOpen={handleOpen}
+                      handleRate={handleRate}
+                    />
+                  ))
+              )}
+            </Box>
+          </TabPanel> */}
+          <TabPanel value="1">
+            {filterRideRequests("Pending").length === 0 ? (
+              <Typography>No pending ride requests.</Typography>
+            ) : (
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+                {renderFilteredRideRequestCards("Pending")}
+              </Box>
+            )}
+          </TabPanel>
+          <TabPanel value="2">
+            {filterRideRequests("Accepted").length === 0 ? (
+              <Typography>No accepted ride requests.</Typography>
+            ) : (
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+                {renderFilteredRideRequestCards("Accepted")}
+              </Box>
+            )}
+          </TabPanel>
+          <TabPanel value="3">
+            {filterRideRequests("Completed").length === 0 ? (
+              <Typography>No completed ride requests.</Typography>
+            ) : (
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+                {renderFilteredRideRequestCards("Completed")}
+              </Box>
+            )}
+          </TabPanel>
+          <TabPanel value="4">
+            {filterRideRequests("Rated").length === 0 ? (
+              <Typography>No rated ride requests.</Typography>
+            ) : (
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+                {renderFilteredRideRequestCards("Rated")}
+              </Box>
+            )}
+          </TabPanel>
+        </TabContext>
       </Box>
+
+      {/* Modal */}
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Are you sure you want to delete ride request?
+          </Typography>
+          <Button
+            onClick={() => {
+              handleDelete(tempRequestId);
+            }}
+          >
+            Yes
+          </Button>
+          <Button onClick={handleClose}>No</Button>
+        </Box>
+      </Modal>
       {/* Add pagination here */}
       {/* ... (your code) */}
     </Container>

@@ -122,6 +122,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true
         },
+        bike_pass_expiry: {
+            type: DataTypes.DATE,
+            allowNull: true
+        },
     }, {
         indexes: [{ unique: true, fields: ["email"] }]
     });
@@ -154,6 +158,11 @@ module.exports = (sequelize, DataTypes) => {
 
         User.hasMany(models.Article, {
             foreignKey: "user_id",
+            onDelete: "CASCADE",
+        });
+
+        User.hasMany(models.RideRating, {
+            foreignKey: "userId",
             onDelete: "CASCADE",
         });
     };

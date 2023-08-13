@@ -9,8 +9,24 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
+        date: {
+            type: DataTypes.DATEONLY,
+            allowNull: true
+        },
+        time: {
+            type: DataTypes.TIME,
+            allowNull: true
+        },
+        formattedTime: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
         wayPoints: {
             type: DataTypes.STRING,
+            allowNull: false
+        },
+        destinationList: {
+            type: DataTypes.JSON,
             allowNull: false
         },
         rideIds: {
@@ -20,6 +36,10 @@ module.exports = (sequelize, DataTypes) => {
         destination: {
             type: DataTypes.STRING,
             allowNull: false
+        },
+        status: {
+            type: DataTypes.STRING,
+            allowNull: true
         },
         duration: {
             type: DataTypes.STRING,
@@ -35,17 +55,17 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 0
         },
         total_cost: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.DOUBLE,
             allowNull: false,
-            defaultValue: 0
+            defaultValue: 0.0
         },
         driver_profit: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.DOUBLE,
             allowNull: false,
             defaultValue: 0
         },
         company_profit: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.DOUBLE,
             allowNull: false,
             defaultValue: 0
         },
