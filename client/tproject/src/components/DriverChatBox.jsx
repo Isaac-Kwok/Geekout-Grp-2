@@ -23,7 +23,7 @@ import useUser from "../context/useUser";
 
 function DriverChatBox({ socket, route, closed, abort=() => {} }) {
   const [sendLoading, setSendLoading] = useState(false);
-  const [connected, setConnected] = useState(socket.connected);
+  const [connected, setConnected] = useState(true);
   const { enqueueSnackbar } = useSnackbar();
   const [messages, setMessages] = useState([]);
   const { user } = useUser();

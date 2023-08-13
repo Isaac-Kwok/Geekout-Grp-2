@@ -32,12 +32,13 @@ function DriverStatistics() {
 
     const columns = [
         { field: 'id', headerName: 'Ride Id', width: 70 },
+        { field: 'status', headerName: 'Status', width: 120 },
         { field: 'distance', headerName: 'Distance', width: 120 },
         { field: 'duration', headerName: 'Duration', width: 120 },
         { field: 'driver_profit', headerName: 'Profit', width: 120 },
         { field: 'names', headerName: 'Rider names', width: 300 },
-        { field: 'pickUp', headerName: 'Pick Up', width: 200 },
-        { field: 'destinationList', headerName: 'Destinations', width: 800 },
+        { field: 'pickUp', headerName: 'Pick Up', width: 250 },
+        { field: 'destinationList', headerName: 'Destinations', width: 1000 },
 
     ];
 
@@ -164,11 +165,11 @@ function DriverStatistics() {
             const distanceValue = ride.distance_value;
 
             if (distanceValue < 5000) {
-                distanceRanges[0].value += 20;
+                distanceRanges[0].value += 100/inputList.length;
             } else if (distanceValue >= 5000 && distanceValue < 10000) {
-                distanceRanges[1].value += 20;
+                distanceRanges[1].value += 100/inputList.length;
             } else {
-                distanceRanges[2].value += 20;
+                distanceRanges[2].value += 100/inputList.length;
             }
         });
         setDistanceRanges(distanceRanges)

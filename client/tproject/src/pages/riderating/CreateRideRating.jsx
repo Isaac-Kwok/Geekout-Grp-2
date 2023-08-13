@@ -71,7 +71,7 @@ function CreateRideRating() {
     onSubmit: (data) => {
       // Construct the request payload
 
-      data.stars = Number(data.stars);
+      data.rating = Number(data.stars);
       data.comment = data.comment.trim();
       data.requestId = requestId;
       data.ratingId = userId + requestId;
