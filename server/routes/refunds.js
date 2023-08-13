@@ -13,14 +13,14 @@ router.get('/:orderId', validateToken, async (req, res) => {
     const orderId = req.params.orderId;
     try {
         const order = await Order.findOne({
-            where: { 
+            where: {
                 user_id: req.user.id,
                 id: orderId
-            }, 
+            },
             include: [
                 {
                     model: OrderItem,
-                    include: [ Product ]
+                    include: [Product]
                 },
                 {
                     model: User,
@@ -28,7 +28,7 @@ router.get('/:orderId', validateToken, async (req, res) => {
                 },
             ]
         });
-        
+
         if (!order || order.order_status !== 6) {
             res.status(404).json({ error: 'No refund processing found for this order' });
             return;
@@ -69,6 +69,28 @@ router.post('/', validateToken, async (req, res) => {
             user_id: req.user.id,
             refund_reason: body.refund_reason,
             refund_amount: body.refund_amount
+        });
+
+        const user = await User.findByPk(order.user_id);
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        const link = process.env.CLIENT_URL + `/profile/orders/${order.id}`;
+
+        // Render email content using EJS template
+        const html = await ejs.renderFile("templates/refundReply.ejs", {
+            name: user.name,
+            refund_id: refund.id,
+            url: link
+        });
+
+        // Send email
+        await emailSender.sendMail({
+            from: process.env.EMAIL_USER,
+            to: user.email,
+            subject: 'Refund Reply',
+            html: html
         });
 
         res.json({ order, refund });
