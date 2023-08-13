@@ -11,6 +11,7 @@ import useUser from '../../context/useUser';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import CheckIcon from '@mui/icons-material/Check';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
+import AdminPageTitle from '../../components/AdminPageTitle';
 
 
 function DriverPastRoutes() {
@@ -30,12 +31,13 @@ function DriverPastRoutes() {
 
     const columns = [
         { field: 'id', headerName: 'Ride Id', width: 70 },
+        { field: 'status', headerName: 'Status', width: 120 },
         { field: 'distance', headerName: 'Distance', width: 120 },
         { field: 'duration', headerName: 'Duration', width: 120 },
         { field: 'driver_profit', headerName: 'Profit', width: 120 },
         { field: 'names', headerName: 'Rider names', width: 300 },
-        { field: 'pickUp', headerName: 'Pick Up', width: 200 },
-        { field: 'destinationList', headerName: 'Destinations', width: 800 },
+        { field: 'pickUp', headerName: 'Pick Up', width: 250 },
+        { field: 'destinationList', headerName: 'Destinations', width: 1000 },
 
     ];
 
@@ -114,7 +116,8 @@ function DriverPastRoutes() {
                     flexDirection: 'column',
                     alignItems: 'center'
                 }}>
-                    <Container maxWidth="xl" sx={{ marginTop: '2rem' }}>
+                    <Container maxWidth="xl" sx={{marginBottom: "5rem" }}>
+                    <AdminPageTitle title="Past Routes" backbutton />
                         <Grid container spacing={2} sx={{ marginBottom: '2rem' }}>
                             <Grid item xs={12} xl={4} md={4} sm={4} lg={4}>
                                 <Card>

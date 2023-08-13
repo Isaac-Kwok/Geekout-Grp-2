@@ -60,7 +60,7 @@ function Register() {
             <Card sx={{ maxWidth: 750, margin: "auto" }}>
                 <Box component="form" onSubmit={formik.handleSubmit}>
                     <CardContent>
-                        <CardTitle title="Register" icon={<PersonAddIcon color="text.secondary" />} />
+                        <CardTitle title="Register an account" icon={<PersonAddIcon />} back="/login" />
                         <Stack spacing={2} sx={{ marginY: 2 }}>
                             <TextField
                                 type="email"

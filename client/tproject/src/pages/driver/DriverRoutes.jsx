@@ -8,6 +8,7 @@ import DriverRegister from './DriverRegister'
 import DriverDashboard from './DriverDashboard'
 import DriverRouting from './DriverRouting'
 import DriverPastRoutes from './DriverPastRoutes'
+import DriverReviews from './DriverReviews'
 
 
 function ProfileRoutes() {
@@ -31,6 +32,7 @@ function ProfileRoutes() {
                 <Route path="/dashboard" element={<DriverDashboard />} />
                 <Route path="/routes" element={<DriverRouting />} />
                 <Route path="/pastRoutes" element={<DriverPastRoutes />} />
+                <Route path="/Reviews" element={<DriverReviews />} />
             </Routes>
         </>
     )

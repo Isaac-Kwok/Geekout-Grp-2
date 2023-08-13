@@ -33,7 +33,22 @@ function ViewLogins() {
             minWidth: 150,
             
         },
-        { field: 'total_amount', headerName: 'Total Price ($)', type: 'number', minWidth: 150 },
+        { 
+            field: 'total_amount', 
+            headerName: 'Total Price ($)', 
+            minWidth: 150,
+            valueGetter: (params) => {
+                return params.row.order_payment_method === "Points" ? '-' : params.row.total_amount;
+            }
+        },
+        { 
+            field: 'payment_method_check',
+            headerName: 'Points Used',
+            minWidth: 150,
+            valueGetter: (params) => {
+                return params.row.order_payment_method === "Points" ? params.row.points_used : '-';
+            }
+        },
         { field: 'createdAt', headerName: 'Created On', type: 'dateTime', minWidth: 200, valueFormatter: (params) => new Date(params.value).toLocaleString() },
         {
             field: 'actions', type: 'actions', width: 40, getActions: (params) => [
