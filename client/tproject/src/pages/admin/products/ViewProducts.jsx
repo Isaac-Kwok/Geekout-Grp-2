@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Container, Typography, Chip, Button, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions } from '@mui/material'
+import { Container, Typography, Chip, Button, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, Grid, Avatar, Card, CardContent, Stack, Tabs, Tab } from '@mui/material'
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +11,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import AdminPageTitle from '../../../components/AdminPageTitle';
+import CategoryIcon from '@mui/icons-material/Category';
+import SellIcon from '@mui/icons-material/Sell';
+import ClearIcon from '@mui/icons-material/Clear';
+import AddTaskIcon from '@mui/icons-material/AddTask';
+import TabContext from "@mui/lab/TabContext";
+import TabPanel from "@mui/lab/TabPanel";
+
 
 function ViewProducts() {
     const [products, setProducts] = useState([])
@@ -22,13 +29,20 @@ function ViewProducts() {
     const [activateProductDialog, setActivateProductDialog] = useState(false)
     const [activateProduct, setActivateProduct] = useState(null)
     const navigate = useNavigate()
+    const [totalProducts, setTotalProducts] = useState(0);
+    const [onSaleProducts, setOnSaleProducts] = useState(0);
+    const [outOfStockProducts, setOutOfStockProducts] = useState(0);
+    const [activeProducts, setActiveProducts] = useState(0);
+    const [tabValue, setTabValue] = useState("all");
+
+
     const [sortModel, setSortModel] = useState([
         {
             field: "id",
             sort: "desc",
         },
     ]);
-    
+
 
     const columns = [
         {
@@ -119,12 +133,34 @@ function ViewProducts() {
             .then((response) => {
                 const productsData = response.data;
                 setProducts(productsData);
+                setTotalProducts(productsData.length);
+                setOnSaleProducts(productsData.filter(p => p.product_sale).length);
+                setOutOfStockProducts(productsData.filter(p => p.product_stock === 0).length);
+                setActiveProducts(productsData.filter(p => p.product_status == true).length);
                 setLoading(false);
             })
             .catch((error) => {
                 console.error('Error fetching products:', error);
             });
     }
+
+    const filteredProducts = () => {
+        switch (tabValue) {
+            case 'all':
+                return products;
+            case 'onSale':
+                return products.filter(p => p.product_sale === true);
+            case 'active':
+                return products.filter(p => p.product_status === true);
+            case 'deactivated':
+                return products.filter(p => !p.product_status);
+            case 'outOfStock':
+                return products.filter(p => p.product_stock <= 0);
+            default:
+                return products;
+        }
+    };
+
 
     useEffect(() => {
         document.title = 'EnviroGo - View Products';
@@ -136,20 +172,175 @@ function ViewProducts() {
         <>
             <Container maxWidth="xl" sx={{ marginY: "1rem", minWidth: 0 }}>
                 <AdminPageTitle title="View Products" />
+                <Grid container spacing={2} sx={{ marginBottom: "1.5em" }}>
+                    <Grid item xs={12} xl={3} md={6} sm={6}>
+                        <Card>
+                            <CardContent>
+                                <Stack
+                                    alignItems="flex-start"
+                                    direction="row"
+                                    justifyContent="space-between"
+                                    spacing={3}
+                                >
+                                    <Stack spacing={1}>
+                                        <Typography
+                                            color="text.secondary"
+                                            variant="h6"
+                                        >
+                                            Total Products
+                                        </Typography>
+                                        <Typography variant="h4">
+                                            {totalProducts}
+
+                                        </Typography>
+                                    </Stack>
+                                    <Avatar
+                                        sx={{
+                                            backgroundColor: 'secondary.main',
+                                            height: 56,
+                                            width: 56
+                                        }}
+                                    >
+                                        <CategoryIcon />
+                                    </Avatar>
+                                </Stack>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                    <Grid item xs={12} xl={3} md={6} sm={6}>
+                        <Card>
+                            <CardContent>
+                                <Stack
+                                    alignItems="flex-start"
+                                    direction="row"
+                                    justifyContent="space-between"
+                                    spacing={3}
+                                >
+                                    <Stack spacing={1}>
+                                        <Typography
+                                            color="text.secondary"
+                                            variant="h6"
+                                        >
+                                            On Sale Products
+                                        </Typography>
+                                        <Typography variant="h4">
+                                            {onSaleProducts}
+                                        </Typography>
+                                    </Stack>
+                                    <Avatar
+                                        sx={{
+                                            backgroundColor: '#ffc107',
+                                            height: 56,
+                                            width: 56
+                                        }}
+                                    >
+                                        <SellIcon />
+                                    </Avatar>
+                                </Stack>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                    <Grid item xs={12} xl={3} md={6} sm={6}>
+                        <Card>
+                            <CardContent>
+                                <Stack
+                                    alignItems="flex-start"
+                                    direction="row"
+                                    justifyContent="space-between"
+                                    spacing={3}
+                                >
+                                    <Stack spacing={1}>
+                                        <Typography
+                                            color="text.secondary"
+                                            variant="h6"
+                                        >
+                                            Out of Stock Products
+                                        </Typography>
+                                        <Typography variant="h4">
+                                            {outOfStockProducts}
+                                        </Typography>
+                                    </Stack>
+                                    <Avatar
+                                        sx={{
+                                            backgroundColor: 'error.main',
+                                            height: 56,
+                                            width: 56
+                                        }}
+                                    >
+                                        <ClearIcon />
+                                    </Avatar>
+                                </Stack>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                    <Grid item xs={12} xl={3} md={6} sm={6}>
+                        <Card>
+                            <CardContent>
+                                <Stack
+                                    alignItems="flex-start"
+                                    direction="row"
+                                    justifyContent="space-between"
+                                    spacing={3}
+                                >
+                                    <Stack spacing={1}>
+                                        <Typography
+                                            color="text.secondary"
+                                            variant="h6"
+                                        >
+                                            Active Products
+                                        </Typography>
+                                        <Typography variant="h4">
+                                            {activeProducts}
+                                        </Typography>
+                                    </Stack>
+                                    <Avatar
+                                        sx={{
+                                            backgroundColor: 'success.main',
+                                            height: 56,
+                                            width: 56
+                                        }}
+                                    >
+                                        <AddTaskIcon />
+                                    </Avatar>
+                                </Stack>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                </Grid>
                 <Button LinkComponent={Link} variant="contained" color="primary" sx={{ marginBottom: "1rem" }} startIcon={<AddIcon />} to="/admin/products/create">Create Product</Button>
-                <DataGrid
-                    rows={products}
-                    columns={columns}
-                    pageSize={10}
-                    slots={{
-                        LoadingOverlay: LoadingSkeleton
-                    }}
-                    sortModel={sortModel}
-                    onSortModelChange={(model) => setSortModel(model)}
-                    loading={loading}
-                    autoHeight
-                    getRowId={(row) => row.id}
-                />
+                <TabContext value={tabValue}>
+                    <Tabs
+                        value={tabValue}
+                        onChange={(e, newVal) => setTabValue(newVal)}
+                        variant="scrollable"
+                        allowScrollButtonsMobile
+                        aria-label="Products tabs"
+                        indicatorColor="primary"
+                        textColor="primary"
+                    >
+                        <Tab label="All" value="all" />
+                        <Tab label="On Sale" value="onSale" />
+                        <Tab label="Active" value="active" />
+                        <Tab label="Deactivated" value="deactivated" />
+                        <Tab label="Out of Stock" value="outOfStock" />
+                    </Tabs>
+
+                    {['all', 'onSale', 'active', 'deactivated', 'outOfStock'].map(tab => (
+                        <TabPanel key={tab} value={tab}>
+                            <DataGrid
+                                rows={filteredProducts(tab)}
+                                columns={columns}
+                                pageSize={10}
+                                slots={{ LoadingOverlay: LoadingSkeleton }}
+                                sortModel={sortModel}
+                                onSortModelChange={(model) => setSortModel(model)}
+                                loading={loading}
+                                autoHeight
+                                getRowId={(row) => row.id}
+                            />
+                        </TabPanel>
+                    ))}
+                </TabContext>
 
             </Container>
             <Dialog open={deactivateProductDialog} onClose={handleDeactivateProductDialogClose}>
