@@ -12,21 +12,20 @@ import { Visibility } from '@mui/icons-material';
 
 function ViewBicycle() {
 
-    const [bicycle, setBicycle] = useState([])
-    const [loading, setLoading] = useState(true)
-    const [deactivateLoading, setDeactivateLoading] = useState(null)
-    const [deleteBicycleDialog, setDeleteBicycleDialog] = useState(false)
-    const [deleteBicycle, setDeleteBicycle] = useState(null)
-    const navigate = useNavigate()
+    const [bicycle, setBicycle] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [deactivateLoading, setDeactivateLoading] = useState(null);
+    const [deleteBicycleDialog, setDeleteBicycleDialog] = useState(false);
+    const [deleteBicycle, setDeleteBicycle] = useState(null);
+    const navigate = useNavigate();
 
     const columns = [
         { field: "id", headerName: "ID", minWidth: 200 },
         { field: "bicycle_lat", headerName: "Latitude", minWidth: 50, flex: 1 },
         { field: "bicycle_lng", headerName: "Longitude", minWidth: 50, flex: 1 },
-        {
-            field: 'location', headerName: 'Location', minWidth: 200,
-            renderCell: (params) => params.row.bicycle_lat || "Loading...",
-        },
+        { field: "disabled", headerName: "Disabled", minWidth: 50, flex: 1 },
+        { field: "registered", headerName: "Registered", minWidth: 50, flex: 1 },
+        { field: "reports", headerName: "Reports", minWidth: 50, flex: 1 },
         {
             field: 'actions', type: 'actions', width: 80, getActions: (params) => [
                 <GridActionsCellItem
@@ -54,7 +53,7 @@ function ViewBicycle() {
                     }}
                     showInMenu
                 />,
-                
+
             ]
         },
 

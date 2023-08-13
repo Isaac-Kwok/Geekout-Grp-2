@@ -52,7 +52,7 @@ function BicycleHistory() {
 
     const handleGetUsages = () => {
         if (user) {
-            http.get("/bicycle/usages/user/"+user?.id)
+            http.get("/bicycle/usages/user/" + user?.id)
                 .then((res) => {
                     if (res.status === 200) {
                         const sortedUsages = res.data.sort((a, b) => {
@@ -60,7 +60,7 @@ function BicycleHistory() {
                             const dateB = new Date(b.unlockedAt);
                             return dateB - dateA; // Compare dates for sorting
                         });
-        
+
                         setUsages(sortedUsages);
                         const directionsPromises = sortedUsages.map(usage => {
                             const start = getCoords(usage.startPosition);
@@ -226,7 +226,7 @@ function BicycleHistory() {
                         />
                     )}
                 </GoogleMap>
-                <Grid container spacing={2}>
+                <Grid container spacing={2} justifyContent="center">
                     <Grid item xs={6}>
                         <h2>Time: {returnTime(time)}</h2>
                     </Grid>
@@ -258,10 +258,10 @@ function BicycleHistory() {
                 </Grid>
             </Grid>
             {isLoaded ? (
-                usages.length > 0 ? ( // Check if there are usages
+                usages.length > 0 ? (
                     usages.map((usage, index) => (
                         <React.Fragment key={index}>
-                            {renderUsage(usage, index)} {/* Pass the index as an argument */}
+                            {renderUsage(usage, index)}
                             {index < usages.length - 1 && <hr />}
                         </React.Fragment>
                     ))
