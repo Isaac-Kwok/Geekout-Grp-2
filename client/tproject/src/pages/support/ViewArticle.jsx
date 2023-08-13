@@ -7,7 +7,7 @@ import PageTitle from '../../components/PageTitle';
 import http from '../../http'
 import { useSnackbar } from 'notistack'
 import { useNavigate, useParams } from 'react-router-dom'
-import { MuiMarkdown } from 'mui-markdown';
+import MDEditor from '@uiw/react-md-editor';
 
 function ViewArticle() {
     const { id } = useParams();
@@ -61,65 +61,7 @@ function ViewArticle() {
                             </Box>
                         </Box>
                         <Box mt={"1rem"}>
-                            <MuiMarkdown
-                                codeWrapperStyles={{
-                                    backgroundColor: "#f5f5f5",
-                                    padding: "0.5rem",
-                                    borderRadius: "5px",
-                                    border: "1px solid #e0e0e0",
-                                    margin: "1rem 0"
-                                }}
-                                overrides={{
-                                    h1: {
-                                        component: Typography,
-                                        props: {
-                                            style: {
-                                                fontSize: "3rem",
-                                                fontWeight: "bold",
-                                            }
-                                        },
-                                    },
-                                    h2: {
-                                        component: Typography,
-                                        props: {
-                                            style: {
-                                                fontSize: "1.5rem",
-                                                fontWeight: "bold",
-                                            }
-                                        },
-                                    },
-                                    h3: {
-                                        component: Typography,
-                                        props: {
-                                            style: {
-                                                fontSize: "1.25rem",
-                                                fontWeight: "bold",
-                                            }
-                                        },
-                                    },
-                                    h4: {
-                                        component: Typography,
-                                        props: {
-                                            style: {
-                                                fontSize: "1rem",
-                                                fontWeight: "bold",
-                                            }
-                                        },
-                                    },
-                                    h5: {
-                                        component: Typography,
-                                        props: {
-                                            style: {
-                                                fontSize: "0.875rem",
-                                                fontWeight: "bold",
-                                            }
-                                        },
-                                    },
-
-                                }}
-                            >
-                                {article?.content}
-                            </MuiMarkdown>
+                            <MDEditor.Markdown source={article?.content} style={{  fontFamily: "Poppins" }} />
                         </Box>
                         
                     </CardContent>

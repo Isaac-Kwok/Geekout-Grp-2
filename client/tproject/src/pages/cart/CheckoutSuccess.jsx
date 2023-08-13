@@ -53,7 +53,7 @@ const CheckoutSuccess = () => {
         refreshUser();
         http.get("/orders/" + (searchParams.get("orderId"))).then(res => {
             if (res.status === 200) {
-                if (res.data.order_status != "Pending") {
+                if (res.data.order_status != "Pending" || searchParams.get("redirect_status") === "succeeded") {
                     setSuccess(true);
                     removeItemsFromCart();
                 }

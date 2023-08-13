@@ -1,23 +1,18 @@
 import React, { useState, useEffect } from 'react'
-import { Paper, Container, Typography, Card, CardContent, CardActions, Box, Stack, Checkbox, InputAdornment, TextField, Grid, FormControlLabel, FormControl, IconButton, InputLabel, Select, MenuItem, Button, Dialog, DialogContent, DialogActions, DialogContentText, DialogTitle, Link, Input } from '@mui/material'
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { Paper, Container, Typography, Card, CardContent, CardActions, Box, Grid, IconButton, Button } from '@mui/material'
 import CardTitle from '../../components/CardTitle';
 import { useNavigate, useParams } from 'react-router-dom'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import CloseIcon from '@mui/icons-material/Close';
 import http from '../../http'
 import MDEditor from '@uiw/react-md-editor';
 import AdminPageTitle from '../../components/AdminPageTitle';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import CategoryIcon from '@mui/icons-material/Category';
 import { useSnackbar } from 'notistack';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import Carousel from 'react-material-ui-carousel';
 import { useTheme } from '@mui/material/styles';
+import { AddShoppingCart, Description } from '@mui/icons-material';
 
 
 
@@ -177,22 +172,10 @@ function ViewSingleProduct() {
     return (
         <>
             {product && (
-                <Container maxWidth="xl" sx={{ marginTop: "1rem" }}>
+                <Container maxWidth="xl">
+                    <AdminPageTitle title={product.product_name} subtitle={product.product_category} backbutton />
                     <Card sx={{ margin: "auto" }}>
                         <CardContent>
-                            <Box display="flex" alignItems="center" mb={3}>
-                                {/* Navigation Button */}
-                                <Box>
-                                    <IconButton size="large" onClick={() => navigate("/products")}>
-                                        <ArrowBackIcon />
-                                    </IconButton>
-                                </Box>
-                                {/* Title on the Left */}
-                                <Box textAlign="left" ml={3}>
-                                    <Typography variant="h3" fontWeight="700" >{product.product_name}</Typography>
-                                    <Typography variant="subtitle1" color="textSecondary" >Category: {product.product_category}</Typography>
-                                </Box>
-                            </Box>
                             <Grid container spacing={3}>
                                 {/* Product Picture */}
                                 <Grid item xs={12} md={9} container alignItems="flex-end" style={{ height: '100%' }}>
@@ -214,7 +197,7 @@ function ViewSingleProduct() {
                                                 style: {
                                                     bottom: '0 !important',
                                                     top: 'unset !important',
-                                                    position: 'absolute !important',  
+                                                    position: 'absolute !important',
                                                     width: '100% !important'
                                                 }
                                             }}
@@ -238,11 +221,8 @@ function ViewSingleProduct() {
 
                                 {/* Product Details */}
                                 <Grid item xs={12} md={3} container alignItems="flex-end">
-                                    <Card variant="outlined" elevation={3} sx={{ width: '100%', boxShadow: 2 }}>
+                                    <Card variant="outlined" sx={{ width: '100%' }}>
                                         <CardContent>
-                                            <Typography variant="h5" fontWeight="bold" component="span">
-                                                Price:
-                                            </Typography>
                                             <Typography variant="h5" fontWeight="bold" component="span" sx={{ textDecoration: product.product_sale ? "line-through" : "none" }}>
                                                 ${product.product_price ? product.product_price : "NIL"}
                                             </Typography>
@@ -257,7 +237,10 @@ function ViewSingleProduct() {
                                                     {product.product_status == 1 && product.product_stock ? "In Stock" : "Out of Stock"}
                                                 </span>
                                             </Typography>
-                                            <Box>
+
+                                        </CardContent>
+                                        <CardActions>
+                                            <Box width={"100%"}>
                                                 {product.product_status == 1 && product.product_stock && (
                                                     <>
                                                         <Grid container spacing={2} alignItems="center">
@@ -275,27 +258,29 @@ function ViewSingleProduct() {
                                                                 </IconButton>
                                                             </Grid>
                                                         </Grid>
-                                                        <Button onClick={addToCart} variant="contained" color="primary" sx={{ width: 'calc(100% - 50px)', marginRight: '10px' }}>
-                                                            Add to Cart
-                                                        </Button>
                                                     </>)}
-                                                <IconButton onClick={() => handleAddToWishlist(product.id)}>
-                                                    {inWishlist ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
-                                                </IconButton>
+                                                <Box display={"flex"} alignItems={"center"}>
+                                                    <Button disabled={!(product.product_status == 1 && product.product_stock)} fullWidth startIcon={<AddShoppingCart />} onClick={addToCart} variant="contained" color="primary" sx={{ marginRight: '1rem', flexGrow: 1 }}>
+                                                        Add to Cart
+                                                    </Button>
+                                                    <Box>
+                                                        <IconButton onClick={() => handleAddToWishlist(product.id)}>
+                                                            {inWishlist ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
+                                                        </IconButton>
+                                                    </Box>
+                                                </Box>
                                             </Box>
-                                        </CardContent>
+                                        </CardActions>
                                     </Card>
                                 </Grid>
-
-
-                                {/* Product Description */}
-                                <Grid item xs={12}>
-                                    <Typography variant="h5" fontWeight="bold" gutterBottom>Description</Typography>
-                                    <MDEditor.Markdown
-                                        style={{ backgroundColor: "white", color: "black", fontFamily: "Poppins" }}
-                                        source={product.product_description} />
-                                </Grid>
                             </Grid>
+                        </CardContent>
+                    </Card>
+
+                    <Card sx={{ margin: "auto", marginY: "1rem" }}>
+                        <CardContent>
+                            <CardTitle title="Product Description" icon={<Description />} />
+                            <MDEditor.Markdown style={{  fontFamily: "Poppins", marginTop: "0.5rem" }} source={product.product_description} />
                         </CardContent>
                     </Card>
                 </Container>
