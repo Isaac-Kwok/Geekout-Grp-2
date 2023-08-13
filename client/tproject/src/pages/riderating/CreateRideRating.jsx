@@ -25,6 +25,8 @@ function CreateRideRating() {
   // const associatedUser = await rideRatingInstance.getUser(); // Using the alias "user"
   const [loading, setLoading] = useState(false);
   const { userId, requestId } = useParams();
+  const [route, setRoute] = useState(null);
+  const [user, setUser] = useState(null);
   const { enqueueSnackbar } = useSnackbar();
   const [rideRequest, setRideRequest] = useState([]);
   const navigate = useNavigate();
@@ -45,9 +47,57 @@ function CreateRideRating() {
     fetchRideRequests();
   }, []);
 
+  useEffect(() => {
+    // Fetch route data on component mount
+    console.log("Ride id for route fetching:", requestId);
+    http
+      .get(`/riderequests/routes/${requestId}`)
+      .then((res) => {
+        console.log("Route data:", res.data);
+        setRoute(res.data);
+      })
+      .catch((err) => {
+        console.error("Error:", err);
+        enqueueSnackbar("Failed to fetch route data!", {
+          variant: "error",
+        });
+      });
+  }, [requestId]);
+
+  useEffect(() => {
+    // Fetch route data on component mount
+    console.log("user id for user fetching:", userId);
+    http
+      .get(`/user`)
+      .then((res) => {
+        console.log("User data:", res.data);
+        setUser(res.data);
+      })
+      .catch((err) => {
+        console.error("Error:", err);
+        enqueueSnackbar("Failed to fetch route data!", {
+          variant: "error",
+        });
+      });
+  }, [userId]);
+
+  const calculatePrice = (route) => {
+    const destinations = route.routes[0].destinationList.split("|");
+    const numberOfDestinations = destinations.length - 1; // Minus one because of the split
+    const pricePerPassenger = route.routes[0].total_cost / numberOfDestinations;
+
+    if (numberOfDestinations === 1) {
+      return pricePerPassenger;
+    }
+
+    const finalPrice = pricePerPassenger * rideRequest.numberOfPassengers;
+    return finalPrice;
+  };
+
+  // Formik
   const formik = useFormik({
     initialValues: {
-      stars: 1,
+      rating: 1,
       comment: "",
     },
 
@@ -56,25 +106,29 @@ function CreateRideRating() {
       const errors = {};
 
       // Check if "Select Pick Up" is chosen and set an error if it is
-      if (values.stars === 0) {
-        errors.pickUp = "Stars must be minimally 1!";
+      if (values.rating === 0) {
+        errors.rating = "Rating must be minimally 1!";
       }
 
       return errors;
     },
 
     validationSchema: Yup.object({
-      stars: Yup.number().required("Please rate the ride"),
+      rating: Yup.number().required("Please rate the ride"),
       comment: Yup.string(),
     }),
 
     onSubmit: (data) => {
       // Construct the request payload
-
-      data.rating = Number(data.stars);
+      console.log('isthereroute',route);
+      data.rating = Number(data.rating);
       data.comment = data.comment.trim();
       data.requestId = requestId;
       data.ratingId = userId + requestId;
+      data.reviewer = user.name;
+      data.routeId = route.routes[0].id;
+      data.driverId = route.routes[0].user_id;
+      console.log("data to submit:", data)
 
       rideRequest.status = "Rated";
 
@@ -108,7 +162,8 @@ function CreateRideRating() {
         .catch((err) => {
           console.error("Error:", err); // Log the error
           enqueueSnackbar(
-            "Ride rating submission failed! - Edit Ride request status part " + err.response.data.message,
+            "Ride rating submission failed! - Edit Ride request status part " +
+              err.response.data.message,
             { variant: "error" }
           );
         })
@@ -134,6 +189,18 @@ function CreateRideRating() {
             <InfoBox title="Pick Up" value={rideRequest.pickUp} />
             <InfoBox title="Destination" value={rideRequest.destination} />
             <InfoBox title="Status" value={rideRequest.status} />
+            {/* Wait for route to load */}
+            {route && (
+              <div>
+                <InfoBox title="Price ($)" value={calculatePrice(route)} />
+                <InfoBox title="Duration" value={route.routes[0].duration} />
+                <InfoBox title="Distance" value={route.routes[0].distance} />
+                <InfoBox
+                  title="Destination(s)"
+                  value={route.routes[0].destination}
+                />
+              </div>
+            )}
           </Paper>
         </Grid>
 
@@ -156,15 +223,15 @@ function CreateRideRating() {
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   <Typography>Rating:</Typography>
                   <Rating
-                    id="stars"
-                    name="stars"
+                    id="rating"
+                    name="rating"
                     defaultValue={1}
                     max={5}
                     size="large"
-                    value={formik.values.stars}
+                    value={Number(formik.values.rating)}
                     onChange={formik.handleChange}
-                    error={formik.touched.stars && Boolean(formik.errors.stars)}
-                    helperText={formik.touched.stars && formik.errors.stars}
+                    error={formik.touched.rating && Boolean(formik.errors.rating)}
+                    helperText={formik.touched.rating && formik.errors.rating}
                   />
                 </Box>
               </Paper>

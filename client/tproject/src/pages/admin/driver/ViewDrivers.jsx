@@ -277,10 +277,11 @@ function ViewDriverApplications() {
                                 <Stack spacing={1}>
                                     <Typography
                                         color="text.secondary"
-                                        variant="overline"
+                                        variant="h6"
                                     >
                                         Total Drivers
                                     </Typography>
+                                    
                                     <Typography variant="h4">
                                         {driverApplications.length}
                                     </Typography>
@@ -312,7 +313,7 @@ function ViewDriverApplications() {
                                 <Stack spacing={1}>
                                     <Typography
                                         color="text.secondary"
-                                        variant="overline"
+                                        variant="h6"
                                     >
                                         Active Drivers
                                     </Typography>
@@ -347,7 +348,7 @@ function ViewDriverApplications() {
                                 <Stack spacing={1}>
                                     <Typography
                                         color="text.secondary"
-                                        variant="overline"
+                                        variant="h6"
                                     >
                                         Not Active Drivers
                                     </Typography>
@@ -381,7 +382,7 @@ function ViewDriverApplications() {
                                 <Stack spacing={1}>
                                     <Typography
                                         color="text.secondary"
-                                        variant="overline"
+                                        variant="h6"
                                     >
                                         On duty drivers
                                     </Typography>

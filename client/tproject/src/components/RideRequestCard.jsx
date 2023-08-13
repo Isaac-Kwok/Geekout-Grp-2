@@ -5,11 +5,13 @@ import {
   CardContent,
   Typography,
   IconButton,
+  Button,
   Grid,
 } from "@mui/material";
 import { Edit, Delete, Visibility } from "@mui/icons-material";
 import InfoBox from "../components/InfoBox";
 import StarHalfIcon from "@mui/icons-material/StarHalf";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 function RideRequestCard({
   rideRequest,
@@ -17,6 +19,7 @@ function RideRequestCard({
   handleEdit,
   handleOpen,
   handleRate,
+  handleOpenAbort,
 }) {
   const { locationDetails } = rideRequest;
   const imageFile = locationDetails ? locationDetails.imageFile : null;
@@ -52,6 +55,17 @@ function RideRequestCard({
             <Grid item xs={6} sm={6}>
               <InfoBox title="Status" value={rideRequest.status} />
             </Grid>
+
+            {rideRequest.status === "Accepted" && (
+              <Grid item xs={6} sm={6}>
+                <Typography></Typography>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => handleDetail(rideRequest.requestId)}
+                >View More Details</Button>
+              </Grid>
+            )}
           </Grid>
         </Grid>
         <IconButton
@@ -60,7 +74,7 @@ function RideRequestCard({
         >
           <Visibility />
         </IconButton>
-        {!["Completed", "Rated"].includes(rideRequest.status) && (
+        {!["Completed", "Rated", "Accepted"].includes(rideRequest.status) && (
           <IconButton
             onClick={() => handleEdit(rideRequest.requestId)}
             title="Edit Request"
@@ -69,12 +83,23 @@ function RideRequestCard({
           </IconButton>
         )}
 
-        {!["Completed", "Rated"].includes(rideRequest.status) && (
+        {!["Completed", "Rated", "Accepted"].includes(rideRequest.status) && (
           <IconButton
             onClick={() => handleOpen(rideRequest.requestId)}
             title="Delete Request"
           >
             <Delete />
+          </IconButton>
+        )}
+
+        {rideRequest.status === "Accepted" && (
+          <IconButton
+            onClick={() =>
+              handleOpenAbort(rideRequest.requestId, rideRequest.routeId)
+            }
+            title="Abort Request"
+          >
+            <CancelIcon />
           </IconButton>
         )}
 

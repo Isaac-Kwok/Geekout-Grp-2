@@ -29,6 +29,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import dayjs from 'dayjs';
 
 function EditRideRequests() {
   const [loading, setLoading] = useState(false);
@@ -96,12 +97,12 @@ function EditRideRequests() {
     initialValues: {
       ...rideRequest,
       // Leave out time from initialValues, set it using useEffect
-      dateTime: null,
+      dateTime: dayjs(rideRequest.dateTime),
     },
     enableReinitialize: true,
 
     validationSchema: Yup.object({
-      dateTime: Yup.string().required("Pleae provide date & time of pickup!"),
+      dateTime: Yup.mixed().required("Please provide date & time of pickup!"),
       time: Yup.string().required("Please provide time of pickup!"),
       pickUp: Yup.string().required("Please provide pick-up location!"),
       destination: Yup.string().required("Please provide destination!"),

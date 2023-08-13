@@ -8,7 +8,7 @@ const { validateToken } = require("../middleware/validateToken");
 // router.post("/create", validateToken, async (req, res) => {
 //   const schema = yup.object().shape({
 //     requestId: yup.number().required(),
-//     stars: yup.number().required(),
+//     rating: yup.number().required(),
 //     comment: yup.string().max(1024),
 //     dateTime: yup.date().required(),
 //   });
@@ -32,7 +32,7 @@ router.post("/create", validateToken, async (req, res) => {
   data.dateTime = new Date();
 
   const schema = yup.object().shape({
-    stars: yup.number().required(),
+    rating: yup.number().required(),
     comment: yup.string().max(1024),
   });
 
@@ -76,12 +76,25 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// Read all ratings
+router.get('/allratings', validateToken, async (req, res) => {
+  try {
+    const ratings = await RideRating.findAll();
+    console.log("Rating object from /viewall", ratings);
+    res.status(201).json(ratings);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'An error occurred.' });
+  }
+});
+
+
 // Update a rating
 router.put("/:id", validateToken, async (req, res) => {
   const ratingId = req.params.id;
 
   const schema = yup.object().shape({
-    stars: yup.number(),
+    rating: yup.number(),
     comment: yup.string().max(1024),
     dateTime: yup.date(),
   });
