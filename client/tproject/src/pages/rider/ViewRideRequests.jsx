@@ -214,7 +214,7 @@ function ViewRideRequests() {
       });
     http
       .put(
-        `/riderequests/abortrequest/requestId/${requestId}/routeId/${requestId}`
+        `/riderequests/abortrequest/requestId/${requestId}/routeId/${routeId}`
       )
       .then((res) => {
         console.log(res.data);
@@ -328,6 +328,16 @@ function ViewRideRequests() {
           onClick={() => navigate(`/riderequests/${user.id}/requestnewpickup`)}
         >
           Request new pick up location
+        </Button>
+        <div>&nbsp;&nbsp;&nbsp;</div>
+        {/* /completed/viewRating/user/:userId/request/:requestId */}
+        {/* Button to go view ratings */}
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate(`/riderequests/completed/viewRating/${user.id}`)}
+        >
+          View Rated Rides
         </Button>
         {/* ... (your code) */}
       </Box>

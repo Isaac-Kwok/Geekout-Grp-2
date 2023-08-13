@@ -245,7 +245,7 @@ const refundRoutes = require('./routes/refunds.js');
 const adminSupportRoutes = require("./routes/admin/support");
 const supportRoutes = require("./routes/support");
 const rideRequestRoutes = require("./routes/rideRequests");
-const rideRatingRoutes = require("./routes/rideRatings");
+const rideRatingRoutes = require("./routes/rideRatings.js");
 app.use("/file", fileRoute);
 
 app.use(express.urlencoded({ extended: false }));

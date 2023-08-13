@@ -109,9 +109,9 @@ const RideRequestDetails = () => {
       })
       .catch((err) => {
         console.error("Error:", err);
-        enqueueSnackbar("Failed to fetch route data!", {
-          variant: "error",
-        });
+        // enqueueSnackbar("Failed to fetch route data!", {
+        //   variant: "error",
+        // });
       });
   }, [requestId]);
 
@@ -209,7 +209,7 @@ const RideRequestDetails = () => {
               />
               <Grid container spacing={2} sx={{ marginY: "1rem" }}>
                 <Grid xs={12} lg={12} spacing={1} item container>
-                  {rideRequest.status === "Accepted" && (
+                  {["Accepted", "Completed", "Rated"].includes(rideRequest.status) && (
                     <Grid xs={12} lg={12} spacing={1} item container>
                       <Grid item xs={6} sm={6}>
                         {/* <InfoBox title="Price ($)" value={route.routes[0].total_cost} /> */}

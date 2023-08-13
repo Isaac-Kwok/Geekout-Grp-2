@@ -8,6 +8,7 @@ import EditRideRequests from './EditRideRequests'
 import ViewSpecificRequest from './ViewSpecificRequest'
 import CreateLocationRequest from './CreateLocationRequest'
 import CreateRideRating from '../riderating/CreateRideRating'
+import ViewAllRatings from '../riderating/ViewAllRatings'
 
 function RiderRoutes() {
     const { enqueueSnackbar } = useSnackbar()
@@ -28,6 +29,7 @@ function RiderRoutes() {
             <Route path="/myrequests/:userId/:requestId" element={<ViewSpecificRequest />} />
             <Route path="/:userId/requestnewpickup/" element={<CreateLocationRequest />} />
             <Route path="/completed/rate/user/:userId/request/:requestId" element={<CreateRideRating />} />
+            <Route path="/completed/viewRating/:userId" element={<ViewAllRatings />} />
         </Routes>
     )
 }

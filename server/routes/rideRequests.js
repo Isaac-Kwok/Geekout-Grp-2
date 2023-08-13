@@ -3,7 +3,7 @@
 const express = require("express");
 const yup = require("yup");
 const router = express.Router();
-const { RideRequest, User, Route } = require("../models");
+const { RideRequest, User, Route, RideRating } = require("../models");
 const { validateToken } = require("../middleware/validateToken");
 
 // create new ride request
@@ -89,7 +89,15 @@ router.get("/routes/:rideId", validateToken, async (req, res) => {
   const { rideId } = req.params;
   try {
     // Find routes based on the provided rideId
-    const routes = await Route.findAll({ where: { rideIds: rideId } });
+
+    const routes = await Route.findAll();
+    for (let index = 0; index < routes.length; index++) {
+      let route = routes[index];
+      if (route.rideIds.includes(rideId.toString())) {
+        console.log("found route:", route);
+        res.status(200).json({ routes: routes });
+      }
+    }
 
     if (routes.length === 0) {
       return res
@@ -98,7 +106,7 @@ router.get("/routes/:rideId", validateToken, async (req, res) => {
     }
 
     // If routes are found, return them in the response
-    res.status(200).json({ routes: routes });
+    // res.status(200).json({ routes: routes });
   } catch (error) {
     console.error(error);
     res
@@ -174,6 +182,18 @@ router.get("/allrequests", async (req, res) => {
     res.json(rideRequests);
   } catch (error) {
     res.status(400).json({ message: "Failed to retrieve ride requests." });
+  }
+});
+
+// Read all ratings
+router.get("/allratings", validateToken, async (req, res) => {
+  try {
+    const ratings = await RideRating.findAll();
+    console.log("Rating object from /viewall", ratings);
+    res.status(201).json(ratings);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "An error occurred." });
   }
 });
 
