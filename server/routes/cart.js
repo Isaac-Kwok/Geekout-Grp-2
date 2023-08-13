@@ -1,7 +1,11 @@
 const express = require("express")
+const ejs = require("ejs")
+const { emailSender } = require("../middleware/emailSender")
 const router = express.Router()
 const { Cart, Product, Order, OrderItem, User } = require("../models")
 const { validateToken } = require("../middleware/validateToken")
+require('dotenv').config();
+const path = require('path')
 
 // Get all items in cart
 router.get('/', validateToken, async (req, res) => {
@@ -13,9 +17,9 @@ router.get('/', validateToken, async (req, res) => {
             },
             include: [
                 {
-                  model: Product,
+                    model: Product,
                 },
-              ],
+            ],
             where: { user_id: userId },
         });
         res.json(cart);
@@ -116,7 +120,7 @@ router.put("/:id", validateToken, async (req, res) => {
 router.get("/productImage/:filename", (req, res) => {
     const fileName = req.params.filename;
     const directoryPath = path.join(__dirname, "../../public/uploads/products/");
-    
+
     res.download(directoryPath + fileName, fileName, (err) => {
         if (err) {
             res.status(500).send({
@@ -137,11 +141,11 @@ router.post("/removeItems", validateToken, async (req, res) => {
         const itemsInCart = await Cart.findAll({ where: { id: itemsToRemove, user_id: userId } });
 
         // Decrement quantity in Product for each cart item
-        for(let item of itemsInCart){
+        for (let item of itemsInCart) {
             const product = await Product.findByPk(item.product_id);
-            if(product && product.product_stock > 0) {
+            if (product && product.product_stock > 0) {
                 let newQuantity = product.product_stock - item.quantity;
-                if(newQuantity < 0) newQuantity = 0; // prevent quantity from going below zero
+                if (newQuantity < 0) newQuantity = 0; // prevent quantity from going below zero
                 await Product.update({ product_stock: newQuantity }, { where: { id: product.id } });
             }
         }
@@ -193,6 +197,8 @@ router.post('/checkout/confirm', async (req, res) => {
         res.status(500).send('An error occurred while creating the order.');
     }
 });
+
+
 
 
 

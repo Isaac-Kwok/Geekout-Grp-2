@@ -20,6 +20,13 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: 0.00,
         },
+
+        delivery_fee: {
+            type: DataTypes.DECIMAL(10, 2),
+            allowNull: false,
+            defaultValue: 0.00,
+        },
+
         no_of_items: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -47,7 +54,22 @@ module.exports = (sequelize, DataTypes) => {
         delivery_address: {
             type: DataTypes.STRING,
             allowNull: true,
+        },
+
+        order_payment_method: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            validate: {
+                isIn: [["Stripe", "Wallet", "Points"]],
+            },
+        },
+
+        points_used: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            defaultValue: 0,
         }
+
     })
 
 

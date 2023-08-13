@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, Paper, TextField, Button, Typography } from '@mui/material';
+import { Container, Paper, TextField, Button, Typography, Divider, Box, Card, CardContent, Stack } from '@mui/material';
 import http from '../../http';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
+import { CurrencyExchange } from '@mui/icons-material';
+import CardTitle from '../../components/CardTitle';
+import InfoBox from '../../components/InfoBox';
 const order_status = {
     1: "Preparing",
     2: "Wait for delivery",
@@ -47,7 +50,7 @@ const RequestRefund = () => {
             navigate('/profile/orders');
         } catch (error) {
             enqueueSnackbar('Error in creating refund', { variant: 'error' });
-            navigate('/profile/orders/'+order.id);
+            navigate('/profile/orders/' + order.id);
             console.error('Error sending refund request:', error);
         }
     };
@@ -57,36 +60,54 @@ const RequestRefund = () => {
     }
 
     return (
-        <Container maxWidth="sm">
-            <Paper elevation={2} style={{ padding: '2rem', marginTop: '2rem' }}>
-                <Typography variant="h4">Request a Refund</Typography>
-                <Typography variant="body1">Name: {order.User.name}</Typography>
-                <Typography variant="body1">Email: {order.User.email}</Typography>
-                <Typography variant="body1">Order Id: {order.id}</Typography>
+        <Card>
+            <CardContent>
+                <CardTitle title="Request a Refund" icon={<CurrencyExchange />} back={"/profile/orders/" + id} />
+                <Box>
+                    <Typography variant="h6" color="textSecondary" mt={"1rem"}>
+                        Order Details:
+                    </Typography>
 
-                <TextField
-                    margin="normal"
-                    fullWidth
-                    id="refundReason"
-                    label="Reason for Refund"
-                    name="refundReason"
-                    multiline
-                    rows={4}
-                    value={refundReason}
-                    onChange={e => setRefundReason(e.target.value)}
-                />
+                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{xs: 2, sm: 4}}>
+                        <InfoBox title="Name" value={order.User.name} />
+                        <InfoBox title="Email" value={order.User.email} />
+                        <InfoBox title="Order ID" value={order.id} />
+                    </Stack>
 
-                <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    onClick={handleRefundRequest}
-                >
-                    Request Refund
-                </Button>
-            </Paper>
-        </Container>
+                    <Divider style={{ marginBottom: '1rem', marginTop: '1rem' }} />
+
+                    <Typography variant="h6" color="textSecondary">
+                        Refund Reason:
+                    </Typography>
+
+                    <TextField
+                        margin="normal"
+                        fullWidth
+                        id="refundReason"
+                        label="Describe your reason"
+                        name="refundReason"
+                        multiline
+                        rows={4}
+                        value={refundReason}
+                        onChange={e => setRefundReason(e.target.value)}
+                        variant="outlined"
+                    />
+
+                    <Box mt={3}>
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            onClick={handleRefundRequest}
+                        >
+                            Request Refund
+                        </Button>
+                    </Box>
+                </Box>
+
+            </CardContent>
+        </Card>
     );
 };
 
