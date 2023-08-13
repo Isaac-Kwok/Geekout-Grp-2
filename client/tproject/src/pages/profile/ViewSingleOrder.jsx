@@ -124,29 +124,29 @@ function ViewSingleOrder() {
                                   Quantity: {item.quantity}
                                 </Typography>
                               </Box>
-                              { order.order_payment_method === "Points" ? (
-                                
-                              <Typography variant="h6" sx={{ display: "flex", alignItems: "center" }}>
-                                <span style={{ textDecoration: item.discounted ? "line-through" : "none" }}>
-                                  {item.points ? item.points : "NIL"}
-                                </span>
-                                {item.discounted ?
-                                  <span style={{ color: "red", marginLeft: "1rem" }}>
-                                    {(parseFloat(item.points_discounted) || 0)} 
-                                  </span>
-                                  : null}
-                              </Typography> ) : (
+                              {order.order_payment_method === "Points" ? (
 
-                              <Typography variant="h6" sx={{ display: "flex", alignItems: "center" }}>
-                                <span style={{ textDecoration: item.discounted ? "line-through" : "none" }}>
-                                  ${item.total_price ? item.total_price : "NIL"}
-                                </span>
-                                {item.discounted ?
-                                  <span style={{ color: "red", marginLeft: "1rem" }}>
-                                    ${(parseFloat(item.discounted_total_price) || 0).toFixed(2)}
+                                <Typography variant="h6" sx={{ display: "flex", alignItems: "center" }}>
+                                  <span style={{ textDecoration: item.discounted ? "line-through" : "none" }}>
+                                    {item.points ? item.points : "NIL"}
                                   </span>
-                                  : null}
-                              </Typography>)}
+                                  {item.discounted ?
+                                    <span style={{ color: "red", marginLeft: "1rem" }}>
+                                      {(parseFloat(item.points_discounted) || 0)}
+                                    </span>
+                                    : null}
+                                </Typography>) : (
+
+                                <Typography variant="h6" sx={{ display: "flex", alignItems: "center" }}>
+                                  <span style={{ textDecoration: item.discounted ? "line-through" : "none" }}>
+                                    ${item.total_price ? item.total_price : "NIL"}
+                                  </span>
+                                  {item.discounted ?
+                                    <span style={{ color: "red", marginLeft: "1rem" }}>
+                                      ${(parseFloat(item.discounted_total_price) || 0).toFixed(2)}
+                                    </span>
+                                    : null}
+                                </Typography>)}
                             </Box>
                           </CardContent>
                         </Card>
@@ -167,7 +167,7 @@ function ViewSingleOrder() {
                 <List>
                   {order.order_payment_method === "Points" ? (
                     <>
-                      <Divider/>
+                      <Divider />
                       <ListItem>
                         <ListItemText primary="Total Points Used" />
                         <Typography variant="body1">{order.points_used}</Typography>
@@ -191,18 +191,26 @@ function ViewSingleOrder() {
                     </>
                   )}
                 </List>
-                {(order.order_status === "Preparing" || order.order_status === "Received") && (
-                  <Grid container alignItems="center">
-                    <Grid item xs>
-                      <Button variant="contained" color="primary" fullWidth onClick={() => navigate("/profile/refunds/" + order.id)}>Refund</Button>
+                {
+                  (order.order_status === "Preparing" || order.order_status === "Received") && order.order_payment_method !== "Points" && (
+                    <Grid container alignItems="center">
+                      <Grid item xs>
+                        <Button variant="contained" color="primary" fullWidth onClick={() => navigate("/profile/refunds/" + order.id)}>Refund</Button>
+                      </Grid>
                     </Grid>
-                  </Grid>)}
-                {order.order_status === "Delivered" && (
-                  <Grid container alignItems="center">
-                    <Grid item xs>
-                      <Button variant="contained" color="primary" fullWidth onClick={changeStatus}>Received</Button>
+                  )
+                }
+
+                {
+                  order.order_status === "Delivered" && (order.order_payment_method === "Wallet" || order.order_payment_method === "Stripe") && (
+                    <Grid container alignItems="center">
+                      <Grid item xs>
+                        <Button variant="contained" color="primary" fullWidth onClick={changeStatus}>Received</Button>
+                      </Grid>
                     </Grid>
-                  </Grid>)}
+                  )
+                }
+
               </Card>
             </Grid>
           </Grid>

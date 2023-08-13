@@ -34,7 +34,7 @@ function ProductCard({ product }) {
             productPictures = [];
         }
     }
-    const shouldDisplayNavButtons =  productPictures > 1;
+    const shouldDisplayNavButtons = productPictures > 1;
 
     const AspectRatioBox = ({ children }) => (
         <div style={{
@@ -126,8 +126,8 @@ function ProductCard({ product }) {
                 <Carousel
                     autoPlay={false}
                     indicators={false}
-                    navButtonsAlwaysVisible={productPictures > 1}
-                    cycleNavigation={productPictures > 1}
+                    navButtonsAlwaysVisible={productPictures.length > 1}
+                    cycleNavigation={productPictures.length > 1}
                     animation='slide'
                     navButtonsProps={{
                         style: {
@@ -157,6 +157,7 @@ function ProductCard({ product }) {
                         </Paper>
                     )}
                 </Carousel>
+
             </Box>
 
 
@@ -206,6 +207,7 @@ function ProductCard({ product }) {
 }
 
 const categories = {
+    'Pass': ['Bicycle Pass'],
     'Health and Beauty': ['Bath', 'Disinfectant', 'Feminine Care', 'Hair', 'Oral Care'],
     'Household': ['Bathroom', 'Bug & Insect Repellent'],
     'Take Away & Travel': ['Bag, pouch, carrier', 'Lunch Box', 'Straw', 'Toiletries'],

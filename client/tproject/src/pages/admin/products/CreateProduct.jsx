@@ -71,6 +71,7 @@ function CreateProduct() {
   }, [productFiles, productFileUploads]);
 
   const subCategories = {
+    'Pass': ['Bicycle Pass'],
     'Health and Beauty': ['Bath', 'Disinfectant', 'Feminine Care', 'Hair', 'Oral Care'],
     'Household': ['Bathroom', 'Bug & Insect Repellent'],
     'Take Away & Travel': ['Bag, pouch, carrier', 'Lunch Box', 'Straw', 'Toiletries'],

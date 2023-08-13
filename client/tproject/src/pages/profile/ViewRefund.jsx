@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, Paper, TextField, Button, Typography } from '@mui/material';
+import { Container, Paper, TextField, Button, Typography, Divider, Box, Card, CardContent } from '@mui/material';
 import http from '../../http';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
@@ -57,36 +57,64 @@ const RequestRefund = () => {
     }
 
     return (
-        <Container maxWidth="sm">
-            <Paper elevation={2} style={{ padding: '2rem', marginTop: '2rem' }}>
-                <Typography variant="h4">Request a Refund</Typography>
-                <Typography variant="body1">Name: {order.User.name}</Typography>
-                <Typography variant="body1">Email: {order.User.email}</Typography>
-                <Typography variant="body1">Order Id: {order.id}</Typography>
+        <Card>
+      <CardContent>
 
-                <TextField
-                    margin="normal"
-                    fullWidth
-                    id="refundReason"
-                    label="Reason for Refund"
-                    name="refundReason"
-                    multiline
-                    rows={4}
-                    value={refundReason}
-                    onChange={e => setRefundReason(e.target.value)}
-                />
+                    <Box p={4}>
+                        <Typography variant="h4" align="center" gutterBottom>
+                            Request a Refund
+                        </Typography>
 
-                <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    onClick={handleRefundRequest}
-                >
-                    Request Refund
-                </Button>
-            </Paper>
-        </Container>
+                        <Divider style={{ marginBottom: '1rem', marginTop: '1rem' }} />
+
+                        <Typography variant="h6" color="textSecondary">
+                            Order Details:
+                        </Typography>
+
+                        <Typography variant="body1">
+                            <strong>Name:</strong> {order.User.name}
+                        </Typography>
+                        <Typography variant="body1">
+                            <strong>Email:</strong> {order.User.email}
+                        </Typography>
+                        <Typography variant="body1">
+                            <strong>Order Id:</strong> {order.id}
+                        </Typography>
+
+                        <Divider style={{ marginBottom: '1rem', marginTop: '1rem' }} />
+
+                        <Typography variant="h6" color="textSecondary">
+                            Refund Reason:
+                        </Typography>
+
+                        <TextField
+                            margin="normal"
+                            fullWidth
+                            id="refundReason"
+                            label="Describe your reason"
+                            name="refundReason"
+                            multiline
+                            rows={4}
+                            value={refundReason}
+                            onChange={e => setRefundReason(e.target.value)}
+                            variant="outlined"
+                        />
+
+                        <Box mt={3}>
+                            <Button
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                color="primary"
+                                onClick={handleRefundRequest}
+                            >
+                                Request Refund
+                            </Button>
+                        </Box>
+                    </Box>
+
+        </CardContent>
+    </Card>
     );
 };
 
