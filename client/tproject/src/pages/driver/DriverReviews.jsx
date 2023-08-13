@@ -129,7 +129,7 @@ function DriverReviews() {
                   <Typography color="text.secondary" variant="h5">
                     Average Review Rating
                   </Typography>
-                  <Typography variant="h4">{averageStars == NaN ? averageStars + " Stars" : "No reviews yet"} </Typography>
+                  <Typography variant="h4">{averageStars == NaN ? "No reviews yet" : averageStars + " Stars"} </Typography>
                 </Stack>
                 <Avatar
                   sx={{

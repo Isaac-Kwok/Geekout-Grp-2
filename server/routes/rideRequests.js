@@ -28,9 +28,9 @@ router.post("/create", validateToken, async (req, res) => {
   try {
     await schema.validate(req.body, { abortEarly: false });
     let result = await RideRequest.create(data);
-    res.json(result);
+    return res.json(result);
   } catch (error) {
-    res.status(400).json({ message: "Failed to create ride request." });
+    return res.status(400).json({ message: "Failed to create ride request." });
   }
 });
 
@@ -48,9 +48,9 @@ router.get("/myrequests/:userId", validateToken, async (req, res) => {
 
     // If the user exists, retrieve their ride requests
     const rideRequests = await RideRequest.findAll({ where: { userId } });
-    res.json(rideRequests);
+    return res.json(rideRequests);
   } catch (error) {
-    res.status(400).json({ message: "Failed to retrieve ride requests." });
+    return res.status(400).json({ message: "Failed to retrieve ride requests." });
   }
 });
 
@@ -79,7 +79,7 @@ router.get(
 
       res.json(rideRequest);
     } catch (error) {
-      res.status(400).json({ message: "Failed to retrieve ride request." });
+      return res.status(400).json({ message: "Failed to retrieve ride request." });
     }
   }
 );
@@ -95,7 +95,7 @@ router.get("/routes/:rideId", validateToken, async (req, res) => {
       let route = routes[index];
       if (route.rideIds.includes(rideId.toString())) {
         console.log("found route:", route);
-        res.status(200).json({ routes: routes });
+        return res.status(200).json({ routes: routes });
       }
     }
 
@@ -109,7 +109,7 @@ router.get("/routes/:rideId", validateToken, async (req, res) => {
     // res.status(200).json({ routes: routes });
   } catch (error) {
     console.error(error);
-    res
+    return res
       .status(500)
       .json({ message: "An error occurred while fetching routes." });
   }
@@ -142,12 +142,12 @@ router.put("/update/:requestId", async (req, res) => {
     }
 
     await rideRequest.update(data);
-    res.json({
+    return res.json({
       message: `Ride request of ID: ${id} updated successfully.`,
       updatedRideRequest: rideRequest,
     });
   } catch (error) {
-    res.status(400).json({
+    return res.status(400).json({
       message: `Failed to update ride request with ID: ${id}`,
       errors: error.errors,
     });
@@ -168,9 +168,9 @@ router.delete("/delete/:id", async (req, res) => {
     }
 
     await rideRequest.destroy();
-    res.json({ message: `Ride request of ID: ${id} deleted successfully.` });
+    return res.json({ message: `Ride request of ID: ${id} deleted successfully.` });
   } catch (error) {
-    res.status(400).json({ message: "Failed to delete ride request." });
+    return res.status(400).json({ message: "Failed to delete ride request." });
   }
 });
 
@@ -179,9 +179,9 @@ router.delete("/delete/:id", async (req, res) => {
 router.get("/allrequests", async (req, res) => {
   try {
     const rideRequests = await RideRequest.findAll();
-    res.json(rideRequests);
+    return res.json(rideRequests);
   } catch (error) {
-    res.status(400).json({ message: "Failed to retrieve ride requests." });
+    return res.status(400).json({ message: "Failed to retrieve ride requests." });
   }
 });
 
@@ -190,10 +190,10 @@ router.get("/allratings", validateToken, async (req, res) => {
   try {
     const ratings = await RideRating.findAll();
     console.log("Rating object from /viewall", ratings);
-    res.status(201).json(ratings);
+    return res.status(201).json(ratings);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "An error occurred." });
+    return res.status(500).json({ message: "An error occurred." });
   }
 });
 
@@ -215,13 +215,13 @@ router.put(
       }
 
       await rideRequest.update(data);
-      res.json({
+      req.app.io.to(`chat_${routeId}`).emit("riderAbort");
+      return res.json({
         message: `Ride request of ID: ${requestId} updated successfully.`,
         updatedRideRequest: rideRequest,
       });
-      req.app.io.to(`chat_${routeId}`).emit("riderAbort");
     } catch (error) {
-      res.status(400).json({
+      return res.status(400).json({
         message: `Failed to update ride request with ID: ${requestId}`,
         errors: error.errors,
       });
