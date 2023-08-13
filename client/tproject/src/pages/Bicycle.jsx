@@ -313,7 +313,7 @@ function Bicycle() {
                 console.log("Bike pass active");
                 // Set price to 0 if bike pass is active
                 var price = Math.max(Math.round(timeDifferenceInHours / 2), 1);
-                enqueueSnackbar("Your bike pass saved you $"+price)
+                enqueueSnackbar("Your bike pass saved you $" + price)
                 var price = 0;
             } else {
                 console.log("Bike pass not active");
@@ -444,18 +444,18 @@ function Bicycle() {
         const menuItems = [
             { text: 'Profile', icon: <AccountCircle />, onClick: () => navigate("/profile") },
             { text: 'Trip History', icon: <History />, onClick: () => navigate("/bicycle/usages") },
-            { text: 'Payment', icon: <Payment />, onClick: () => console.log('Payment clicked') },
-            { text: 'Report', icon: <Report />, onClick: () => navigate("/bicycle/report") },
-            { text: 'Challenges', icon: <Star />, onClick: () => console.log('Rewards clicked') },
+            // { text: 'Payment', icon: <Payment />, onClick: () => console.log('Payment clicked') },
+            { text: 'Report', icon: <Report />, onClick: () => navigate("/bicycle/report") }
+            // { text: 'Challenges', icon: <Star />, onClick: () => console.log('Rewards clicked') },
         ];
 
         return (
             <Drawer anchor="left" open={isOpen} onClose={onClose}>
-                <div style={{ padding: '1rem', textAlign: 'center' }}>
+                <div style={{ padding: '1rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <Avatar alt="User Avatar" src={userInfo.avatarUrl} style={{ width: '5rem', height: '5rem', marginBottom: '1rem' }} />
                     <Typography variant="h6">{userInfo.name}</Typography>
-                    <Typography>{userInfo.distance} km travelled</Typography>
-                    <Typography>{userInfo.caloriesBurnt} calories burnt</Typography>
+                    {/* <Typography>{userInfo.distance} km travelled</Typography>
+                    <Typography>{userInfo.caloriesBurnt} calories burnt</Typography> */}
                 </div>
                 <List>
                     {menuItems.map((item, index) => (
@@ -564,7 +564,7 @@ function Bicycle() {
                     <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleSidebarToggle}>
                         <MenuIcon />
                     </IconButton>
-                    <Typography variant="h6">Bicycle Sharing App</Typography>
+                    <Typography variant="h6">Bicycle Sharing</Typography>
                 </Toolbar>
             </AppBar>
             <Sidebar isOpen={isSidebarOpen} onClose={handleSidebarToggle} />
