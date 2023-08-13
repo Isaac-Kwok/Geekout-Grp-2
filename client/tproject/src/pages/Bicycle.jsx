@@ -23,7 +23,7 @@ const bounds = {
     east: 104.131,
 };
 
-function CombinedComponent({ distance, proximity, isUserOwner, isBikeUnlocked, handleLock, handleUnlock, handleReportBike }) {
+function CombinedComponent({ distance, proximity, isUserOwner, isBikeUnlocked, handleLock, handleUnlock, handleReportBike, handleBikePass }) {
     return (
         <div className="small-rectangular-component">
             <div className="top-left">Find a Bike</div>
@@ -32,7 +32,9 @@ function CombinedComponent({ distance, proximity, isUserOwner, isBikeUnlocked, h
                     Bike missing?
                 </button>
             </div>
-            <div className="bottom-left">$1.00/30min</div>
+            <div className="bottom-left">
+                {handleBikePass ? 'Bike Pass Active' : '$1.00/30min'}
+            </div>
             <div className="bottom-center">
                 {isUserOwner ? (
                     <button className="circular-button" onClick={handleLock}>
@@ -306,8 +308,20 @@ function Bicycle() {
         const timeDifferenceInHours = getTimeDifference(unlockedAt, currentTime) / (1000 * 60 * 60);
         console.log("Time Difference in Hours:", timeDifferenceInHours);
 
-        const price = Math.max(Math.round(timeDifferenceInHours / 2), 1)
-        enqueueSnackbar("$" + price + " has been credited from your wallet");
+        if (user) {
+            if (user.bike_pass_expiry >= getDateTime()) {
+                console.log("Bike pass active");
+                // Set price to 0 if bike pass is active
+                var price = Math.max(Math.round(timeDifferenceInHours / 2), 1);
+                enqueueSnackbar("Your bike pass saved you $"+price)
+                var price = 0;
+            } else {
+                console.log("Bike pass not active");
+                // Calculate price based on timeDifferenceInHours
+                var price = Math.max(Math.round(timeDifferenceInHours / 2), 1);
+                enqueueSnackbar("$" + price + " has been credited from your wallet");
+            }
+        }
 
         const data = {
             bicycle_lat: selectedMarker.bicycle_lat,
@@ -386,6 +400,16 @@ function Bicycle() {
             reportBike();
         };
 
+        const handleBikePass = () => {
+            if (user) {
+                if (user.bike_pass_expiry >= getDateTime()) {
+                    return true
+                } else {
+                    return false
+                }
+            }
+        }
+
         if (selectedMarker) {
             return (
                 <CombinedComponent
@@ -396,6 +420,7 @@ function Bicycle() {
                     handleLock={handleLock}
                     handleUnlock={handleUnlock}
                     handleReportBike={handleReportBike}
+                    handleBikePass={handleBikePass}
                 />
             );
         }
@@ -407,14 +432,14 @@ function Bicycle() {
             avatarUrl: user.profile_picture,
             distance: 150, // in kilometers
             caloriesBurnt: 800, // in calories
-        } 
-        :
-        {
-            name: "John",
-            avatarUrl: "-",
-            distance: 150, // in kilometers
-            caloriesBurnt: 800, // in calories;
         }
+            :
+            {
+                name: "John",
+                avatarUrl: "-",
+                distance: 150, // in kilometers
+                caloriesBurnt: 800, // in calories;
+            }
 
         const menuItems = [
             { text: 'Profile', icon: <AccountCircle />, onClick: () => navigate("/profile") },

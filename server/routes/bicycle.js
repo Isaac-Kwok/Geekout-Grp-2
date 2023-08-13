@@ -45,32 +45,38 @@ const BicycleUsagesSchema = yup.object().shape({
         .number()
 });
 
-// Create a new bicycle
-router.post('/', async (req, res) => {
+// Get a specific bicycle usage by USER ID
+router.get('/usages/user/:id', async (req, res) => {
     try {
-        // Validate the request body against the schema
-        const validatedData = await bicycleSchema.validate(req.body);
-
-        // Create a new Bicycle object using the validated data
-        const bicycle = await Bicycle.create(validatedData);
-
-        res.status(200).json(bicycle);
-    } catch (error) {
-        if (error.name === 'ValidationError') {
-            // Handle validation errors
-            res.status(400).json({ message: error.message });
-        } else {
-            console.error(error);
-            res.status(500).json({ message: 'Internal server error' });
+        const { id } = req.params;
+        const usage = await BicycleUsages.findAll({
+            where: {
+                user_id: id
+            }
+        });
+        if (!usage) {
+            return res.status(404).json({ message: 'Bicycle usage not found' });
         }
+        res.json(usage);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 });
 
-// Get all bicycles
-router.get('/', async (req, res) => {
+// Get a specific bicycle usage by USAGE ID
+router.get('/usages/:id', async (req, res) => {
     try {
-        const bicycles = await Bicycle.findAll();
-        res.json(bicycles);
+        const { id } = req.params;
+        const usage = await BicycleUsages.findAll({
+            where: {
+                bike_id: id
+            }
+        });
+        if (!usage) {
+            return res.status(404).json({ message: 'Bicycle usage not found' });
+        }
+        res.json(usage);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });
@@ -116,6 +122,52 @@ router.put('/usages', async (req, res) => {
     }
 });
 
+// Create a new bicycle usage
+router.post('/usages', async (req, res) => {
+    try {
+        const validatedData = await BicycleUsagesSchema.validate(req.body);
+        const usage = await BicycleUsages.create(validatedData);
+        res.status(200).json(usage);
+    } catch (error) {
+        if (error.name === 'ValidationError') {
+            res.status(400).json({ message: error.message });
+        } else {
+            console.error(error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+});
+
+// Get all bicycle usages
+router.get('/usages', async (req, res) => {
+    try {
+        const usages = await BicycleUsages.findAll();
+        res.json(usages);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// Get a specific bicycle report by ID
+router.get('/reports/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const report = await BicycleReports.findAll({
+            where: {
+                bike_id: id
+            }
+        });
+        if (!report) {
+            return res.status(404).json({ message: 'Bicycle report not found' });
+        }
+        res.json(report);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 // Create a new bicycle report
 router.post('/reports', async (req, res) => {
     try {
@@ -137,25 +189,6 @@ router.get('/reports', async (req, res) => {
     try {
         const reports = await BicycleReports.findAll();
         res.json(reports);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
-
-// Get a specific bicycle report by ID
-router.get('/reports/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const report = await BicycleReports.findAll({
-            where: {
-                bike_id: id
-            }
-        });
-        if (!report) {
-            return res.status(404).json({ message: 'Bicycle report not found' });
-        }
-        res.json(report);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });
@@ -216,6 +249,38 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+// Create a new bicycle
+router.post('/', async (req, res) => {
+    try {
+        // Validate the request body against the schema
+        const validatedData = await bicycleSchema.validate(req.body);
+
+        // Create a new Bicycle object using the validated data
+        const bicycle = await Bicycle.create(validatedData);
+
+        res.status(200).json(bicycle);
+    } catch (error) {
+        if (error.name === 'ValidationError') {
+            // Handle validation errors
+            res.status(400).json({ message: error.message });
+        } else {
+            console.error(error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+});
+
+// Get all bicycles
+router.get('/', async (req, res) => {
+    try {
+        const bicycles = await Bicycle.findAll();
+        res.json(bicycles);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 // DELETE /bicycle route
 router.delete('/', async (req, res) => {
     try {
@@ -229,73 +294,6 @@ router.delete('/', async (req, res) => {
     } catch (error) {
         console.error('Error deleting bicycles:', error);
         res.sendStatus(500); // Internal Server Error
-    }
-});
-
-// Similar routes for getting a specific bicycle usage by ID, updating, and deleting
-
-// Get a specific bicycle usage by USAGE ID
-router.get('/usages/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const usage = await BicycleUsages.findAll({
-            where: {
-                bike_id: id
-            }
-        });
-        if (!usage) {
-            return res.status(404).json({ message: 'Bicycle usage not found' });
-        }
-        res.json(usage);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
-
-// Get a specific bicycle usage by USER ID
-router.get('/usages/user/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const usage = await BicycleUsages.findAll({
-            where: {
-                user_id: id
-            }
-        });
-        if (!usage) {
-            return res.status(404).json({ message: 'Bicycle usage not found' });
-        }
-        res.json(usage);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
-
-// Create a new bicycle usage
-router.post('/usages', async (req, res) => {
-    try {
-        const validatedData = await BicycleUsagesSchema.validate(req.body);
-        const usage = await BicycleUsages.create(validatedData);
-        res.status(200).json(usage);
-    } catch (error) {
-        if (error.name === 'ValidationError') {
-            res.status(400).json({ message: error.message });
-        } else {
-            console.error(error);
-            res.status(500).json({ message: 'Internal server error' });
-        }
-    }
-});
-
-// Get all bicycle usages
-router.get('/usages', async (req, res) => {
-    try {
-        const usages = await BicycleUsages.findAll();
-        res.json(usages);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
     }
 });
 

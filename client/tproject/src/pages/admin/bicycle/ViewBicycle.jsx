@@ -51,7 +51,7 @@ function ViewBicycle() {
                     icon={<Visibility />}
                     label="View Bicycle Details"
                     onClick={() => {
-                        navigate("/admin/bicycle/details" + params.row.id)
+                        navigate("/admin/bicycle/details/" + params.row.id)
                     }}
                 />
             ]

@@ -1,7 +1,7 @@
 import { GoogleMap, MarkerF, useLoadScript, InfoWindowF } from "@react-google-maps/api";
-import { Container, Button } from '@mui/material';
+import { Container, Button, Tab, Tabs } from '@mui/material';
 import { useMemo, useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import http from "../../../http"
 import '../../../bicycle.css'
 import AdminPageTitle from "../../../components/AdminPageTitle";
@@ -133,6 +133,14 @@ function BicycleAdmin() {
         east: 104.131,
     };
 
+    const handleTabChange = (event, newValue) => {
+        if (newValue === 'otherPage') {
+            Navigate("/admin/bicycle/panel")
+        } else {
+            setFilter(newValue);
+        }
+    };
+
     useEffect(() => {
         document.title = 'EnviroGo - View Map';
         handleGetBicycle();
@@ -146,20 +154,18 @@ function BicycleAdmin() {
                 View Bicycle List
             </Button>
 
-            <div>
-                <Button onClick={() => setFilter('all')} variant={filter === 'all' ? 'contained' : 'outlined'} sx={{ marginRight: '0.5rem' }}>
-                    All
-                </Button>
-                <Button onClick={() => setFilter('disabled')} variant={filter === 'disabled' ? 'contained' : 'outlined'} sx={{ marginRight: '0.5rem' }}>
-                    Disabled
-                </Button>
-                <Button onClick={() => setFilter('registered')} variant={filter === 'registered' ? 'contained' : 'outlined'} sx={{ marginRight: '0.5rem' }}>
-                    Registered
-                </Button>
-                <Button onClick={() => setFilter('reports')} variant={filter === 'reports' ? 'contained' : 'outlined'} sx={{ marginRight: '0.5rem' }}>
-                    With Reports
-                </Button>
-            </div>
+            <Tabs
+                value={filter}
+                onChange={handleTabChange}
+                variant="fullWidth"
+                sx={{ marginBottom: '1rem' }}
+            >
+                <Tab label="All" value="all" />
+                <Tab label="Disabled" value="disabled" />
+                <Tab label="Registered" value="registered" />
+                <Tab label="With Reports" value="reports" />
+                <Tab label="Control Panel" value="otherPage" component={Link} to="/admin/bicycle/panel" />
+            </Tabs>
 
             {!isLoaded ? (
                 <h1>Loading...</h1>
