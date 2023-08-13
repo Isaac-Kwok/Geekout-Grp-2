@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Container,
   Card,
@@ -7,6 +7,9 @@ import {
   TextField,
   Grid,
   MenuItem,
+  Paper,
+  Typography,
+  Button,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import AddIcon from "@mui/icons-material/Add";
@@ -18,6 +21,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import http from "../../http";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
+import InfoBox from "../../components/InfoBox";
 import "react-toastify/dist/ReactToastify.css";
 
 // import DatePicker from "react-datepicker";
@@ -29,6 +33,8 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
 function CreateRideRequest() {
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
+  const [cash, setCash] = useState(null);
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const [locations, setLocations] = useState([]);
@@ -45,6 +51,21 @@ function CreateRideRequest() {
   //     formik.setFieldValue("time", "");
   //   }
   // };
+
+  useEffect(() => {
+    // Fetch the user from the server using an HTTP request
+    const fetchUser = async () => {
+      try {
+        const response = await http.get("/user");
+        setUser(response.data); // set location to array of locations (response)
+        console.log("user: ", user); // Check that locations are correctly fetched
+        setCash(user?.cash);
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+      }
+    };
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     // Fetch the locations from the server using an HTTP request
@@ -122,31 +143,42 @@ function CreateRideRequest() {
 
       console.log("Data to be submitted:", data); // Log the data to be submitted
 
-      http
-        .post("/riderequests/create", data)
-        .then((res) => {
-          console.log("Response:", res); // Log the response
-          if (res.status === 200) {
-            enqueueSnackbar("Ride request submitted successfully!", {
-              variant: "success",
-            });
-            navigate("/riderequests/myrequests");
-          } else {
-            enqueueSnackbar("Ride request submission failed!", {
-              variant: "error",
-            });
+      if (user?.cash < 30) {
+        enqueueSnackbar(
+          "Ride request submission failed! Wallet balance is less than $30",
+          {
+            variant: "error",
           }
-        })
-        .catch((err) => {
-          console.error("Error:", err); // Log the error
-          enqueueSnackbar(
-            "Ride request submission failed! " + err.response.data.message,
-            { variant: "error" }
-          );
-        })
-        .finally(() => {
-          setLoading(false); // Set loading state to false after API request is complete
-        });
+        );
+        setLoading(false); // Set loading state to false after showing the error message
+        return; // Cancel the submission
+      } else {
+        http
+          .post("/riderequests/create", data)
+          .then((res) => {
+            console.log("Response:", res); // Log the response
+            if (res.status === 200) {
+              enqueueSnackbar("Ride request submitted successfully!", {
+                variant: "success",
+              });
+              navigate("/riderequests/myrequests");
+            } else {
+              enqueueSnackbar("Ride request submission failed!", {
+                variant: "error",
+              });
+            }
+          })
+          .catch((err) => {
+            console.error("Error:", err); // Log the error
+            enqueueSnackbar(
+              "Ride request submission failed! " + err.response.data.message,
+              { variant: "error" }
+            );
+          })
+          .finally(() => {
+            setLoading(false); // Set loading state to false after API request is complete
+          });
+      }
     },
   });
 
@@ -161,6 +193,16 @@ function CreateRideRequest() {
               <CardTitle
                 title="Ride Details"
                 icon={<DirectionsCarIcon color="text.secondary" />}
+              />
+              <InfoBox
+                flexGrow={1}
+                title=""
+                value={
+                  <Typography variant="h12" fontWeight={150}>
+                    <strong>Note:</strong> You must have at least $30 in balance
+                    to book rides.
+                  </Typography>
+                }
               />
               <Grid container spacing={2} sx={{ marginY: "1rem" }}>
                 <Grid xs={12} lg={12} spacing={1} item container>
@@ -243,6 +285,7 @@ function CreateRideRequest() {
                   </Grid>
 
                   {/* Destination */}
+
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
@@ -342,6 +385,38 @@ function CreateRideRequest() {
             </CardContent>
           </Box>
         </Card>
+        <Box>&nbsp;</Box>
+        {/* Display this part only when cash value is loaded */}
+        {user?.cash && (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            padding={2}
+          >
+            <Paper
+              elevation={3}
+              sx={{ padding: "1.5rem", textAlign: "center" }}
+            >
+              <InfoBox
+                flexGrow={1}
+                title="Cash Balance"
+                value={
+                  <Typography variant="h5" fontWeight={700}>
+                    ${user?.cash}
+                  </Typography>
+                }
+              />
+              <Button
+                variant="text"
+                color="primary"
+                onClick={() => navigate(`/profile`)}
+              >
+                Top-up
+              </Button>
+            </Paper>
+          </Box>
+        )}
       </Container>
     </>
   );

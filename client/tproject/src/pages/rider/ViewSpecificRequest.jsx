@@ -23,15 +23,18 @@ import { Edit, Delete, Visibility } from "@mui/icons-material";
 import Modal from "@mui/material/Modal";
 import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
+import { ca } from "date-fns/locale";
 
 const RideRequestDetails = () => {
   const { userId, requestId } = useParams();
   const [rideRequest, setRideRequest] = useState(null);
   const [route, setRoute] = useState(null);
-  const [routeId, setRouteId] = useState(null);
   const [pickUpLocation, setPickUpLocation] = useState(null); // State to store pickUp location details
   const [imageFile, setImageFile] = useState(null);
   const [socket, setSocket] = useState(null);
+  const [user, setUser] = useState(null);
+  const [routeId, setrouteId] = useState(null);
+  const [driverId, setdriverId] = useState(null);
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -41,6 +44,13 @@ const RideRequestDetails = () => {
     setOpen(true);
   };
   const handleClose = () => setOpen(false);
+
+  // Payment modal
+  const [openPayment, setOpenPayment] = useState(false);
+  const handleOpenPayment = () => {
+    setOpenPayment(true);
+  };
+  const handleClosePayment = () => setOpenPayment(false);
 
   // Modal attributes
   const style = {
@@ -90,6 +100,81 @@ const RideRequestDetails = () => {
         console.error("Failed to update ride request:", error);
       });
   };
+
+  // Function to handle releasing payment for a completed ride
+  const handlePay = () => {
+    const finalPrice = route?.routes[routeId - 1].total_cost; // Calculate final price
+
+    // Update the ride request's status to "Paid"
+    http
+      .put(`/riderequests/updatestatus/${rideRequest.requestId}`, {
+        status: "Paid", // Update riderequest status to paid
+      })
+      .then(() => {
+        // Deduct the finalPrice from the user's cash attribute
+        const updatedCash = user.cash - finalPrice;
+
+        // Update the user's cash attribute
+        return http.put(`/riderequests/minuscash/user/${rideRequest.userId}`, {
+          cash: updatedCash,
+        });
+      })
+      // .then(() => {
+      //   // Update the user's cash attribute
+      //   return http.put(`/admin/locations/editdeparture/:id/${rideRequest.pickUp}`, {
+      //     arrival: arrival + 1,
+      //   });
+      // })
+      // /editdeparture/:id
+      .then(() => {
+        // Update the ride request list and navigate
+        handleClosePayment(); // Close payment modal upon successful payment
+        navigate("/riderequests/myrequests");
+      })
+      .catch((error) => {
+        console.error("Failed to update user or ride request:", error);
+      });
+  };
+
+  useEffect(() => {
+    // Fetch route data on component mount
+    console.log("Ride id for route fetching:", requestId);
+    http
+      .get(`/riderequests/routes/${requestId}`)
+      .then((res) => {
+        console.log("Route data:", res.data);
+        for (let index = 0; index < res.data.routes.length; index++) {
+          const element = res.data.routes[index];
+          if (element.rideIds.includes(requestId)) {
+            setrouteId(element.id);
+            setdriverId(element.user_id);
+            console.log("tesrt", routeId, userId);
+          }
+        }
+
+        setRoute(res.data);
+      })
+      .catch((err) => {
+        console.error("Error:", err);
+        enqueueSnackbar("Failed to fetch route data!", {
+          variant: "error",
+        });
+      });
+  }, [requestId]);
+
+  useEffect(() => {
+    // Fetch the user from the server using an HTTP request
+    const fetchUser = async () => {
+      try {
+        const response = await http.get("/user");
+        setUser(response.data); // set location to array of locations (response)
+        console.log("user: ", user); // Check that locations are correctly fetched
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+      }
+    };
+    fetchUser();
+  }, []);
 
   // Function to handle Rating a specific request
   const handleRate = (id) => {
@@ -150,7 +235,6 @@ const RideRequestDetails = () => {
         console.log(res.data);
         setRideRequest(res.data);
         setPickUpLocation(res.data.pickUp);
-        setRouteId(res.data.routeId);
       });
   };
 
@@ -163,15 +247,19 @@ const RideRequestDetails = () => {
   };
 
   const calculatePrice = (route) => {
+    if (!routeId || !route.routes[0]) {
+      return 0; // Or some default value, since routeId is not available yet
+    }
+  
     const destinations = route.routes[0].destinationList.split("|");
     const numberOfDestinations = destinations.length - 1; // Minus one because of the split
     const pricePerPassenger = route.routes[0].total_cost / numberOfDestinations;
-
+  
     // If there's only one destination, final price is just total cost divided by number of passengers
     if (numberOfDestinations === 1) {
       return pricePerPassenger;
     }
-
+  
     const finalPrice = pricePerPassenger * rideRequest.numberOfPassengers;
     return finalPrice;
   };
@@ -209,73 +297,77 @@ const RideRequestDetails = () => {
               />
               <Grid container spacing={2} sx={{ marginY: "1rem" }}>
                 <Grid xs={12} lg={12} spacing={1} item container>
-                  {["Accepted", "Completed", "Rated"].includes(
+                  {["Accepted", "Completed", "Rated", "Paid"].includes(
                     rideRequest.status
                   ) && (
-                    <Grid xs={12} lg={12} spacing={1} item container>
-                      <Grid item xs={6} sm={6}>
-                        {/* <InfoBox title="Price ($)" value={route.routes[0].total_cost} /> */}
-                        <InfoBox
-                          title="Price ($)"
-                          value={calculatePrice(route)}
-                        />
-                      </Grid>
+                    <>
+                      {routeId && (
+                        <Grid xs={12} lg={12} spacing={1} item container>
+                          <Grid item xs={6} sm={6}>
+                            {/* <InfoBox title="Price ($)" value={route.routes[0].total_cost} /> */}
+                            <InfoBox
+                              title="Price ($)"
+                              value={route?.routes[routeId - 1].total_cost}
+                            />
+                          </Grid>
 
-                      <Grid item xs={6} sm={6}>
-                        <InfoBox
-                          title="Duration"
-                          value={route.routes[0].duration}
-                        />
-                      </Grid>
+                          <Grid item xs={6} sm={6}>
+                            <InfoBox
+                              title="Duration"
+                              value={route?.routes[routeId - 1].duration}
+                            />
+                          </Grid>
 
-                      <Grid item xs={6} sm={6}>
-                        <InfoBox
-                          title="Distance"
-                          value={route.routes[0].distance}
-                        />
-                      </Grid>
+                          <Grid item xs={6} sm={6}>
+                            <InfoBox
+                              title="Distance"
+                              value={route?.routes[routeId - 1].distance}
+                            />
+                          </Grid>
 
-                      <Grid item xs={6} sm={6}>
-                        <InfoBox
-                          title="Destination(s)"
-                          value={route.routes[0].destination}
-                        />
-                      </Grid>
-                    </Grid>
+                          <Grid item xs={6} sm={6}>
+                            <InfoBox
+                              title="Destination(s)"
+                              value={route?.routes[routeId - 1].destination}
+                            />
+                          </Grid>
+                        </Grid>
+                      )}
+                    </>
                   )}
 
                   <Grid item xs={6} sm={6}>
-                    <InfoBox title="User ID" value={rideRequest.userId} />
+                    <InfoBox title="User ID" value={rideRequest?.userId} />
                   </Grid>
 
                   <Grid item xs={6} sm={6}>
-                    <InfoBox title="Date" value={rideRequest.date} />
+                    <InfoBox title="Date" value={rideRequest?.date} />
                   </Grid>
 
                   <Grid item xs={6} sm={6}>
-                    <InfoBox title="Time" value={rideRequest.time} />
+                    <InfoBox title="Time" value={rideRequest?.time} />
                   </Grid>
 
                   <Grid item xs={6} sm={6}>
-                    <InfoBox title="Pick Up" value={rideRequest.pickUp} />
+                    <InfoBox title="Pick Up" value={rideRequest?.pickUp} />
                   </Grid>
 
                   <Grid item xs={6} sm={6}>
                     <InfoBox
                       title="Destination"
-                      value={rideRequest.destination}
+                      value={rideRequest?.destination}
                     />
                   </Grid>
 
                   <Grid item xs={6} sm={6}>
                     <InfoBox
                       title="No. of Passengers"
-                      value={rideRequest.numberOfPassengers}
+                      value={rideRequest?.numberOfPassengers}
                     />
                   </Grid>
 
                   <Grid item xs={6} sm={6}>
-                    <InfoBox title="Status" value={rideRequest.status} />
+                    <InfoBox title="Status" value={rideRequest?.status} />
                   </Grid>
                   <Grid item xs={12} sm={12}></Grid>
                   <Grid item xs={6} sm={6}></Grid>
@@ -304,6 +396,17 @@ const RideRequestDetails = () => {
                       Abort Request
                     </Button>
                   )}
+
+                  {rideRequest.status === "Completed" && (
+                    <Button
+                      variant="contained"
+                      color="warning"
+                      onClick={handleOpenPayment} // Call handlePay function here
+                      title="Release Payment"
+                    >
+                      Release Payment
+                    </Button>
+                  )}
                 </Grid>
               </Grid>
             </CardContent>
@@ -325,7 +428,7 @@ const RideRequestDetails = () => {
         <Box>&nbsp;</Box>
       </Grid>
 
-      {/* Modal */}
+      {/* Modal for abortion */}
       <Modal
         open={open}
         onClose={handleClose}
@@ -347,6 +450,37 @@ const RideRequestDetails = () => {
           </Button>
           &nbsp;&nbsp;&nbsp;
           <Button onClick={handleClose} variant="contained" color="error">
+            No
+          </Button>
+        </Box>
+      </Modal>
+
+      {/* Modal for payment */}
+      <Modal
+        open={openPayment}
+        onClose={handleClosePayment}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Release payment to driver?
+          </Typography>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={() => {
+              handlePay();
+            }}
+          >
+            Yes
+          </Button>
+          &nbsp;&nbsp;&nbsp;
+          <Button
+            onClick={handleClosePayment}
+            variant="contained"
+            color="error"
+          >
             No
           </Button>
         </Box>
