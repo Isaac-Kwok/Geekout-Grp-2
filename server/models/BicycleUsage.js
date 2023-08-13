@@ -10,11 +10,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true
         },
         startPosition: {
-            type: DataTypes.DOUBLE,
+            type: DataTypes.STRING,
             allowNull: false
         },
         endPosition: {
-            type: DataTypes.DOUBLE,
+            type: DataTypes.STRING,
             allowNull: false
         },
         user_id: {
