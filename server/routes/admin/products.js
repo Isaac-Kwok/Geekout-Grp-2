@@ -37,12 +37,12 @@ router.post('/upload', validateAdmin, upload_picture, (req, res) => {
 router.post("/create", validateAdmin,upload_picture,  async (req, res) => {
     let data = req.body;
     let validationSchema = yup.object().shape({
-        product_name: yup.string().trim().min(3).max(100).required(),
+        product_name: yup.string().trim().min(3).required(),
         product_category: yup.string().trim().required(),
         product_sub_category: yup.string().trim().required(),
         pass_category_status: yup.bool(),
         product_stock: yup.number().integer().required(),
-        product_description: yup.string().trim().min(3).max(1000).required(),
+        product_description: yup.string().trim().min(3).required(),
         product_picture: yup.string().required(),
         product_price: yup.number().min(0).integer().required(),
         product_sale: yup.bool(),
@@ -125,12 +125,12 @@ router.put("/status/:id", validateAdmin, async (req, res) => {
 
 router.put("/:id", validateAdmin, async (req, res) => {
     const schema = yup.object().shape({
-        product_name: yup.string().trim().min(3).max(100).required(),
+        product_name: yup.string().trim().min(3).required(),
         product_category: yup.string().trim().required(),
         product_sub_category: yup.string().trim().required(),
         pass_category_status: yup.bool(),
         product_stock: yup.number().integer().required(),
-        product_description: yup.string().trim().min(3).max(1000).required(),
+        product_description: yup.string().trim().min(3).required(),
         product_picture: yup.string(),
         product_price: yup.number().min(0).integer().required(),
         product_sale: yup.bool(),
