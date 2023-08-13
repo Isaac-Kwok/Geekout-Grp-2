@@ -32,12 +32,13 @@ function DriverStatistics() {
 
     const columns = [
         { field: 'id', headerName: 'Ride Id', width: 70 },
+        { field: 'status', headerName: 'Status', width: 120 },
         { field: 'distance', headerName: 'Distance', width: 120 },
         { field: 'duration', headerName: 'Duration', width: 120 },
         { field: 'driver_profit', headerName: 'Profit', width: 120 },
         { field: 'names', headerName: 'Rider names', width: 300 },
-        { field: 'pickUp', headerName: 'Pick Up', width: 200 },
-        { field: 'destinationList', headerName: 'Destinations', width: 800 },
+        { field: 'pickUp', headerName: 'Pick Up', width: 250 },
+        { field: 'destinationList', headerName: 'Destinations', width: 1000 },
 
     ];
 

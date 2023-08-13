@@ -1,5 +1,5 @@
 import { React, useEffect, useState } from 'react'
-import { Box, Card, CardContent, Stack, Avatar, Typography, Grid, Container, Button, CardActions } from '@mui/material'
+import { Box, Card, CardContent, Stack, Avatar, Typography, Grid, Container, Button, CardActions, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid';
 import CardTitle from '../../components/CardTitle';
 import useUser from '../../context/useUser';
@@ -10,6 +10,8 @@ import ReviewsIcon from '@mui/icons-material/Reviews';
 import TimeToLeaveIcon from '@mui/icons-material/TimeToLeave';
 import http from '../../http'
 import { Link } from 'react-router-dom';
+import { BarChart, PieChart } from '@mui/x-charts';
+import { axisClasses } from '@mui/x-charts';
 
 
 function DriverDashboard() {
@@ -23,12 +25,22 @@ function DriverDashboard() {
 
 
   ];
+  const [open, setOpen] = useState(false);
+  const [distanceRanges, setDistanceRanges] = useState([])
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
   const getAllRoutes = () => {
     http.get('/driver/getRoutes')
       .then((res) => {
         if (res.status === 200) {
           console.log(res.data);
           setallRoutes(res.data);
+          calculateDistanceRanges(res.data);
         } else {
           console.log("Failed to retrieve routes:", res.status);
         }
@@ -38,7 +50,27 @@ function DriverDashboard() {
       })
 
   }
+  function calculateDistanceRanges(inputList) {
+    const distanceRanges = [
+      { id: 0, value: 0, label: 'Distance < 5KM', color: "#FFBB28" },
+      { id: 1, value: 0, label: '5KM < Distance < 10KM', color: "#00C49F" },
+      { id: 2, value: 0, label: 'Distance > 10KM', color: "#FF8042" },
+    ];
 
+    inputList.forEach((ride) => {
+      const distanceValue = ride.distance_value;
+
+      if (distanceValue < 5000) {
+        distanceRanges[0].value += 20;
+      } else if (distanceValue >= 5000 && distanceValue < 10000) {
+        distanceRanges[1].value += 20;
+      } else {
+        distanceRanges[2].value += 20;
+      }
+    });
+    setDistanceRanges(distanceRanges)
+    return distanceRanges;
+  }
   useEffect(() => {
     refreshUser()
     getAllRoutes()
@@ -171,7 +203,42 @@ function DriverDashboard() {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button size="large">Learn more</Button>
+                <Button size="large" onClick={handleClickOpen}>
+                  Learn more
+                </Button>
+                <Dialog
+                  open={open}
+                  onClose={handleClose}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description"
+                >
+                  <DialogTitle id="alert-dialog-title">
+                    {"Distance ranges for all your routes"}
+                  </DialogTitle>
+                  <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                      We collect data like distance travelled per route for all your routes to present you usefull information and data that can provide you with valuable insights!
+                    </DialogContentText>
+                    <PieChart
+                      series={[
+                        {
+                          data: distanceRanges,
+                        },
+                      ]}
+                      height={250}
+                      sx={{
+                        "--ChartsLegend-rootOffsetX": "-6rem",
+
+                      }}
+
+                    />
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleClose} autoFocus>
+                      Close
+                    </Button>
+                  </DialogActions>
+                </Dialog>
               </CardActions>
             </Card>
           </Grid>
@@ -210,7 +277,7 @@ function DriverDashboard() {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button size="large">View all</Button>
+                <Button  to='/driver/Reviews' LinkComponent={Link} size="large">View all</Button>
               </CardActions>
             </Card>
           </Grid>
@@ -243,14 +310,14 @@ function DriverDashboard() {
                 </CardContent>
               </Card>}
             {user?.account_type === 1 &&
-                          <Card>
-                          <CardContent>
-                            <CardTitle icon={<TimeToLeaveIcon />} title="Your Driver account has been deactivated" />
-                            <p>Oh No!, Your driver account has been deactivated, you can still access your driver information, but cannot accept routes and drive others, please visit our support and launch a support ticket to reactivate your account.</p>
-                            <Button to="/support" LinkComponent={Link} variant='contained' >Support</Button>
-                            
-                          </CardContent>
-                        </Card>}
+              <Card>
+                <CardContent>
+                  <CardTitle icon={<TimeToLeaveIcon />} title="Your Driver account has been deactivated" />
+                  <p>Oh No!, Your driver account has been deactivated, you can still access your driver information, but cannot accept routes and drive others, please visit our support and launch a support ticket to reactivate your account.</p>
+                  <Button to="/support" LinkComponent={Link} variant='contained' >Support</Button>
+
+                </CardContent>
+              </Card>}
           </Grid>
         </Grid>
       </Container>

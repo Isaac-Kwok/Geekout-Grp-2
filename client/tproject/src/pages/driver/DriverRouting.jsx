@@ -604,6 +604,11 @@ function DriverRouting() {
         console.error("Error updating driver status:", err);
         // Handle the error here, e.g., display an error message or take appropriate action
       });
+      http.post(`/driver/chat/${routeObj.id}/message`, { message: 'Your ride has been completed. Thank you for riding with us' }).then(res => {
+      }).catch(err => {
+        console.log(err)
+        enqueueSnackbar("Error sending message. " + err.response.data.message, { variant: "error" });
+      })
   };
   useEffect(() => {
     if (user?.current_route) {
