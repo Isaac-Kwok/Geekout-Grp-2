@@ -13,8 +13,7 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import PageTitle from '../../components/PageTitle';
 import { useTheme } from '@mui/material/styles';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import Carousel from 'react-material-ui-carousel'
 
 function ProductCard({ product }) {
     const navigate = useNavigate();
@@ -24,21 +23,38 @@ function ProductCard({ product }) {
     const theme = useTheme();
     const [activeStep, setActiveStep] = useState(0);
 
-    const productPictures = Array.isArray(product.product_picture)
-        ? product.product_picture
-        : JSON.parse(product.product_picture);
 
-    const maxSteps = productPictures.length;
-    const imageName = productPictures[activeStep].trim();
+    let productPictures;
+    if (Array.isArray(product.product_picture)) {
+        productPictures = product.product_picture;
+    } else {
+        try {
+            productPictures = JSON.parse(product.product_picture);
+        } catch (error) {
+            productPictures = [];
+        }
+    }
+    const shouldDisplayNavButtons =  productPictures > 1;
 
-
-    const handleNext = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    };
-
-    const handleBack = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep - 1);
-    };
+    const AspectRatioBox = ({ children }) => (
+        <div style={{
+            position: 'relative',
+            width: '100%',
+            height: 0,
+            paddingBottom: '56.25%', /* 16:9 Aspect Ratio (divide 9 by 16 = 0.5625 or 56.25%) */
+            overflow: 'hidden'
+        }}>
+            <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%'
+            }}>
+                {children}
+            </div>
+        </div>
+    );
 
     const loadWishlistItems = async () => {
         try {
@@ -107,51 +123,46 @@ function ProductCard({ product }) {
             )}
             {/* Image box */}
             <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: 400 }, flexGrow: 1 }}>
-                {maxSteps > 1 ? (
-                    <>
-                        <CardMedia
-                            component="img"
-                            height="140"
-                            image={`${productPath}${imageName}`}
-                            alt={product.product_name}
-                            sx={{ width: '100%', objectFit: 'cover' }}
-                        />
-                        {/* Carousel stepper */}
-                        <MobileStepper
-                            steps={maxSteps}
-                            position="static"
-                            activeStep={activeStep}
-                            nextButton={
-                                <Button
-                                    size="small"
-                                    onClick={handleNext}
-                                    disabled={activeStep === maxSteps - 1}
-                                >
-                                    Next
-                                    {theme.direction === 'rtl' ? <ArrowForwardIosIcon /> : <ArrowForwardIosIcon />}
-                                </Button>
-                            }
-                            backButton={
-                                <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
-                                    {theme.direction === 'rtl' ? <ArrowBackIosIcon /> : <ArrowBackIosIcon />}
-                                    Back
-                                </Button>
-                            }
-                        />
-                    </>
-                ) : (
-                    <CardMedia
-                        component="img"
-                        height="188"
-                        image={`${productPath}${productPictures[0].trim()}`}
-                        alt={product.product_name}
-                        sx={{ width: '100%', objectFit: 'cover' }}
-                    />
-                )}
+                <Carousel
+                    autoPlay={false}
+                    indicators={false}
+                    navButtonsAlwaysVisible={shouldDisplayNavButtons}
+                    cycleNavigation={shouldDisplayNavButtons}
+                    animation='slide'
+                    navButtonsProps={{
+                        style: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.5) !important',
+                            color: 'black !important',
+                            margin: '0 10px !important'
+                        }
+                    }}
+                    navButtonsWrapperProps={{
+                        style: {
+                            bottom: '0 !important',
+                            top: 'unset !important',
+                            position: 'absolute !important',
+                            width: '100% !important'
+                        }
+                    }}
+                >
+                    {productPictures.map((picture, index) =>
+                        <Paper elevation={0} key={index} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                            <AspectRatioBox>
+                                <img
+                                    src={`${productPath}${picture.trim()}`}
+                                    alt={product.product_name}
+                                    style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+                                />
+                            </AspectRatioBox>
+                        </Paper>
+                    )}
+                </Carousel>
             </Box>
+
+
             {/* Card content */}
             <CardContent>
-                <Typography variant="h5">{product.product_name}</Typography>
+                <Typography variant="h5" fontWeight="bold">{product.product_name}</Typography>
                 <Typography variant="h6" sx={{ display: "flex", alignItems: "center" }}>
                     <span style={{ textDecoration: product.product_sale ? "line-through" : "none" }}>
                         ${product.product_price ? product.product_price : "NIL"}
@@ -171,7 +182,6 @@ function ProductCard({ product }) {
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                     GreenMiles: {product.product_price_greenmiles}<br />
-                    On Sale: {product.product_sale ? "Yes" : "No"}
                 </Typography>
             </CardContent>
             {/* Card actions */}

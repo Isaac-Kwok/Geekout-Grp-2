@@ -1,16 +1,15 @@
 import React from 'react'
 import { Box, Typography, Chip } from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close';
-import CheckIcon from '@mui/icons-material/Check';
+import { Check, Close, HourglassBottom } from '@mui/icons-material';
 
 function InfoBox(props) {
     return (
         <Box flexGrow={props.flexGrow}>
             <Typography variant="body" fontWeight={700}>{props.title}</Typography>
             <Typography marginTop={"0.25rem"}>
-                {props.boolean == null && props.value}
-                {props.boolean && <Chip size='small' icon={<CheckIcon/>} label={props.value} color="success" />}
-                {props.boolean == false && <Chip size='small' icon={<CloseIcon/>} label={props.value} color="error" />}
+                {(props.boolean == null && !props.pending) && props.value}
+                {(props.boolean != null && !props.pending) && <Chip size='small' icon={props.boolean ? <Check/> : <Close/>} label={props.value} color={props.boolean ? "success" : "error"} />}
+                {props.pending && <Chip size='small' icon={<HourglassBottom/>} label={props.value} color="warning" />}
             </Typography>
         </Box>
     )
