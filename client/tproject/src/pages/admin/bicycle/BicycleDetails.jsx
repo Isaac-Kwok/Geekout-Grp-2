@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Card, CardContent, Container, Box, Grid } from '@mui/material'
+import { Card, CardContent, Container, Box, Grid, Button } from '@mui/material'
 import { useParams } from 'react-router-dom';
 import http from "../../../http";
 import AdminPageTitle from '../../../components/AdminPageTitle';
@@ -7,6 +7,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import CardTitle from '../../../components/CardTitle';
 import { AutoGraph, DirectionsBike, Warning } from '@mui/icons-material';
 import InfoBox from '../../../components/InfoBox';
+import { useSnackbar } from 'notistack';
 
 const BicycleDetails = () => {
     const { id } = useParams(); // Get the bicycle ID from the URL
@@ -14,6 +15,7 @@ const BicycleDetails = () => {
     const [reports, setReports] = useState([]);
     const [usages, setUsages] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { enqueueSnackbar } = useSnackbar();
 
     const columnsReports = [
         { field: "id", headerName: "ID", minWidth: 100 },
@@ -56,7 +58,6 @@ const BicycleDetails = () => {
             });
     };
 
-
     const handleGetBicycleUsages = () => {
         http.get("/bicycle/usages/" + id)
             .then((res) => {
@@ -73,6 +74,46 @@ const BicycleDetails = () => {
                 console.error("An error occurred while fetching bicycle usages:", error);
                 setLoading(false); // Set loading to false on error
             });
+    };
+
+    const handleDisableBike = async () => {
+        try {
+            const updatedData = {
+                ...bicycle,
+                disabled: 1,
+            };
+            const response = await http.put(`/bicycle/${id}`, updatedData);
+            if (response.status === 200) {
+                enqueueSnackbar('Bike disabled successfully!', {
+                    variant: 'success',
+                });
+                setBicycle({ ...bicycle, disabled: 1 });
+            } else {
+                enqueueSnackbar('Failed to disable bike', { variant: 'error' });
+            }
+        } catch (error) {
+            enqueueSnackbar('Failed to disable bike', { variant: 'error' });
+        }
+    };
+
+    const handleEnableBike = async () => {
+        try {
+            const updatedData = {
+                ...bicycle,
+                disabled: 0,
+            };
+            const response = await http.put(`/bicycle/${id}`, updatedData);
+            if (response.status === 200) {
+                enqueueSnackbar('Bike enabled successfully!', {
+                    variant: 'success',
+                });
+                setBicycle({ ...bicycle, disabled: 0 });
+            } else {
+                enqueueSnackbar('Failed to enable bike', { variant: 'error' });
+            }
+        } catch (error) {
+            enqueueSnackbar('Failed to enable bike', { variant: 'error' });
+        }
     };
 
     useEffect(() => {
@@ -100,6 +141,33 @@ const BicycleDetails = () => {
                                 </Grid>
                                 <Grid item xs={12} sm={6} md={4}>
                                     <InfoBox title="Bicycle Longitude" value={bicycle.bicycle_lng + " °E"} />
+                                </Grid>
+                                <Grid item xs={12} sm={6} md={4}>
+                                    <InfoBox title="Disabled" value={bicycle.disabled ? 'True' : 'False'} />
+                                </Grid>
+                                <Grid item xs={12} sm={6} md={4}>
+                                    <Button
+                                        variant="contained"
+                                        onClick={handleDisableBike}
+                                        disabled={bicycle.disabled === 1}
+                                        sx={{
+                                            marginTop: '1rem',
+                                            backgroundColor: bicycle.disabled ? 'red' : undefined,
+                                            color: 'white',
+                                        }}
+                                    >
+                                        Disable Bike
+                                    </Button>
+                                </Grid>
+                                <Grid item xs={12} sm={6} md={4}>
+                                    <Button
+                                        variant="contained"
+                                        onClick={handleEnableBike}
+                                        disabled={bicycle.disabled === 0}
+                                        sx={{ marginTop: '1rem' }}
+                                    >
+                                        Enable Bike
+                                    </Button>
                                 </Grid>
                             </Grid>
                         </CardContent>

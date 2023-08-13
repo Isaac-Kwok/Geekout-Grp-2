@@ -265,7 +265,7 @@ function Login() {
                         <Card sx={{ margin: "auto" }}>
                             <Box component="form" onSubmit={formik.handleSubmit}>
                                 <CardContent>
-                                    <CardTitle title="Login (layout NOT final)" icon={<LoginIcon color="text.secondary" />} />
+                                    <CardTitle title="Login to EnviroGo" icon={<LoginIcon color="text.secondary" />} />
                                     <Stack spacing={2} sx={{ marginTop: 2 }}>
                                         <TextField
                                             type="email"

@@ -1,7 +1,7 @@
 import { GoogleMap, MarkerF, useLoadScript, InfoWindowF } from "@react-google-maps/api";
-import { Container, Button } from '@mui/material';
+import { Container, Button, Tab, Tabs } from '@mui/material';
 import { useMemo, useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import http from "../../../http"
 import '../../../bicycle.css'
 import AdminPageTitle from "../../../components/AdminPageTitle";
@@ -82,11 +82,63 @@ function BicycleAdmin() {
         ));
     }, [bicycle, filter]);
 
+    const renderMap = () => {
+        return (
+            <GoogleMap
+                mapContainerClassName="map-container"
+                center={center}
+                zoom={14}
+                mapContainerStyle={{ width: '100%', marginBottom: '1rem' }}
+                options={{
+                    restriction: {
+                        latLngBounds: bounds,
+                        strictBounds: true,
+                    },
+                }}
+            >
+                {markers}
+                {currentLocation && (
+                    <MarkerF position={currentLocation} onClick={() => handleMarkerClick({ id: 0, bicycle_lat: currentLocation.lat, bicycle_lng: currentLocation.lng, reports: 0 })} />
+                )}
+
+                {selectedSelf && (
+                    <InfoWindowF position={{ lat: currentLocation.lat, lng: currentLocation.lng }} onCloseClick={handleInfoWindowClose}>
+                        <div>
+                            <h3>Your Current Location</h3>
+                            <p>Latitude: {currentLocation.lat}</p>
+                            <p>Longitude: {currentLocation.lng}</p>
+                        </div>
+                    </InfoWindowF>
+                )}
+
+                {selectedMarker && (
+                    <InfoWindowF position={{ lat: selectedMarker.bicycle_lat, lng: selectedMarker.bicycle_lng }} onCloseClick={handleInfoWindowClose}>
+                        <div>
+                            <h3>Bicycle Information</h3>
+                            <p>Latitude: {selectedMarker.bicycle_lat}</p>
+                            <p>Longitude: {selectedMarker.bicycle_lng}</p>
+                            <p>Reports: {selectedMarker.reports}</p>
+                            <Link to={`details/${selectedMarker.id}`}>View Details</Link>
+                        </div>
+                    </InfoWindowF>
+                )}
+            </GoogleMap>
+        )
+    }
+
     const bounds = {
         north: 1.493,
         south: 1.129,
         west: 103.557,
         east: 104.131,
+    };
+
+    const handleTabChange = (event, newValue) => {
+        if (newValue === 'otherPage') {
+            Navigate("/admin/bicycle/panel")
+        } else {
+            setFilter(newValue);
+        }
     };
 
     useEffect(() => {
@@ -102,63 +154,23 @@ function BicycleAdmin() {
                 View Bicycle List
             </Button>
 
-            <div>
-                <Button onClick={() => setFilter('all')} variant={filter === 'all' ? 'contained' : 'outlined'} sx={{ marginRight: '0.5rem' }}>
-                    All
-                </Button>
-                <Button onClick={() => setFilter('disabled')} variant={filter === 'disabled' ? 'contained' : 'outlined'} sx={{ marginRight: '0.5rem' }}>
-                    Disabled
-                </Button>
-                <Button onClick={() => setFilter('registered')} variant={filter === 'registered' ? 'contained' : 'outlined'} sx={{ marginRight: '0.5rem' }}>
-                    Registered
-                </Button>
-                <Button onClick={() => setFilter('reports')} variant={filter === 'reports' ? 'contained' : 'outlined'} sx={{ marginRight: '0.5rem' }}>
-                    With Reports
-                </Button>
-            </div>
+            <Tabs
+                value={filter}
+                onChange={handleTabChange}
+                variant="fullWidth"
+                sx={{ marginBottom: '1rem' }}
+            >
+                <Tab label="All" value="all" />
+                <Tab label="Disabled" value="disabled" />
+                <Tab label="Registered" value="registered" />
+                <Tab label="With Reports" value="reports" />
+                <Tab label="Control Panel" value="otherPage" component={Link} to="/admin/bicycle/panel" />
+            </Tabs>
 
             {!isLoaded ? (
                 <h1>Loading...</h1>
             ) : (
-                <GoogleMap
-                    mapContainerClassName="map-container"
-                    center={center}
-                    zoom={14}
-                    mapContainerStyle={{ width: '100%', marginBottom: '1rem' }}
-                    options={{
-                        restriction: {
-                            latLngBounds: bounds,
-                            strictBounds: true,
-                        },
-                    }}
-                >
-                    {markers}
-                    {currentLocation && (
-                        <MarkerF position={currentLocation} onClick={() => handleMarkerClick({ id: 0, bicycle_lat: currentLocation.lat, bicycle_lng: currentLocation.lng, reports: 0 })} />
-                    )}
-
-                    {selectedSelf && (
-                        <InfoWindowF position={{ lat: currentLocation.lat, lng: currentLocation.lng }} onCloseClick={handleInfoWindowClose}>
-                            <div>
-                                <h3>Your Current Location</h3>
-                                <p>Latitude: {currentLocation.lat}</p>
-                                <p>Longitude: {currentLocation.lng}</p>
-                            </div>
-                        </InfoWindowF>
-                    )}
-
-                    {selectedMarker && (
-                        <InfoWindowF position={{ lat: selectedMarker.bicycle_lat, lng: selectedMarker.bicycle_lng }} onCloseClick={handleInfoWindowClose}>
-                            <div>
-                                <h3>Marker Information</h3>
-                                <p>Latitude: {selectedMarker.bicycle_lat}</p>
-                                <p>Longitude: {selectedMarker.bicycle_lng}</p>
-                                <p>Reports: {selectedMarker.reports}</p>
-                                <Link to={`details/${selectedMarker.id}`}>View Details</Link>
-                            </div>
-                        </InfoWindowF>
-                    )}
-                </GoogleMap>
+                renderMap()
             )}
         </Container>
     );

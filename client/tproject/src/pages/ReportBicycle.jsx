@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState} from 'react';
 import '../bicycle.css';
 import { Box, Container, Card, CardContent, Grid, FormControl, FormControlLabel, RadioGroup, Radio, TextField, CardActions, FormLabel } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
@@ -17,6 +17,7 @@ function ReportBicycle() {
     const { enqueueSnackbar } = useSnackbar();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const [reports, setReports] = useState();
 
     const getDateTime = () => {
         const now = new Date();
@@ -29,6 +30,20 @@ function ReportBicycle() {
 
         return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     };
+
+    const getReports = (bikeId) => {
+        http.get(`/bicycle/${bikeId}`).then((res) => {
+            if (res.status === 200) {
+                const bikeData = res.data;
+                const bikeReports = bikeData.reports || 0; // Default to 0 if reports is not available
+                setReports(bikeReports);
+            } else {
+                console.log('Failed to fetch bike reports');
+            }
+        }).catch((err) => {
+            console.error('Error fetching bike reports:', err);
+        });
+    }
 
     const formik = useFormik({
         initialValues: {
@@ -49,6 +64,16 @@ function ReportBicycle() {
                 if (res.status === 200) {
                     enqueueSnackbar("Bicycle reported succesfully!", { variant: "success" });
                     navigate("/bicycle")
+
+                    http.put("/bicycle/"+id, {reports: reports + 1}).then((res) => {
+                        if (res.status === 200) {
+                            console.log("Report incremented succesfully")
+                        } else {
+                            console.log("Failed to increment report")
+                        }
+                    }).catch((err) => {
+                        console.log("Error while incrementing report:", err);
+                    })
                 } else {
                     enqueueSnackbar("Failed to report bicycle test", { variant: "error" });
                     setLoading(false);
@@ -57,6 +82,12 @@ function ReportBicycle() {
                 enqueueSnackbar("Failed to report bicycle" + err.response.data.message, { variant: "error" });
                 setLoading(false);
             })
+        }
+    })
+
+    useEffect(() => {
+        if (id) {
+            getReports(id)
         }
     })
 
