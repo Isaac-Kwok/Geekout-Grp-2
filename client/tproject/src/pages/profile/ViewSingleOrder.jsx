@@ -54,6 +54,7 @@ function ViewSingleOrder() {
     }
   }
 
+
   const changeStatus = async () => {
     try {
       const response = await http.put(`/orders/set-received/${id}`);
@@ -77,9 +78,11 @@ function ViewSingleOrder() {
   }, []);
 
 
+
   if (!order || !order.OrderItems || !order.OrderItems.length) {
     return 'Loading...';
   }
+
 
   return (
     <Card>
@@ -94,7 +97,7 @@ function ViewSingleOrder() {
                   <Box marginTop={"1rem"}>
                     <InfoBox title="Order Status" value={order.order_status} />
                     {order.Refund && (
-                      <InfoBox title="Order Status" value={order.Refund.refund_status} />
+                      <InfoBox title="Refund Status" value={order.Refund.refund_status} />
                     )}
                     <br /><Divider></Divider><br />
                     <Typography variant="h6" marginBottom={"0.5rem"}>Order Items:</Typography>
@@ -111,7 +114,7 @@ function ViewSingleOrder() {
                             image={`${productPath}${productPictures[0]}`} // Assuming you have product_image field in Product
                             alt={item.Product.product_name}
                           />
-                          <CardContent sx={{flexGrow: 1}}>
+                          <CardContent sx={{ flexGrow: 1 }}>
                             <Box display="flex" alignItems="center">
                               <Box flexGrow={1}>
                                 <Typography fontWeight={700} fontSize={"18px"}>
@@ -121,6 +124,19 @@ function ViewSingleOrder() {
                                   Quantity: {item.quantity}
                                 </Typography>
                               </Box>
+                              { order.order_payment_method === "Points" ? (
+                                
+                              <Typography variant="h6" sx={{ display: "flex", alignItems: "center" }}>
+                                <span style={{ textDecoration: item.discounted ? "line-through" : "none" }}>
+                                  {item.points ? item.points : "NIL"}
+                                </span>
+                                {item.discounted ?
+                                  <span style={{ color: "red", marginLeft: "1rem" }}>
+                                    {(parseFloat(item.points_discounted) || 0)} 
+                                  </span>
+                                  : null}
+                              </Typography> ) : (
+
                               <Typography variant="h6" sx={{ display: "flex", alignItems: "center" }}>
                                 <span style={{ textDecoration: item.discounted ? "line-through" : "none" }}>
                                   ${item.total_price ? item.total_price : "NIL"}
@@ -130,7 +146,7 @@ function ViewSingleOrder() {
                                     ${(parseFloat(item.discounted_total_price) || 0).toFixed(2)}
                                   </span>
                                   : null}
-                              </Typography>
+                              </Typography>)}
                             </Box>
                           </CardContent>
                         </Card>
@@ -149,22 +165,33 @@ function ViewSingleOrder() {
                   <CardTitle icon={<RequestQuote />} title="Payment Summary" />
                 </CardContent>
                 <List>
-                  <ListItem>
-                    <ListItemText primary="Subtotal" />
-                    <Typography variant="body1">${(order.total_amount / 108 * 100).toFixed(2)}</Typography>
-                  </ListItem>
-                  {/* The calculations for GST and total might vary based on your requirements */}
-                  <ListItem>
-                    <ListItemText primary="GST (8%)" />
-                    <Typography variant="body1">${(order.total_amount / 108 * 8).toFixed(2)}</Typography>
-                  </ListItem>
-                  <Divider></Divider>
-                  <ListItem>
-                    <ListItemText primary="Total" />
-                    <Typography variant="body1">${order.total_amount}</Typography>
-                  </ListItem>
+                  {order.order_payment_method === "Points" ? (
+                    <>
+                      <Divider/>
+                      <ListItem>
+                        <ListItemText primary="Total Points Used" />
+                        <Typography variant="body1">{order.points_used}</Typography>
+                      </ListItem>
+                    </>
+                  ) : (
+                    <>
+                      <ListItem>
+                        <ListItemText primary="Subtotal" />
+                        <Typography variant="body1">${order.subtotal_amount}</Typography>
+                      </ListItem>
+                      <ListItem>
+                        <ListItemText primary="GST (8%)" />
+                        <Typography variant="body1">${order.gst_amount}</Typography>
+                      </ListItem>
+                      <Divider></Divider>
+                      <ListItem>
+                        <ListItemText primary="Total" />
+                        <Typography variant="body1">${order.total_amount}</Typography>
+                      </ListItem>
+                    </>
+                  )}
                 </List>
-                {order.order_status === "Preparing" || order.order_status === "Received" && (
+                {(order.order_status === "Preparing" || order.order_status === "Received") && (
                   <Grid container alignItems="center">
                     <Grid item xs>
                       <Button variant="contained" color="primary" fullWidth onClick={() => navigate("/profile/refunds/" + order.id)}>Refund</Button>

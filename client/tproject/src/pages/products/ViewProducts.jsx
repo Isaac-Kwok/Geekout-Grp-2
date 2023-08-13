@@ -126,8 +126,8 @@ function ProductCard({ product }) {
                 <Carousel
                     autoPlay={false}
                     indicators={false}
-                    navButtonsAlwaysVisible={shouldDisplayNavButtons}
-                    cycleNavigation={shouldDisplayNavButtons}
+                    navButtonsAlwaysVisible={productPictures > 1}
+                    cycleNavigation={productPictures > 1}
                     animation='slide'
                     navButtonsProps={{
                         style: {

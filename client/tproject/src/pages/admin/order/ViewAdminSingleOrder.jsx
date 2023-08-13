@@ -86,16 +86,29 @@ function ViewAdminSingleOrder() {
                               Quantity: {item.quantity}
                             </Typography>
                           </Box>
-                          <Typography variant="h6" sx={{ display: "flex", alignItems: "center" }}>
-                            <span style={{ textDecoration: item.discounted ? "line-through" : "none" }}>
-                              ${item.total_price ? item.total_price : "NIL"}
-                            </span>
-                            {item.discounted ?
-                              <span style={{ color: "red", marginLeft: "1rem" }}>
-                                ${(parseFloat(item.discounted_total_price) || 0).toFixed(2)}
-                              </span>
-                              : null}
-                          </Typography>
+                          { order.order_payment_method === "Points" ? (
+                                
+                                <Typography variant="h6" sx={{ display: "flex", alignItems: "center" }}>
+                                  <span style={{ textDecoration: item.discounted ? "line-through" : "none" }}>
+                                    {item.points ? item.points : "NIL"}
+                                  </span>
+                                  {item.discounted ?
+                                    <span style={{ color: "red", marginLeft: "1rem" }}>
+                                      {(parseFloat(item.points_discounted) || 0)} 
+                                    </span>
+                                    : null}
+                                </Typography> ) : (
+  
+                                <Typography variant="h6" sx={{ display: "flex", alignItems: "center" }}>
+                                  <span style={{ textDecoration: item.discounted ? "line-through" : "none" }}>
+                                    ${item.total_price ? item.total_price : "NIL"}
+                                  </span>
+                                  {item.discounted ?
+                                    <span style={{ color: "red", marginLeft: "1rem" }}>
+                                      ${(parseFloat(item.discounted_total_price) || 0).toFixed(2)}
+                                    </span>
+                                    : null}
+                                </Typography>)}
                         </Box>
                       </CardContent>
                     </Card>
@@ -114,20 +127,31 @@ function ViewAdminSingleOrder() {
               <CardTitle icon={<RequestQuote />} title="Payment Summary" />
             </CardContent>
             <List>
-              <ListItem>
-                <ListItemText primary="Subtotal" />
-                <Typography variant="body1">${(order.total_amount / 108 * 100).toFixed(2)}</Typography>
-              </ListItem>
-              {/* The calculations for GST and total might vary based on your requirements */}
-              <ListItem>
-                <ListItemText primary="GST (8%)" />
-                <Typography variant="body1">${(order.total_amount / 108 * 8).toFixed(2)}</Typography>
-              </ListItem>
-              <Divider></Divider>
-              <ListItem>
-                <ListItemText primary="Total" />
-                <Typography variant="body1">${order.total_amount}</Typography>
-              </ListItem>
+              {order.order_payment_method === "Points" ? (
+                <>
+                  <Divider />
+                  <ListItem>
+                    <ListItemText primary="Total Points Used" />
+                    <Typography variant="body1">{order.points_used}</Typography>
+                  </ListItem>
+                </>
+              ) : (
+                <>
+                  <ListItem>
+                    <ListItemText primary="Subtotal" />
+                    <Typography variant="body1">${order.subtotal_amount}</Typography>
+                  </ListItem>
+                  <ListItem>
+                    <ListItemText primary="GST (8%)" />
+                    <Typography variant="body1">${order.gst_amount}</Typography>
+                  </ListItem>
+                  <Divider></Divider>
+                  <ListItem>
+                    <ListItemText primary="Total" />
+                    <Typography variant="body1">${order.total_amount}</Typography>
+                  </ListItem>
+                </>
+              )}
             </List>
             {order.order_status === "Preparing" || order.order_status === "Received" && (
               <Grid container alignItems="center">

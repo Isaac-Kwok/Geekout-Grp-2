@@ -65,6 +65,7 @@ const Checkout = () => {
                             discounted_total_price: price * item.quantity,
                             discounted: item.product_sale,
                             points: item.Product.product_price_greenmiles * item.quantity,
+                            points_discounted: item.Product.product_price_greenmiles * (1 - item.Product.product_discounted_percent / 100) * item.quantity,
                         }
                     });
                     const no_of_items = selectedItemsDetails.reduce((total, item) => total + item.quantity, 0);

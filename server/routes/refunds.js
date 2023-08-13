@@ -3,6 +3,11 @@ const router = express.Router();
 const { Order, OrderItem, Product, User, Refund } = require('../models');
 const yup = require('yup');
 const { validateToken } = require('../middleware/validateToken');
+const ejs = require("ejs")
+require('dotenv').config();
+const path = require('path')
+const { emailSender } = require("../middleware/emailSender")
+
 
 router.get('/:orderId', validateToken, async (req, res) => {
     const orderId = req.params.orderId;
