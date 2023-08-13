@@ -9,6 +9,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 import useUser from "../context/useUser";
+import { Avatar, Drawer, List, ListItem, ListItemIcon, ListItemText, AppBar, IconButton, Toolbar, Typography } from '@mui/material';
+import { AccountCircle, ConnectingAirportsOutlined, DirectionsBike, History, Map, Payment, Report, Star } from '@mui/icons-material';
+import MenuIcon from '@mui/icons-material/Menu';
 
 const libraries = ['geometry'];
 
@@ -64,7 +67,12 @@ function Bicycle() {
     const [isLocked, setIsLocked] = useState(false);
     const { enqueueSnackbar } = useSnackbar();
     const { user, refreshUser } = useUser();
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const navigate = useNavigate();
+
+    const handleSidebarToggle = () => {
+        setIsSidebarOpen(!isSidebarOpen);
+    };
 
     // Function to reload the LoadScript
     const reloadLoadScript = () => {
@@ -377,7 +385,7 @@ function Bicycle() {
             // Logic to report a missing bike
             reportBike();
         };
-        
+
         if (selectedMarker) {
             return (
                 <CombinedComponent
@@ -391,6 +399,47 @@ function Bicycle() {
                 />
             );
         }
+    };
+
+    const Sidebar = ({ isOpen, onClose }) => {
+        const userInfo = user ? {
+            name: user.name,
+            avatarUrl: user.profile_picture,
+            distance: 150, // in kilometers
+            caloriesBurnt: 800, // in calories
+        } : 
+        {   name: "John",
+            avatarUrl: "-",
+            distance: 150, // in kilometers
+            caloriesBurnt: 800, // in calories;
+        }
+
+        const menuItems = [
+            { text: 'Profile', icon: <AccountCircle />, onClick: () => console.log('Profile clicked') },
+            { text: 'Trip History', icon: <History />, onClick: () => navigate("/bicycle/usages") },
+            { text: 'Payment', icon: <Payment />, onClick: () => console.log('Payment clicked') },
+            { text: 'Report', icon: <Report />, onClick: () => navigate("/bicycle/report") },
+            { text: 'Challenges', icon: <Star />, onClick: () => console.log('Rewards clicked') },
+        ];
+
+        return (
+            <Drawer anchor="left" open={isOpen} onClose={onClose}>
+                <div style={{ padding: '1rem', textAlign: 'center' }}>
+                    <Avatar alt="User Avatar" src={userInfo.avatarUrl} style={{ width: '5rem', height: '5rem', marginBottom: '1rem' }} />
+                    <Typography variant="h6">{userInfo.name}</Typography>
+                    <Typography>{userInfo.distance} km travelled</Typography>
+                    <Typography>{userInfo.caloriesBurnt} calories burnt</Typography>
+                </div>
+                <List>
+                    {menuItems.map((item, index) => (
+                        <ListItem button key={index} onClick={item.onClick}>
+                            <ListItemIcon>{item.icon}</ListItemIcon>
+                            <ListItemText primary={item.text} />
+                        </ListItem>
+                    ))}
+                </List>
+            </Drawer>
+        );
     };
 
     const currentLocationMarkerUrl = "../currentlocation.png"
@@ -467,10 +516,12 @@ function Bicycle() {
     };
 
     useEffect(() => {
-        document.title = 'EnviroGo - View Map';
-        handleGetBicycle();
-        handleGetLocation(setCurrentLocation);
-    }, []);
+        if (user) {
+            document.title = 'EnviroGo - View Map';
+            handleGetBicycle();
+            handleGetLocation(setCurrentLocation);
+        }
+    }, [user]);
 
     useEffect(() => {
         // Check if currentLocation is available and map is loaded
@@ -480,7 +531,17 @@ function Bicycle() {
     }, [currentLocation, isLoaded]);
 
     return (
+
         <Container maxWidth="xl" sx={{ marginTop: '1rem' }}>
+            <AppBar position="static">
+                <Toolbar>
+                    <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleSidebarToggle}>
+                        <MenuIcon />
+                    </IconButton>
+                    <Typography variant="h6">Bicycle Sharing</Typography>
+                </Toolbar>
+            </AppBar>
+            <Sidebar isOpen={isSidebarOpen} onClose={handleSidebarToggle} />
             {isLoaded && mapLoaded ? (
                 renderMap()
             ) : (
