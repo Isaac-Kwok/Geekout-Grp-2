@@ -103,7 +103,7 @@ function EditProduct() {
       product_status: product ? product.product_status : true,
     },
     validationSchema: Yup.object({
-      product_name: Yup.string().trim().min(3).max(100).required("Product Name is required"),
+      product_name: Yup.string().trim().min(3).required("Product Name is required"),
       product_category: Yup.string().trim().required("Product Category is required"),
       product_sub_category: Yup.string().trim().required("Sub Category is required"),
       pass_category_status: Yup.bool(),
