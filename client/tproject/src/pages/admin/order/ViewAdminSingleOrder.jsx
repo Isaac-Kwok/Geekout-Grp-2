@@ -25,14 +25,10 @@ function ViewAdminSingleOrder() {
         setOrder(response.data);
       } catch (error) {
         if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
           console.error('Error fetching order:', error.response.data);
         } else if (error.request) {
-          // The request was made but no response was received
           console.error('No response received:', error.request);
         } else {
-          // Something happened in setting up the request that triggered an Error
           console.error('Error', error.message);
         }
       }
@@ -72,8 +68,8 @@ function ViewAdminSingleOrder() {
                     <Card variant='outlined' sx={{ display: 'flex', marginBottom: 2, flexDirection: { xs: "column", md: "row" } }}>
                       <CardMedia
                         component="img"
-                        sx={{ width: { xs: "100%", md: "140px" } }}  // Adjust the size as needed
-                        image={`${productPath}${productPictures[0]}`} // Assuming you have product_image field in Product
+                        sx={{ width: { xs: "100%", md: "140px" } }}  
+                        image={`${productPath}${productPictures[0]}`} 
                         alt={item.Product.product_name}
                       />
                       <CardContent sx={{ flexGrow: 1 }}>

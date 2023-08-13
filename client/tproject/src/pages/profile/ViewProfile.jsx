@@ -37,7 +37,6 @@ function ViewProfile() {
 
     const handleTopupClose = () => {
         setTopupOpen(false)
-        // Update user profile
         http.get("/profile").then(res => {
             setProfile(res.data)
         })
@@ -48,7 +47,6 @@ function ViewProfile() {
     }
 
     const handleOnPaymentSuccess = () => {
-        // Update user profile
         http.get("/profile").then(res => {
             setProfile(res.data)
         })

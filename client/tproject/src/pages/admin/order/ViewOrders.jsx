@@ -50,8 +50,7 @@ function ViewOrders() {
     const [pendingOrders, setPendingOrders] = useState(0);
     const [completedOrders, setCompletedOrders] = useState(0);
     const [tabValue, setTabValue] = useState("all");
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
+    
     const filteredOrders = () => {
         if (tabValue === 'all') return orders;
         return orders.filter(order => order.order_status === order_status[tabValue]);
