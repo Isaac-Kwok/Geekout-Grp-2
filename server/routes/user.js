@@ -169,6 +169,17 @@ router.post("/social/google", validateToken, async (req, res) => {
             user.save()
             res.json({ message: "Google account un-linked" })
         } else {
+            // Check if email is already linked to another account
+            const emailExists = await User.findOne({
+                where: {
+                    is_google_auth_enabled: ticket.email
+                }
+            })
+
+            if (emailExists) {
+                return res.status(400).json({ message: "Google account has been linked with another account." })
+            }
+
             user.is_google_auth_enabled = ticket.email
             user.save()
             res.json({ message: "Google account linked" })
@@ -202,6 +213,17 @@ router.post("/social/facebook", validateToken, async (req, res) => {
             user.save()
             res.json({ message: "Facebook account un-linked" })
         } else {
+            // Check if ID is already linked to another account
+            const idExists = await User.findOne({
+                where: {
+                    is_fb_auth_enabled: ticket.data.id
+                }
+            })
+
+            if (idExists) {
+                return res.status(400).json({ message: "Facebook account has been linked with another account." })
+            }
+
             user.is_fb_auth_enabled = ticket.data.id
             user.save()
             res.json({ message: "Facebook account linked" })
