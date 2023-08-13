@@ -52,7 +52,7 @@ function BicycleHistory() {
 
     const handleGetUsages = () => {
         if (user) {
-            http.get("/bicycle/usages/user/"+user.id)
+            http.get("/bicycle/usages/user/"+user?.id)
                 .then((res) => {
                     if (res.status === 200) {
                         const sortedUsages = res.data.sort((a, b) => {
@@ -245,8 +245,10 @@ function BicycleHistory() {
     };
 
     useEffect(() => {
-        handleGetUsages()
-    }, []);
+        if (user) {
+            handleGetUsages()
+        }
+    }, [user]);
 
     return (
         <Container maxWidth="xl" sx={{ marginTop: '1rem' }}>
