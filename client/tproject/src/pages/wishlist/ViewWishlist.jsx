@@ -10,7 +10,7 @@ import PageTitle from '../../components/PageTitle';
 
 
 function ViewWishlist() {
-    const { user } = useContext(UserContext); 
+    const { user } = useContext(UserContext);
     const [items, setItems] = useState([]);
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
@@ -42,7 +42,8 @@ function ViewWishlist() {
     }
 
     const handleConfirmRemoveItem = () => {
-        http.delete('/wishlist/' + selectedItem)
+        console.log()
+        http.delete(`/wishlist/${selectedItem}`)
             .then((response) => {
                 if (response.status === 200) {
                     handleGetWishlistItems();
@@ -53,6 +54,7 @@ function ViewWishlist() {
             });
         setOpenDialog(false);
     }
+    
 
     const clearWishlist = () => {
         setItems([]);
@@ -66,7 +68,7 @@ function ViewWishlist() {
                 console.error('Error clearing wishlist:', error);
             });
     }
-    
+
 
     useEffect(() => {
         if (!validateUser()) {
@@ -100,6 +102,9 @@ function ViewWishlist() {
                                         </TableHead>
                                         <TableBody>
                                             {items.map((item, index) => {
+                                                const productPictures = item.Product.product_picture && Array.isArray(item.Product.product_picture)
+                                                    ? item.Product.product_picture
+                                                    : JSON.parse(item.Product.product_picture || '[]');
                                                 return (
                                                     <TableRow key={item.id}>
                                                         <TableCell component="th" scope="row">
@@ -110,16 +115,18 @@ function ViewWishlist() {
                                                         <TableCell>
                                                             <CardMedia
                                                                 component="img"
-                                                                height="80px"
-                                                                width="80px"
-                                                                object-fit="cover"
-                                                                image={`${productPath}${item.product_picture}`}
-                                                                alt={item.product_name}
+                                                                sx={{
+                                                                    width: 340,  // Automatically adjust width based on aspect ratio
+                                                                    height: 140,    // Fixed height
+                                                                    objectFit: 'cover'
+                                                                }}
+                                                                image={`${productPath}${productPictures[0]}`}
+                                                                alt={item.Product.product_name}
                                                             />
                                                         </TableCell>
                                                         <TableCell align="center">{item.product_price}</TableCell>
                                                         <TableCell align="center">
-                                                            <IconButton aria-label="delete" onClick={() => handleRemoveItem(item.id)}>
+                                                            <IconButton aria-label="delete" onClick={() => handleRemoveItem(item.product_id)}>
                                                                 <DeleteIcon />
                                                             </IconButton>
                                                         </TableCell>
@@ -131,16 +138,16 @@ function ViewWishlist() {
                                 </>
                             ) : (
                                 <Table>
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell colSpan={7} style={{textAlign: 'center', justifyContent: 'center', alignItems:'center'}}>
-                                                    <Typography variant="h6">
-                                                        Your Wishlist is empty
-                                                    </Typography>
-                                                </TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                    </Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell colSpan={7} style={{ textAlign: 'center', justifyContent: 'center', alignItems: 'center' }}>
+                                                <Typography variant="h6">
+                                                    Your Wishlist is empty
+                                                </Typography>
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                </Table>
                             )
                         }
                     </TableContainer>

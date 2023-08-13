@@ -43,7 +43,7 @@ function CheckoutPaymentForm(props) {
                 if (result.paymentIntent.status === "succeeded" || result.paymentIntent.status === "processing") {
                     // I set up the webhook on the backend to handle the topup, no action needed here
                     enqueueSnackbar("Payment is successful!", { variant: "success" });
-                    navigate("/cart/checkout/success?orderId=" + props.orderId);
+                    navigate("/cart/checkout/success?orderId=" + props.orderId + "&redirect_status=succeeded");
                 } else {
                     enqueueSnackbar("Payment is not successful!", { variant: "error" });
                 }

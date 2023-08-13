@@ -123,56 +123,58 @@ function SupportHome() {
                         <CardContent>
                             <CardTitle title={"Need Help?"} icon={<LiveHelpIcon />} />
                             <Grid container mt={"1rem"}>
-                                <Grid item xs={12} md>
-                                    <Typography variant="h6" textAlign={"center"}>Create Support Ticket</Typography>
-                                    <Box component="form" mt={"1rem"} onSubmit={ticketForm.handleSubmit}>
-                                        <Stack direction="column" spacing={2}>
-                                            <TextField
-                                                fullWidth
-                                                name="title"
-                                                label="Title"
-                                                variant="outlined"
-                                                value={ticketForm.values.title}
-                                                onChange={ticketForm.handleChange}
-                                                error={ticketForm.touched.title && Boolean(ticketForm.errors.title)}
-                                                helperText={ticketForm.touched.title && ticketForm.errors.title}
-                                            />
-                                            <FormControl fullWidth>
-                                                <InputLabel id="category-label">Select Category</InputLabel>
-                                                <Select
-                                                    labelId="category-label"
-                                                    id="category"
-                                                    label="Select Category"
+                                {user && (
+                                    <Grid item xs={12} md>
+                                        <Typography variant="h6" textAlign={"center"}>Create Support Ticket</Typography>
+                                        <Box component="form" mt={"1rem"} onSubmit={ticketForm.handleSubmit}>
+                                            <Stack direction="column" spacing={2}>
+                                                <TextField
                                                     fullWidth
-                                                    name="category"
-                                                    value={ticketForm.values.category}
+                                                    name="title"
+                                                    label="Title"
+                                                    variant="outlined"
+                                                    value={ticketForm.values.title}
                                                     onChange={ticketForm.handleChange}
-                                                    error={ticketForm.touched.category && Boolean(ticketForm.errors.category)}
-                                                    helperText={ticketForm.touched.category && ticketForm.errors.category}
-                                                >
-                                                    <MenuItem value={"general"}>General Enquiry</MenuItem>
-                                                    <MenuItem value={"account"}>Account Issues</MenuItem>
-                                                    <MenuItem value={"payment"}>Payment Issues</MenuItem>
-                                                    <MenuItem value={"other"}>Others...</MenuItem>
-                                                </Select>
-                                            </FormControl>
-                                            <TextField
-                                                fullWidth
-                                                name="description"
-                                                label="Description"
-                                                variant="outlined"
-                                                multiline
-                                                rows={4}
-                                                value={ticketForm.values.description}
-                                                onChange={ticketForm.handleChange}
-                                                error={ticketForm.touched.description && Boolean(ticketForm.errors.description)}
-                                                helperText={ticketForm.touched.description && ticketForm.errors.description}
-                                            />
-                                            <LoadingButton variant="contained" color="primary" type='submit' startIcon={<SupportIcon />} loading={loadingSubmit}>Request Support</LoadingButton>
-                                        </Stack>
-                                    </Box>
-                                </Grid>
-                                <Divider orientation="vertical" sx={{ marginX: "1rem" }} flexItem />
+                                                    error={ticketForm.touched.title && Boolean(ticketForm.errors.title)}
+                                                    helperText={ticketForm.touched.title && ticketForm.errors.title}
+                                                />
+                                                <FormControl fullWidth>
+                                                    <InputLabel id="category-label">Select Category</InputLabel>
+                                                    <Select
+                                                        labelId="category-label"
+                                                        id="category"
+                                                        label="Select Category"
+                                                        fullWidth
+                                                        name="category"
+                                                        value={ticketForm.values.category}
+                                                        onChange={ticketForm.handleChange}
+                                                        error={ticketForm.touched.category && Boolean(ticketForm.errors.category)}
+                                                        helperText={ticketForm.touched.category && ticketForm.errors.category}
+                                                    >
+                                                        <MenuItem value={"general"}>General Enquiry</MenuItem>
+                                                        <MenuItem value={"account"}>Account Issues</MenuItem>
+                                                        <MenuItem value={"payment"}>Payment Issues</MenuItem>
+                                                        <MenuItem value={"other"}>Others...</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+                                                <TextField
+                                                    fullWidth
+                                                    name="description"
+                                                    label="Description"
+                                                    variant="outlined"
+                                                    multiline
+                                                    rows={4}
+                                                    value={ticketForm.values.description}
+                                                    onChange={ticketForm.handleChange}
+                                                    error={ticketForm.touched.description && Boolean(ticketForm.errors.description)}
+                                                    helperText={ticketForm.touched.description && ticketForm.errors.description}
+                                                />
+                                                <LoadingButton variant="contained" color="primary" type='submit' startIcon={<SupportIcon />} loading={loadingSubmit}>Request Support</LoadingButton>
+                                            </Stack>
+                                        </Box>
+                                    </Grid>
+                                )}
+                                <Divider orientation="vertical" sx={{ marginX: "1rem", display: !user ? "none": "initial" }} flexItem />
                                 <Grid item xs={12} md marginTop={{ xs: "1rem", md: 0 }}>
                                     <Typography variant="h6" textAlign={"center"}>Contact via Other Methods</Typography>
                                     <Stack spacing={2} mt={"1rem"}>

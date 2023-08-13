@@ -192,107 +192,101 @@ function ViewCart() {
         <Container maxWidth="xl" sx={{ marginY: "1rem", minWidth: 0 }}>
             <PageTitle title="Your Cart" subtitle="Review Items" />
             {items.length > 0 && (<><Button onClick={clearCart}>Clear Cart</Button></>)}
-            <Grid container spacing={2} flexDirection={{xs: "row-reverse", md: "row"}}>
+            <Grid container spacing={2} flexDirection={{ xs: "row-reverse", md: "row" }}>
                 <Grid item xs={12} md={9}>
                     <TableContainer component={Paper}>
-                        {items.length > 0 ?
-                            (
-                                <>
-                                    <Table>
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell padding="checkbox">
-                                                    <Checkbox
-                                                        checked={items.length > 0 && selectedItems.length === items.length}
-                                                        onChange={handleSelectAllClick}
-                                                    />
-                                                </TableCell>
-                                                <TableCell>Product</TableCell>
-                                                <TableCell>Product Image</TableCell>
-                                                <TableCell align="center">Unit Price</TableCell>
-                                                <TableCell align="center">Quantity</TableCell>
-                                                <TableCell align="center">Total Price</TableCell>
-                                                <TableCell align="center">Actions</TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {items.map((item, index) => {
-                                                const isItemSelected = isSelected(item.id);
-                                                return (
-                                                    <TableRow
-                                                        key={item.id}
-                                                        selected={isItemSelected}
-                                                    >
-                                                        <TableCell padding="checkbox">
-                                                            <Checkbox
-                                                                checked={isItemSelected}
-                                                                onChange={(event) => handleCheckboxChange(event, item)}
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell component="th" scope="row">
-                                                            <Typography
-                                                                style={{ cursor: 'pointer' }}
-                                                                onClick={() => navigate('/products/' + item.product_id)}>{item.product_name}</Typography>
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <CardMedia
-                                                                component="img"
-                                                                height="80px"
-                                                                width="80px"
-                                                                object-fit="cover"
-                                                                image={`${productPath}${item.product_picture}`}
-                                                                alt={item.product_name}
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell align="center">
-                                                            {item.product_sale ?
-                                                                <><del>{parseFloat(item.product_price).toFixed(2)}</del> <span style={{ color: 'red' }}>{(parseFloat(item.product_price) * (1 - item.product_discounted_percent / 100)).toFixed(2)}</span></>
-                                                                : parseFloat(item.product_price).toFixed(2)}
-                                                        </TableCell>
-                                                        <TableCell align="center">
-                                                            <IconButton aria-label="minus" onClick={() => handleDecrementQuantity(item.id)}>
-                                                                <RemoveIcon />
-                                                            </IconButton>
+                        {items.length > 0 ? (
+                            <>
+                                <Table style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell padding="checkbox">
+                                                <Checkbox
+                                                    checked={items.length > 0 && selectedItems.length === items.length}
+                                                    onChange={handleSelectAllClick}
+                                                />
+                                            </TableCell>
+                                            <TableCell>Product Image</TableCell>
+                                            <TableCell>Product</TableCell>
+                                            <TableCell align="center">Unit Price</TableCell>
+                                            <TableCell align="center">Quantity</TableCell>
+                                            <TableCell align="center">Total Price</TableCell>
+                                            <TableCell align="center">Actions</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {items.map((item, index) => {
+                                            const isItemSelected = isSelected(item.id);
+                                            const productPictures = item.Product.product_picture && Array.isArray(item.Product.product_picture)
+                                                ? item.Product.product_picture
+                                                : JSON.parse(item.Product.product_picture || '[]');
+                                            return (
+                                                <TableRow key={item.id} selected={isItemSelected}>
+                                                    <TableCell padding="checkbox">
+                                                        <Checkbox
+                                                            checked={isItemSelected}
+                                                            onChange={(event) => handleCheckboxChange(event, item)}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <CardMedia
+                                                            component="img"
+                                                            sx={{
+                                                                width: 80,
+                                                                height: 80,
+                                                                borderRadius: '8px',
+                                                                objectFit: 'cover'
+                                                            }}
+                                                            image={`${productPath}${productPictures[0]}`}
+                                                            alt={item.Product.product_name}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell component="th" scope="row">
+                                                        <Typography
+                                                            style={{ cursor: 'pointer', fontWeight: '500' }}
+                                                            onClick={() => navigate('/products/' + item.product_id)}>{item.product_name}</Typography>
+                                                    </TableCell>
+                                                    <TableCell align="center">
+                                                        {item.product_sale ?
+                                                            <><del>{parseFloat(item.product_price).toFixed(2)}</del> <span style={{ color: 'red' }}>{(parseFloat(item.product_price) * (1 - item.product_discounted_percent / 100)).toFixed(2)}</span></>
+                                                            : parseFloat(item.product_price).toFixed(2)}
+                                                    </TableCell>
+                                                    <TableCell align="center" style={{ width: '120px' }}>
+                                                        <IconButton aria-label="minus" onClick={() => handleDecrementQuantity(item.id)}>
+                                                            <RemoveIcon />
+                                                        </IconButton>
+                                                        <span style={{ display: 'inline-block', width: '30px', textAlign: 'center' }}>
                                                             {item.quantity}
-                                                            <IconButton aria-label="plus" onClick={() => handleIncrementQuantity(item.id)}>
-                                                                <AddIcon />
-                                                            </IconButton>
-                                                        </TableCell>
-                                                        <TableCell align="center">
-                                                            {item.product_sale ?
-                                                                (item.product_price * (1 - item.product_discounted_percent / 100) * item.quantity).toFixed(2)
-                                                                : (item.product_price * item.quantity).toFixed(2)
-                                                            }
-                                                        </TableCell>
+                                                        </span>
+                                                        <IconButton aria-label="plus" onClick={() => handleIncrementQuantity(item.id)}>
+                                                            <AddIcon />
+                                                        </IconButton>
+                                                    </TableCell>
+                                                    <TableCell align="center">
+                                                        {item.product_sale ?
+                                                            (item.product_price * (1 - item.product_discounted_percent / 100) * item.quantity).toFixed(2)
+                                                            : (item.product_price * item.quantity).toFixed(2)
+                                                        }
+                                                    </TableCell>
 
-                                                        <TableCell align="center">
-                                                            <IconButton aria-label="delete" onClick={() => handleRemoveItem(item.id)}>
-                                                                <DeleteIcon />
-                                                            </IconButton>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                );
-                                            })}
-                                        </TableBody>
-                                    </Table>
-                                </>
-                            ) : (
-                                <>
-                                    <Table>
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell colSpan={7} style={{ textAlign: 'center', justifyContent: 'center', alignItems: 'center' }}>
-                                                    <Typography variant="h6">
-                                                        Your cart is empty
-                                                    </Typography>
-                                                </TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                    </Table>
-                                </>
-                            )
-                        }
+                                                    <TableCell align="center">
+                                                        <IconButton aria-label="delete" onClick={() => handleRemoveItem(item.id)}>
+                                                            <DeleteIcon />
+                                                        </IconButton>
+                                                    </TableCell>
+                                                </TableRow>
+                                            );
+                                        })}
+                                    </TableBody>
+                                </Table>
+                            </>
+                        ) : (
+                            <Typography variant="h6" style={{ textAlign: 'center', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+                                Your cart is empty
+                            </Typography>
+                        )}
                     </TableContainer>
+
                     {!user?.delivery_address && <>
                         <Card sx={{ marginY: "1rem" }}>
                             <CardContent>
@@ -336,7 +330,7 @@ function ViewCart() {
                         </List>
                         <CardActions>
                             <Button
-                            startIcon={<ShoppingCartCheckoutIcon />}
+                                startIcon={<ShoppingCartCheckoutIcon />}
                                 variant="contained"
                                 fullWidth
                                 onClick={() => {
