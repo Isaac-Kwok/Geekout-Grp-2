@@ -407,15 +407,17 @@ function Bicycle() {
             avatarUrl: user.profile_picture,
             distance: 150, // in kilometers
             caloriesBurnt: 800, // in calories
-        } : 
-        {   name: "John",
+        } 
+        :
+        {
+            name: "John",
             avatarUrl: "-",
             distance: 150, // in kilometers
             caloriesBurnt: 800, // in calories;
         }
 
         const menuItems = [
-            { text: 'Profile', icon: <AccountCircle />, onClick: () => console.log('Profile clicked') },
+            { text: 'Profile', icon: <AccountCircle />, onClick: () => navigate("/profile") },
             { text: 'Trip History', icon: <History />, onClick: () => navigate("/bicycle/usages") },
             { text: 'Payment', icon: <Payment />, onClick: () => console.log('Payment clicked') },
             { text: 'Report', icon: <Report />, onClick: () => navigate("/bicycle/report") },
@@ -532,6 +534,16 @@ function Bicycle() {
 
     return (
         <Container maxWidth="xl" sx={{ marginTop: '1rem' }}>
+            <AppBar position="static">
+                <Toolbar>
+                    <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleSidebarToggle}>
+                        <MenuIcon />
+                    </IconButton>
+                    <Typography variant="h6">Bicycle Sharing App</Typography>
+                </Toolbar>
+            </AppBar>
+            <Sidebar isOpen={isSidebarOpen} onClose={handleSidebarToggle} />
+            {/* Main content of your app */}
             {isLoaded && mapLoaded ? (
                 renderMap()
             ) : (

@@ -16,6 +16,8 @@ function ReportBicycle() {
     const { id } = useParams();
     const { enqueueSnackbar } = useSnackbar();
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const [reports, setReports] = useState();
 
     const getDateTime = () => {
         const now = new Date();
@@ -84,7 +86,9 @@ function ReportBicycle() {
     })
 
     useEffect(() => {
-        getReports(id)
+        if (id) {
+            getReports(id)
+        }
     })
 
     return (
