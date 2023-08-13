@@ -100,7 +100,6 @@ const Checkout = () => {
                             subtotal_amount: subtotal,
                             gst_amount: gst,
                             delivery_address: user.delivery_address,
-                            delivery_fee: 2.00,
                         },
                         orderItems
                     }).then((res) => {
@@ -177,7 +176,7 @@ const Checkout = () => {
     }
 
     const getTotalPrice = () => {
-        return (getSubTotalPrice() + parseFloat(getGST()) + 2).toFixed(2);
+        return (getSubTotalPrice() + parseFloat(getGST())).toFixed(2);
     }
 
     const getTotalPoints = () => {
@@ -284,10 +283,6 @@ const Checkout = () => {
                                 <ListItem>
                                     <ListItemText primary="GST (8%)" />
                                     <Typography variant="h6">${getGST()}</Typography>
-                                </ListItem>
-                                <ListItem>
-                                    <ListItemText primary="Delivery Fee" />
-                                    <Typography variant="h6">$2.00</Typography>
                                 </ListItem>
                                 <Divider />
                                 <ListItem>

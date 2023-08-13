@@ -159,7 +159,7 @@ function ViewCart() {
 
     const getTotalPrice = () => {
         var sumOfItems = parseFloat(getSubTotalPrice());
-        var total = sumOfItems + parseFloat(getGST()) + 2;
+        var total = sumOfItems + parseFloat(getGST());
         return total.toFixed(2);
     }
 
@@ -316,10 +316,6 @@ function ViewCart() {
                             <ListItem>
                                 <ListItemText primary="GST (8%)" />
                                 <Typography variant="h6">${getGST()}</Typography>
-                            </ListItem>
-                            <ListItem>
-                                <ListItemText primary="Delivery Fee" />
-                                <Typography variant="h6">$2.00</Typography>
                             </ListItem>
                             <Divider />
                             <ListItem>
