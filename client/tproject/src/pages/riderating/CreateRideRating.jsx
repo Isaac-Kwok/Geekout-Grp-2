@@ -30,20 +30,24 @@ function CreateRideRating() {
   const { enqueueSnackbar } = useSnackbar();
   const [rideRequest, setRideRequest] = useState([]);
   const navigate = useNavigate();
+  const [routeId, setrouteId] = useState(1)
+  const [driverId, setdriverId] = useState(1)
+
+  // Fetch the locations from the server using an HTTP request
+  const fetchRideRequests = async () => {
+    try {
+      const response = await http.get(
+        `/riderequests/myrequests/${userId}/specific/${requestId}`
+      );
+      setRideRequest(response.data); // set specific ride request
+      console.log(rideRequest); // Check that rideRequests are correctly fetched
+    } catch (error) {
+      console.error("Failed to fetch ride request:", error);
+    }
+  };
+
 
   useEffect(() => {
-    // Fetch the locations from the server using an HTTP request
-    const fetchRideRequests = async () => {
-      try {
-        const response = await http.get(
-          `/riderequests/myrequests/${userId}/specific/${requestId}`
-        );
-        setRideRequest(response.data); // set specific ride request
-        console.log(rideRequest); // Check that rideRequests are correctly fetched
-      } catch (error) {
-        console.error("Failed to fetch ride request:", error);
-      }
-    };
     fetchRideRequests();
   }, []);
 
@@ -54,6 +58,15 @@ function CreateRideRating() {
       .get(`/riderequests/routes/${requestId}`)
       .then((res) => {
         console.log("Route data:", res.data);
+        for (let index = 0; index < res.data.routes.length; index++) {
+          const element = res.data.routes[index];
+          if (element.rideIds.includes(requestId)) {
+            setrouteId(element.id)
+            setdriverId(element.user_id)
+            console.log('tesrt', routeId, userId)
+          }
+        }
+        
         setRoute(res.data);
       })
       .catch((err) => {
@@ -62,7 +75,23 @@ function CreateRideRating() {
           variant: "error",
         });
       });
+
   }, [requestId]);
+
+  useEffect(() => {
+    if (route) {
+      for (let index = 0; index < route.routes.length; index++) {
+        const element = route.routes[index];
+        if (element.rideIds.includes(requestId)) {
+          setrouteId(element.id)
+          setdriverId(element.user_id)
+          console.log('tesrt', routeId, userId)
+        }
+      }
+    }
+  }, [route])
+
+
 
   useEffect(() => {
     // Fetch route data on component mount
@@ -120,14 +149,14 @@ function CreateRideRating() {
 
     onSubmit: (data) => {
       // Construct the request payload
-      console.log('isthereroute',route);
+      console.log('isthereroute', route);
       data.rating = Number(data.rating);
       data.comment = data.comment.trim();
       data.requestId = requestId;
       data.ratingId = userId + requestId;
       data.reviewer = user.name;
-      data.routeId = route.routes[0].id;
-      data.driverId = route.routes[0].user_id;
+      data.routeId = routeId;
+      data.driverId = driverId;
       console.log("data to submit:", data)
 
       rideRequest.status = "Rated";
@@ -163,7 +192,7 @@ function CreateRideRating() {
           console.error("Error:", err); // Log the error
           enqueueSnackbar(
             "Ride rating submission failed! - Edit Ride request status part " +
-              err.response.data.message,
+            err.response.data.message,
             { variant: "error" }
           );
         })
