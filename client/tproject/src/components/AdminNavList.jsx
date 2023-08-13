@@ -1,22 +1,19 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 import { ListItem, ListItemButton, ListItemIcon, ListItemText, Collapse, List } from '@mui/material'
-
 import PeopleIcon from '@mui/icons-material/People';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import PedalBikeIcon from '@mui/icons-material/PedalBike';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import StoreIcon from '@mui/icons-material/Store';
 import SupportIcon from '@mui/icons-material/Support';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import LabelIcon from '@mui/icons-material/Label';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import LiveHelpIcon from '@mui/icons-material/LiveHelp';
 import ArticleIcon from '@mui/icons-material/Article';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
-import InventoryIcon from '@mui/icons-material/Inventory';
+import { Add, AddLocation, Category, CurrencyExchange, DirectionsBike, Explore, HowToReg, Map, NoCrash, Person, PersonAdd, Place, RequestPage } from '@mui/icons-material';
 
 
 function AdminNavList() {
@@ -60,7 +57,7 @@ function AdminNavList() {
         <>
             <ListItem key={"Users"} disablePadding>
                 <ListItemButton onClick={handleClickUsers}>
-                    <ListItemIcon><PeopleIcon /></ListItemIcon>
+                    <ListItemIcon><Person /></ListItemIcon>
                     <ListItemText primary={"Users"} />
                     {usersOpen ? <ExpandLess /> : <ExpandMore />}
                 </ListItemButton>
@@ -69,13 +66,13 @@ function AdminNavList() {
                 <List component="div" disablePadding>
                     <ListItem key={"ViewUsers"} disablePadding>
                         <ListItemButton component={Link} to="/admin/users">
-                            <ListItemIcon><LabelIcon /></ListItemIcon>
+                            <ListItemIcon><PeopleIcon /></ListItemIcon>
                             <ListItemText primary={"View Users"} />
                         </ListItemButton>
                     </ListItem>
                     <ListItem key={"CreateUser"} disablePadding>
                         <ListItemButton component={Link} to="/admin/users/create">
-                            <ListItemIcon><LabelIcon /></ListItemIcon>
+                            <ListItemIcon><PersonAdd /></ListItemIcon>
                             <ListItemText primary={"Create User"} />
                         </ListItemButton>
                     </ListItem>
@@ -92,13 +89,13 @@ function AdminNavList() {
                 <List component="div" disablePadding>
                     <ListItem key={"ViewDriverApplications"} disablePadding>
                         <ListItemButton component={Link} to="/admin/driver/viewdriverapplications">
-                            <ListItemIcon><LabelIcon /></ListItemIcon>
+                            <ListItemIcon><HowToReg /></ListItemIcon>
                             <ListItemText primary={"View Applications"} />
                         </ListItemButton>
                     </ListItem>
                     <ListItem key={"ViewDrivers"} disablePadding>
                         <ListItemButton component={Link} to="/admin/driver/viewdrivers">
-                            <ListItemIcon><LabelIcon /></ListItemIcon>
+                            <ListItemIcon><NoCrash /></ListItemIcon>
                             <ListItemText primary={"View Drivers"} />
                         </ListItemButton>
                     </ListItem>
@@ -116,19 +113,19 @@ function AdminNavList() {
                 <List component="div" disablePadding>
                     <ListItem key={"ViewBicycleMap"} disablePadding>
                         <ListItemButton component={Link} to="/admin/bicycle">
-                            <ListItemIcon><LabelIcon /></ListItemIcon>
+                            <ListItemIcon><Map /></ListItemIcon>
                             <ListItemText primary={"View Bicycle Map"} />
                         </ListItemButton>
                     </ListItem>
                     <ListItem key={"ViewBicycleList"} disablePadding>
                         <ListItemButton component={Link} to="/admin/bicycle/view">
-                            <ListItemIcon><LabelIcon /></ListItemIcon>
+                            <ListItemIcon><DirectionsBike /></ListItemIcon>
                             <ListItemText primary={"View Bicycle List"} />
                         </ListItemButton>
                     </ListItem>
                     <ListItem key={"AddBicycle"} disablePadding>
                         <ListItemButton component={Link} to="/admin/bicycle/add">
-                            <ListItemIcon><LabelIcon /></ListItemIcon>
+                            <ListItemIcon><Add /></ListItemIcon>
                             <ListItemText primary={"Add Bicycle"} />
                         </ListItemButton>
                     </ListItem>
@@ -137,7 +134,7 @@ function AdminNavList() {
             </Collapse>
             <ListItem key={"Locations"} disablePadding>
                 <ListItemButton onClick={handleClickLocations}>
-                    <ListItemIcon><LocationOnIcon /></ListItemIcon>
+                    <ListItemIcon><Explore /></ListItemIcon>
                     <ListItemText primary={"Locations"} />
                     {locationsOpen ? <ExpandLess /> : <ExpandMore />}
                 </ListItemButton>
@@ -146,13 +143,13 @@ function AdminNavList() {
                 <List component="div" disablePadding>
                     <ListItem key={"ViewLocations"} disablePadding>
                         <ListItemButton component={Link} to="/admin/locations/view">
-                            <ListItemIcon><LabelIcon /></ListItemIcon>
+                            <ListItemIcon><Place /></ListItemIcon>
                             <ListItemText primary={"View Locations"} />
                         </ListItemButton>
                     </ListItem>
                     <ListItem key={"AddLocation"} disablePadding>
                         <ListItemButton component={Link} to="/admin/locations/create">
-                            <ListItemIcon><LabelIcon /></ListItemIcon>
+                            <ListItemIcon><AddLocation /></ListItemIcon>
                             <ListItemText primary={"Create Location"} />
                         </ListItemButton>
                     </ListItem>
@@ -170,7 +167,7 @@ function AdminNavList() {
                 <List component="div" disablePadding>
                     <ListItem key={"ViewRequests"} disablePadding>
                         <ListItemButton component={Link} to="/admin/requests">
-                            <ListItemIcon><LabelIcon /></ListItemIcon>
+                            <ListItemIcon><RequestPage /></ListItemIcon>
                             <ListItemText primary={"View Requests"} />
                         </ListItemButton>
                     </ListItem>
@@ -188,25 +185,25 @@ function AdminNavList() {
                 <List component="div" disablePadding>
                     <ListItem key={"ViewProducts"} disablePadding>
                         <ListItemButton component={Link} to="/admin/products">
-                            <ListItemIcon><LabelIcon /></ListItemIcon>
+                            <ListItemIcon><Category /></ListItemIcon>
                             <ListItemText primary={"View Products"} />
                         </ListItemButton>
                     </ListItem>
                     <ListItem key={"CreateProduct"} disablePadding>
                         <ListItemButton component={Link} to="/admin/products/create">
-                            <ListItemIcon><LabelIcon /></ListItemIcon>
+                            <ListItemIcon><Add /></ListItemIcon>
                             <ListItemText primary={"Create Product"} />
                         </ListItemButton>
                     </ListItem>
                     <ListItem key={"Orders"} disablePadding>
                         <ListItemButton component={Link} to="/admin/orders">
-                            <ListItemIcon><LabelIcon /></ListItemIcon>
+                            <ListItemIcon><ReceiptLongIcon /></ListItemIcon>
                             <ListItemText primary={"View All Orders"} />
                         </ListItemButton>
                     </ListItem>
                     <ListItem key={"Refunds"} disablePadding>
                         <ListItemButton component={Link} to="/admin/refunds">
-                            <ListItemIcon><LabelIcon /></ListItemIcon>
+                            <ListItemIcon><CurrencyExchange /></ListItemIcon>
                             <ListItemText primary={"View All Refunds"} />
                         </ListItemButton>
                     </ListItem>

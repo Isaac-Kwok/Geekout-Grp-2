@@ -9,6 +9,8 @@ import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import { useSnackbar } from 'notistack';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import http from '../../http';
+import { Category, RequestQuote } from '@mui/icons-material';
+import InfoBox from '../../components/InfoBox';
 
 const order_status = {
   1: "Preparing",
@@ -82,60 +84,70 @@ function ViewSingleOrder() {
   return (
     <Card>
       <CardContent>
-        <CardTitle icon={<ReceiptLongIcon />} title="Order Details" />
+        <CardTitle icon={<ReceiptLongIcon />} title="Order Details" back="/profile/orders" />
         <Box marginY={"1rem"}>
           <Grid container spacing={2} direction={{ xs: 'column-reverse', sm: 'row' }}>
-            <Grid item xs={12} sm={9}>
-              <Paper elevation={2} sx={{ padding: 2 }}>
-                <Typography variant="h6">Status & Delivery Information</Typography>
-                <Typography variant="body1">Status of Order: {order.order_status}</Typography>
-                {order.Refund && (
-                  <Typography variant="body1">Refund Status: {order.Refund.refund_status}</Typography>
-                )}
-                <br /><Divider></Divider><br />
-                <Typography variant="h6">Order Items:</Typography>
-                {order.OrderItems.map(item => {
-                  const productPictures = item.Product.product_picture && Array.isArray(item.Product.product_picture)
-                    ? item.Product.product_picture
-                    : JSON.parse(item.Product.product_picture || '[]');
+            <Grid item xs={12} sm={8}>
+              <Card variant='outlined'>
+                <CardContent>
+                  <CardTitle icon={<Category />} title="Status & Order Items" />
+                  <Box marginTop={"1rem"}>
+                    <InfoBox title="Order Status" value={order.order_status} />
+                    {order.Refund && (
+                      <InfoBox title="Order Status" value={order.Refund.refund_status} />
+                    )}
+                    <br /><Divider></Divider><br />
+                    <Typography variant="h6" marginBottom={"0.5rem"}>Order Items:</Typography>
+                    {order.OrderItems.map(item => {
+                      const productPictures = item.Product.product_picture && Array.isArray(item.Product.product_picture)
+                        ? item.Product.product_picture
+                        : JSON.parse(item.Product.product_picture || '[]');
 
-                  return (
-                    <Card elevation={2} sx={{ display: 'flex', marginBottom: 2, border: '1px solid #ccc' }}>
-                      <CardMedia
-                        component="img"
-                        sx={{ width: 140 }}  // Adjust the size as needed
-                        image={`${productPath}${productPictures[0]}`} // Assuming you have product_image field in Product
-                        alt={item.Product.product_name}
-                      />
-                      <CardContent sx={{ flex: '1 0 auto' }}>
-                        <Typography component="h5" variant="h5">
-                          {item.Product.product_name}
-                        </Typography>
-                        <Typography variant="subtitle1" color="text.secondary">
-                          Quantity: {item.quantity}
-                        </Typography>
-                      </CardContent>
-                      <div sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', m: 2 }}>
-                        <Typography variant="h6" sx={{ display: "flex", alignItems: "center", padding: '8px' }}>
-                          <span style={{ textDecoration: item.discounted ? "line-through" : "none" }}>
-                            ${item.total_price ? item.total_price : "NIL"}
-                          </span>
-                          {item.discounted ?
-                            <span style={{ color: "red", marginLeft: "1rem" }}>
-                              ${(parseFloat(item.discounted_total_price) || 0).toFixed(2)}
-                            </span>
-                            : null}
-                        </Typography>
-                      </div>
-                    </Card>
-                    );
-                  })}
-              </Paper>
+                      return (
+                        <Card variant='outlined' sx={{ display: 'flex', marginBottom: 2, flexDirection: { xs: "column", md: "row" } }}>
+                          <CardMedia
+                            component="img"
+                            sx={{ width: { xs: "100%", md: "140px" } }}  // Adjust the size as needed
+                            image={`${productPath}${productPictures[0]}`} // Assuming you have product_image field in Product
+                            alt={item.Product.product_name}
+                          />
+                          <CardContent sx={{flexGrow: 1}}>
+                            <Box display="flex" alignItems="center">
+                              <Box flexGrow={1}>
+                                <Typography fontWeight={700} fontSize={"18px"}>
+                                  {item.Product.product_name}
+                                </Typography>
+                                <Typography variant="subtitle1" color="text.secondary">
+                                  Quantity: {item.quantity}
+                                </Typography>
+                              </Box>
+                              <Typography variant="h6" sx={{ display: "flex", alignItems: "center" }}>
+                                <span style={{ textDecoration: item.discounted ? "line-through" : "none" }}>
+                                  ${item.total_price ? item.total_price : "NIL"}
+                                </span>
+                                {item.discounted ?
+                                  <span style={{ color: "red", marginLeft: "1rem" }}>
+                                    ${(parseFloat(item.discounted_total_price) || 0).toFixed(2)}
+                                  </span>
+                                  : null}
+                              </Typography>
+                            </Box>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </Box>
+
+                </CardContent>
+
+              </Card>
             </Grid>
 
-            <Grid item xs={12} sm={3}>
-              <Paper elevation={2} sx={{ padding: 2 }}>
-                <Typography variant="h6">Payment Summary</Typography>
+            <Grid item xs={12} sm={4}>
+              <Card variant='outlined'>
+                <CardContent>
+                  <CardTitle icon={<RequestQuote />} title="Payment Summary" />
+                </CardContent>
                 <List>
                   <ListItem>
                     <ListItemText primary="Subtotal" />
@@ -164,7 +176,7 @@ function ViewSingleOrder() {
                       <Button variant="contained" color="primary" fullWidth onClick={changeStatus}>Received</Button>
                     </Grid>
                   </Grid>)}
-              </Paper>
+              </Card>
             </Grid>
           </Grid>
         </Box>

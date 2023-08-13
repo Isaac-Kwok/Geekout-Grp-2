@@ -25,7 +25,7 @@ router.post("/", async (req, res) => {
         await schema.validate(req.body, { abortEarly: false })
         const { email, password, code } = req.body
         const user = await User.findOne({ where: { email: email } })
-        const secret = await Secret.findOne({ where: { user_id: user.id } })
+        
 
         // Check if user exists
         if (!user) {
@@ -58,6 +58,7 @@ router.post("/", async (req, res) => {
             return
         }
 
+        const secret = await Secret.findOne({ where: { user_id: user.id } })
         // Check user 2fa
         if (secret) {
             //check 2fa
