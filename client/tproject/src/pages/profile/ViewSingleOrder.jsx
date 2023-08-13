@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Container, Grid, Card, CardContent, CardMedia, Typography, Paper, List, ListItem, ListItemText, Divider, Box, Chip } from '@mui/material';
+import { Button, Container, Grid, Card, CardContent, CardMedia, Typography, Paper, List, ListItem, ListItemText, Divider, Box, Chip, CardActions } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
@@ -191,25 +191,28 @@ function ViewSingleOrder() {
                     </>
                   )}
                 </List>
-                {
-                  (order.order_status === "Preparing" || order.order_status === "Received") && order.order_payment_method !== "Points" && (
-                    <Grid container alignItems="center">
-                      <Grid item xs>
-                        <Button variant="contained" color="primary" fullWidth onClick={() => navigate("/profile/refunds/" + order.id)}>Refund</Button>
+                <CardActions>
+                  {
+                    (order.order_status === "Preparing" || order.order_status === "Received") && order.order_payment_method !== "Points" && (
+                      <Grid container alignItems="center">
+                        <Grid item xs>
+                          <Button variant="contained" color="primary" fullWidth onClick={() => navigate("/profile/refunds/" + order.id)}>Refund</Button>
+                        </Grid>
                       </Grid>
-                    </Grid>
-                  )
-                }
+                    )
+                  }
 
-                {
-                  order.order_status === "Delivered" && (order.order_payment_method === "Wallet" || order.order_payment_method === "Stripe") && (
-                    <Grid container alignItems="center">
-                      <Grid item xs>
-                        <Button variant="contained" color="primary" fullWidth onClick={changeStatus}>Received</Button>
+                  {
+                    order.order_status === "Delivered" && (order.order_payment_method === "Wallet" || order.order_payment_method === "Stripe") && (
+                      <Grid container alignItems="center">
+                        <Grid item xs>
+                          <Button variant="contained" color="primary" fullWidth onClick={changeStatus}>Received</Button>
+                        </Grid>
                       </Grid>
-                    </Grid>
-                  )
-                }
+                    )
+                  }
+                </CardActions>
+
 
               </Card>
             </Grid>
