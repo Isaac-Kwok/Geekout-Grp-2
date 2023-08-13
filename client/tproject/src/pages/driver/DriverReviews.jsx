@@ -27,7 +27,7 @@ function DriverReviews() {
   const [currentStars, setCurrentStars] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [reviewStars, setreviewStars] = useState([]);
-  const [averageStars, setaverageStars] = useState(0);
+  const [averageStars, setaverageStars] = useState(null);
   const [reviews, setreviews] = useState([]);
   const { user, refreshUser } = useUser();
   const [filteredReviews, setFilteredReviews] = useState([]); // New state for filtered reviews
@@ -37,7 +37,7 @@ function DriverReviews() {
   const startIndex = (currentPage - 1) * reviewsPerPage;
   const endIndex = startIndex + reviewsPerPage;
   const pagedReviews = filteredReviews.slice(startIndex, endIndex);
-  
+
   const handleGetReviews = async () => {
     try {
       const res = await http.get("/driver/review/" + user.id);
@@ -113,7 +113,7 @@ function DriverReviews() {
   }, [reviews, searchQuery]);
 
   return (
-    <Container maxWidth="lg" sx={{ marginBottom: 8 }}>
+    <Container maxWidth="xl" sx={{ marginBottom: 8 }}>
       <AdminPageTitle title="Review Statistics" backbutton />
       <Grid container spacing={2} sx={{ marginBottom: 2, marginTop: 3 }}>
         <Grid item lg={4} sm={12}>
@@ -129,7 +129,7 @@ function DriverReviews() {
                   <Typography color="text.secondary" variant="h5">
                     Average Review Rating
                   </Typography>
-                  <Typography variant="h4">{averageStars} Stars</Typography>
+                  <Typography variant="h4">{averageStars == NaN ? averageStars + " Stars" : "No reviews yet"} </Typography>
                 </Stack>
                 <Avatar
                   sx={{
@@ -153,30 +153,31 @@ function DriverReviews() {
           </Card>
         </Grid>
         <Grid item lg={8} sm={12} sx={{ marginBottom: "2rem" }}>
-          {reviewStars != [] &&
-          <PieChart
-          series={[
-            {
-              data: reviewStars,
-            },
-          ]}
-          height={220}
-          sx={{
-            "--ChartsLegend-rootOffsetX": "-5rem",
-            padding: 0,
-          }}
-        />}
-        
+          {reviews.length >= 1 &&
+            <PieChart
+              series={[
+                {
+                  data: reviewStars,
+                },
+              ]}
+              height={220}
+              sx={{
+                "--ChartsLegend-rootOffsetX": "-5rem",
+                padding: 0,
+              }}
+            />
+          }
         </Grid>
         <Grid item lg={5}>
-            {/* Search Bar here */}
+          {reviews.length >= 1 &&
             <TextField
-            label="Search by Route ID or Comment"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            fullWidth
-            margin="normal"
-          />
+              label="Search by Route ID or Comment"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              fullWidth
+              margin="normal"
+            />
+          }
         </Grid>
       </Grid>
       <Grid container spacing={2}>
@@ -198,12 +199,14 @@ function DriverReviews() {
           </Grid>
         ))}
       </Grid>
-      <Pagination
-        count={Math.ceil(filteredReviews.length / reviewsPerPage)}
-        page={currentPage}
-        onChange={handlePageChange}
-        sx={{ marginTop: 3, display: "flex", justifyContent: "center" }}
-      />
+      {reviews.length >= 1 &&
+        <Pagination
+          count={Math.ceil(filteredReviews.length / reviewsPerPage)}
+          page={currentPage}
+          onChange={handlePageChange}
+          sx={{ marginTop: 3, display: "flex", justifyContent: "center" }}
+        />
+      }
     </Container>
   );
 }
