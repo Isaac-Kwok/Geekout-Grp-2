@@ -158,13 +158,8 @@ function ViewCart() {
     }
 
     const getTotalPrice = () => {
-        // Convert the result of getSubTotalPrice into a number using parseFloat
         var sumOfItems = parseFloat(getSubTotalPrice());
-
-        // Now both sumOfItems and parseFloat(getGST()) are numbers, so this will be a numeric addition
-        var total = sumOfItems + parseFloat(getGST());
-
-        // Convert the result into a string with 2 decimal points
+        var total = sumOfItems + parseFloat(getGST()) + 2;
         return total.toFixed(2);
     }
 
@@ -321,6 +316,10 @@ function ViewCart() {
                             <ListItem>
                                 <ListItemText primary="GST (8%)" />
                                 <Typography variant="h6">${getGST()}</Typography>
+                            </ListItem>
+                            <ListItem>
+                                <ListItemText primary="Delivery Fee" />
+                                <Typography variant="h6">$2.00</Typography>
                             </ListItem>
                             <Divider />
                             <ListItem>

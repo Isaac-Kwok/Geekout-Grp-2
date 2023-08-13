@@ -27,6 +27,7 @@ const Checkout = () => {
     const [order_id, setorder_id] = useState("");
     const [paymentMethod, setPaymentMethod] = useState("Stripe");
     const [totalPrice, setTotalPrice] = useState(0);
+    const [subTotalPrice, setSubTotalPrice] = useState(0);
     const navigate = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
 
@@ -63,6 +64,7 @@ const Checkout = () => {
                             total_price: item.product_price * item.quantity,
                             discounted_total_price: price * item.quantity,
                             discounted: item.product_sale,
+                            points: item.Product.product_price_greenmiles * item.quantity,
                         }
                     });
                     const no_of_items = selectedItemsDetails.reduce((total, item) => total + item.quantity, 0);
@@ -77,6 +79,7 @@ const Checkout = () => {
                     const gst = (subtotal * 0.08).toFixed(2);
                     const total = (subtotal + parseFloat(gst)).toFixed(2);
                     setTotalPrice(total);
+                    setSubTotalPrice(subtotal);
                     if (no_of_items === 0) {
                         enqueueSnackbar("You have no items in your cart", { variant: "error" });
                         return navigate("/cart");
@@ -96,6 +99,7 @@ const Checkout = () => {
                             subtotal_amount: subtotal,
                             gst_amount: gst,
                             delivery_address: user.delivery_address,
+                            delivery_fee: 2.00,
                         },
                         orderItems
                     }).then((res) => {
@@ -155,21 +159,28 @@ const Checkout = () => {
 
     const getSubTotalPrice = () => {
         const selectedItemsDetails = items.filter(item => selectedItems.includes(item.id));
-        return selectedItemsDetails.reduce((sum, item) => {
+        var subtotal =  selectedItemsDetails.reduce((sum, item) => {
             let price = item.product_price;
             if (item.product_sale) {
                 price = item.product_price * (1 - item.product_discounted_percent / 100);
             }
             return sum + (price * item.quantity);
         }, 0);
+        return subtotal;
+
     }
+    
 
     const getGST = () => {
         return (getSubTotalPrice() * 0.08).toFixed(2);
     }
 
     const getTotalPrice = () => {
-        return (getSubTotalPrice() + parseFloat(getGST())).toFixed(2);
+        return (getSubTotalPrice() + parseFloat(getGST()) + 2).toFixed(2);
+    }
+
+    const getTotalPoints = () => {
+        return (getSubTotalPrice() * 100).toFixed();
     }
 
     const handleChangePaymentMethod = (event) => {
@@ -200,7 +211,7 @@ const Checkout = () => {
     }
 
     // Stripe element options with poppins font
-    const elementOptions = { 
+    const elementOptions = {
         clientSecret: clientSecret,
         fonts: [
             {
@@ -208,7 +219,7 @@ const Checkout = () => {
             },
         ],
         appearance: appearance,
-     };
+    };
 
 
     if (loading || !clientSecret) {
@@ -225,10 +236,10 @@ const Checkout = () => {
             <Button LinkComponent={Link} variant="outlined" color="primary" sx={{ marginBottom: "1rem" }} startIcon={<ArrowBackIcon />} to="/cart" onClick={backToCart}>Back</Button>
             <Grid container spacing={2} flexDirection={{ xs: "row-reverse", md: "row" }}>
                 <Grid item xs={12} md={9}>
-                    <Card sx={{marginBottom: "1rem"}}>
+                    <Card sx={{ marginBottom: "1rem" }}>
                         <CardContent>
                             <CardTitle title="Choose Payment Method" icon={<PaymentIcon />} />
-                            <FormControl fullWidth sx={{marginTop: "1rem"}}>
+                            <FormControl fullWidth sx={{ marginTop: "1rem" }}>
                                 <InputLabel id="category-label">Payment Method</InputLabel>
                                 <Select
                                     labelId="category-label"
@@ -252,7 +263,7 @@ const Checkout = () => {
                             <CardTitle title="Payment Details" icon={<PaymentIcon />} />
                         </CardContent>
                         <Elements stripe={stripePromise} options={elementOptions}>
-                            <CheckoutPaymentForm orderId={order_id} paymentMethod={paymentMethod} total={totalPrice} />
+                            <CheckoutPaymentForm orderId={order_id} paymentMethod={paymentMethod} total={totalPrice} subtotal={subTotalPrice} />
                         </Elements>
                     </Card>
                 </Grid>
@@ -262,21 +273,38 @@ const Checkout = () => {
                             <CardTitle title="Order Summary" icon={<RequestQuoteIcon />} />
                         </CardContent>
 
-                        <List>
-                            <ListItem>
-                                <ListItemText primary="Subtotal" />
-                                <Typography variant="h6">${getSubTotalPrice().toFixed(2)}</Typography>
-                            </ListItem>
-                            <ListItem>
-                                <ListItemText primary="GST (8%)" />
-                                <Typography variant="h6">${getGST()}</Typography>
-                            </ListItem>
+
+                        {paymentMethod !== "Point" ? (
+                            <List>
+                                <ListItem>
+                                    <ListItemText primary="Subtotal" />
+                                    <Typography variant="h6">${getSubTotalPrice().toFixed(2)}</Typography>
+                                </ListItem>
+                                <ListItem>
+                                    <ListItemText primary="GST (8%)" />
+                                    <Typography variant="h6">${getGST()}</Typography>
+                                </ListItem>
+                                <ListItem>
+                                    <ListItemText primary="Delivery Fee" />
+                                    <Typography variant="h6">$2.00</Typography>
+                                </ListItem>
+                                <Divider />
+                                <ListItem>
+                                    <ListItemText primary="Total" />
+                                    <Typography variant="h6">${getTotalPrice()}</Typography>
+                                </ListItem>
+                            </List>
+                        ) : (
+                            <>
                             <Divider />
-                            <ListItem>
-                                <ListItemText primary="Total" />
-                                <Typography variant="h6">${getTotalPrice()}</Typography>
-                            </ListItem>
-                        </List>
+                            <List>
+                                <ListItem>
+                                    <ListItemText primary="Total Points" />
+                                    <Typography variant="h6">{getTotalPoints()}</Typography>
+                                </ListItem>
+                            </List>
+                            </>
+                        )}
                     </Card>
                 </Grid>
             </Grid>

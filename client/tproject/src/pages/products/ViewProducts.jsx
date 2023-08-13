@@ -113,9 +113,9 @@ function ProductCard({ product }) {
                         position: 'absolute',
                         top: '8px',
                         right: '8px',
-                        zIndex: '1',
+                        zIndex: '10',
                         backgroundColor: 'red',
-                        color: 'white',
+                        color: 'white!important',
                         fontSize: '12px',
                         height: '20px',
                     }}
