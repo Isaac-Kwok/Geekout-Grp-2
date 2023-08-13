@@ -335,7 +335,7 @@ function DriverRouting() {
       setDirectionsResponse(results);
       setDistance(formattedTotalDistance);
       setDuration(formattedTotalDuration);
-      setprofit(((totalDistance / 1000) * 2 * 0.65).toFixed(2));
+      setprofit((5 + (totalDistance / 1000) * 0.7 * 0.65).toFixed(2));
 
       console.log("total distacne:", distance);
     } catch (error) {
@@ -375,7 +375,7 @@ function DriverRouting() {
       setDirectionsResponse(results);
       setDistance(formattedTotalDistance);
       setDuration(formattedTotalDuration);
-      setprofit(((totalDistance / 1000) * 2 * 0.65).toFixed(2));
+      setprofit((5 + (totalDistance / 1000) * 0.7 * 0.65).toFixed(2));
 
       return {
         directions: directionsResponse,
@@ -443,9 +443,9 @@ function DriverRouting() {
       newObj.distance = formattedTotalDistance;
       newObj.distance_value = totalDistance;
       newObj.duration = formattedTotalDuration;
-      newObj.driver_profit = (totalDistance / 1000) * 2 * 0.65;
-      newObj.company_profit = (totalDistance / 1000) * 2 * 0.35;
-      newObj.total_cost = (totalDistance / 1000) * 2;
+      newObj.driver_profit = 5 + (totalDistance / 1000) * 0.7 * 0.65;
+      newObj.company_profit = 5 + (totalDistance / 1000) * 0.7 * 0.35;
+      newObj.total_cost = 5 + (totalDistance / 1000) * 0.7;
       newObj.rideDirections = results;
       newObj.status = "Accepted";
 
@@ -672,6 +672,7 @@ function DriverRouting() {
           if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition);
           }
+          handleGetRideRequests()
         } else {
           console.log("Failed to complete routes:", res.status);
         }

@@ -60,7 +60,7 @@ function ViewDriverInformation() {
                                     </Grid>}
 
                                 <Grid item xs={6} md={4}>
-                                    <InfoBox title="Application Status" value={driverApplication.driver_status} boolean={driverApplication.driver_status == "Rejected" ? false : true} />
+                                    <InfoBox title="Application Status" value={driverApplication.driver_status} pending={driverApplication.driver_status == "Pending" ? true : false} boolean={driverApplication.driver_status == "Rejected" ? false : true} />
                                 </Grid>
                                 <Grid item xs={12} md={12}>
                                     <Typography variant="body1"><b>Reason</b> </Typography>

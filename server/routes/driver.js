@@ -1,6 +1,6 @@
 const express = require("express")
 const yup = require("yup")
-const { DriverApplication, Sequelize, User, Route, RideRequest, Message } = require("../models")
+const { DriverApplication, Sequelize, User, Route, RideRequest, Message, RideRating } = require("../models")
 const router = express.Router()
 require('dotenv').config();
 const axios = require('axios');
@@ -228,6 +228,7 @@ router.put("/complete", validateToken, async (req, res) => {
             driven_distance: Sequelize.literal(`driven_distance + ${user.current_route.distance_value}`),
             total_earned: Sequelize.literal(`total_earned + ${user.current_route.driver_profit}`),
             completed_routes: Sequelize.literal('completed_routes + 1'),
+            cash: Sequelize.literal(`cash + ${user.current_route.driver_profit}`),
             rideDirections: null,
             current_route: {}
         })
@@ -237,6 +238,7 @@ router.put("/complete", validateToken, async (req, res) => {
 
         res.status(400).json({ message: error.errors })
     }
+    
 })
 // Delete route
 router.delete("/route/:id", async (req, res) => {
@@ -393,44 +395,21 @@ router.get("/chat/:id/message", validateToken, async (req, res) => {
         res.status(500).json({ message: error.message })
     }
 })
-router.post("/chat/:id/notificationAccept", validateToken, async (req, res) => {
+
+// Get all reviews by driverId
+router.get("/review", async (req, res) => {
 
     try {
-        const { id } = req.params
-        const { id: userId } = req.user
-
-        const route = await Route.findOne({
-            where: { id: id, user_id: userId },
-        })
-
-        if (!route) {
-            return res.status(404).json({ message: "Route not found" })
-        }
-
-        if (route.user_id !== userId) {
-            return res.status(403).json({ message: "You are not allowed to reply to this Chat" })
-        }
-
-        const newMessage = await Message.create({
-            message: "Hello, I have accepted your ride request, I am on my way.",
-            chat_id: id,
-            user_id: userId
-        })
-
-        const sendingMessage = await Message.findByPk(newMessage.id, {
-            include: {
-                model: User,
-                attributes: ["id", "name", "account_type"]
-            }
-        })
-
-
-        req.app.io.to(`chat_${route.id}`).emit("chat_message", sendingMessage)
-        res.status(201).json(newMessage)
+      const rating = await RideRating.findAll({ where: { driverId: req.user.id }, order: [['updatedAt']] })
+      if (!rating) {
+        return res.status(404).json({ message: "Rating not found." });
+      }
+      res.json(rating);
     } catch (error) {
-        console.log(error)
-        res.status(500).json({ message: error.message })
+      console.error(error);
+      res.status(500).json({ message: "An error occurred." });
     }
-})
+  });
 
+ 
 module.exports = router;
