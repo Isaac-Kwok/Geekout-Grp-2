@@ -46,7 +46,7 @@ function ViewArticle() {
                         alt={article?.title}
                     />
                     <CardContent>
-                        <CardTitle title={article?.title} icon={<HelpIcon/>} />
+                        <CardTitle title={article?.title} icon={<HelpIcon/>} back="/support/articles" />
                         <Box mt={"1rem"} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                             <Box>
                                 <Typography variant="small" color="text.secondary" component="p">
