@@ -165,11 +165,11 @@ function DriverStatistics() {
             const distanceValue = ride.distance_value;
 
             if (distanceValue < 5000) {
-                distanceRanges[0].value += 20;
+                distanceRanges[0].value += 100/inputList.length;
             } else if (distanceValue >= 5000 && distanceValue < 10000) {
-                distanceRanges[1].value += 20;
+                distanceRanges[1].value += 100/inputList.length;
             } else {
-                distanceRanges[2].value += 20;
+                distanceRanges[2].value += 100/inputList.length;
             }
         });
         setDistanceRanges(distanceRanges)

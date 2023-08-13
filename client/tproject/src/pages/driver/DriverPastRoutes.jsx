@@ -11,6 +11,7 @@ import useUser from '../../context/useUser';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import CheckIcon from '@mui/icons-material/Check';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
+import AdminPageTitle from '../../components/AdminPageTitle';
 
 
 function DriverPastRoutes() {
@@ -115,7 +116,8 @@ function DriverPastRoutes() {
                     flexDirection: 'column',
                     alignItems: 'center'
                 }}>
-                    <Container maxWidth="xl" sx={{ marginTop: '2rem' }}>
+                    <Container maxWidth="xl" sx={{marginBottom: "5rem" }}>
+                    <AdminPageTitle title="Past Routes" backbutton />
                         <Grid container spacing={2} sx={{ marginBottom: '2rem' }}>
                             <Grid item xs={12} xl={4} md={4} sm={4} lg={4}>
                                 <Card>

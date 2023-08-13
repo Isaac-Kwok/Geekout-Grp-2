@@ -23,8 +23,20 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: "CASCADE", // If a user is deleted, their ride requests will also be deleted
       onUpdate: "CASCADE", // If a user's ID is updated, the corresponding ride requests will also be updated
     },
-    stars: {
+    driverId: {
       type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    routeId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    rating: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    reviewer: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
     comment: {

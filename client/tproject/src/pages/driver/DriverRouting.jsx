@@ -33,6 +33,7 @@ import DriverChatBox from "../../components/DriverChatBox";
 import ChatIcon from "@mui/icons-material/Chat";
 import DirectionsIcon from "@mui/icons-material/Directions";
 import io from "socket.io-client";
+import AdminPageTitle from '../../components/AdminPageTitle';
 
 function DriverRouting() {
   const navigate = useNavigate();
@@ -509,7 +510,6 @@ function DriverRouting() {
   };
 
   const handleAbortSocket = (routeObj) => {
-    console.log('reacheddd')
     // update status of route in DB
     let newData = {
       status: "Aborted",
@@ -553,12 +553,13 @@ function DriverRouting() {
       .put("/driver/abort")
       .then((res) => {
         if (res.status === 200) {
-          console.log(res.data);
+          console.log('abort data',res.data);
           refreshUser();
           // Reload the page
-          window.location.reload();
-
-          enqueueSnackbar("You have aborted Route!", { variant: "warning" });
+          enqueueSnackbar("Rider has cancelled the ride !", { variant: "warning" });
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+          }
         } else {
           console.log("Failed to abort routes:", res.status);
         }
@@ -616,9 +617,10 @@ function DriverRouting() {
         if (res.status === 200) {
           console.log(res.data);
           refreshUser();
-          // Reload the page
-          window.location.reload();
-
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+          }
+          handleGetRideRequests()
           enqueueSnackbar("You have aborted Route!", { variant: "warning" });
         } else {
           console.log("Failed to abort routes:", res.status);
@@ -628,6 +630,11 @@ function DriverRouting() {
         console.error("Error updating driver status:", err);
         // Handle the error here, e.g., display an error message or take appropriate action
       });
+      http.post(`/driver/chat/${routeObj.id}/message`, { message: 'Your ride has been Aborted by the driver. We apologise for the inconvenience' }).then(res => {
+      }).catch(err => {
+        console.log(err)
+        enqueueSnackbar("Error sending message. " + err.response.data.message, { variant: "error" });
+      })
     clearRoute();
   };
 
@@ -661,8 +668,10 @@ function DriverRouting() {
           console.log(res.data);
           refreshUser();
           enqueueSnackbar("You have Completed Route!", { variant: "success" });
-          // Reload the page
-          window.location.reload();
+          handleGetRideRequests()
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+          }
         } else {
           console.log("Failed to complete routes:", res.status);
         }
@@ -690,7 +699,6 @@ function DriverRouting() {
       setSocket(newSocket);
       console.log("socket data", socket);
       return () => newSocket.close();
-      refreshUser()
     }
   }, [user]);
 
@@ -721,7 +729,8 @@ function DriverRouting() {
             alignItems: "center",
           }}
         >
-          <Container maxWidth="xl" sx={{ marginTop: "2rem" }}>
+          <Container maxWidth="xl" sx={{marginBottom:"5rem" }}>
+          <AdminPageTitle title="Driver Routes" backbutton />
             <Grid container spacing={2}>
               <Grid item xs={12} lg={9} md={7} sm={12}>
                 <GoogleMap
@@ -920,7 +929,8 @@ function DriverRouting() {
             alignItems: "center",
           }}
         >
-          <Container maxWidth="xl" sx={{ marginTop: "2rem" }}>
+          <Container maxWidth="xl" sx={{marginBottom:"5rem" }}>
+          <AdminPageTitle title="Current Route" backbutton />
             <Grid container spacing={2}>
               <Grid item xs={12} lg={9} md={7} sm={12}>
                 <GoogleMap
