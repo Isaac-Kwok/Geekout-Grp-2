@@ -78,18 +78,6 @@ function CreateRideRating() {
 
   }, [requestId]);
 
-  useEffect(() => {
-    if (route) {
-      for (let index = 0; index < route.routes.length; index++) {
-        const element = route.routes[index];
-        if (element.rideIds.includes(requestId)) {
-          setrouteId(element.id)
-          setdriverId(element.user_id)
-          console.log('tesrt', routeId, userId)
-        }
-      }
-    }
-  }, [route])
 
 
 
