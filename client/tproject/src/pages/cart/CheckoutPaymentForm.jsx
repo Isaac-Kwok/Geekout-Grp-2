@@ -95,7 +95,7 @@ function CheckoutPaymentForm(props) {
     useEffect(() => {
         if (user) {
             setRemainingBalance((user.cash - props.total).toFixed(2))
-            setRemainingPoints((user.points - (props.total * 100)).toFixed())
+            setRemainingPoints((user.points - (props.subtotal * 100)).toFixed())
         }
     }, [user, props.total])
 

@@ -12,9 +12,12 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AdminPageTitle from '../../../components/AdminPageTitle';
+import { useTheme } from '@mui/material/styles';
+
 
 function formatDateToCustomFormat(dateTimeStr) {
     const date = new Date(dateTimeStr);
+
 
     // Convert to UTC+8 timezone
     date.setUTCHours(date.getUTCHours() + 8);
@@ -37,6 +40,7 @@ function formatDateToCustomFormat(dateTimeStr) {
 }
 
 function ViewOrders() {
+    const theme = useTheme();
     const [orders, setOrders] = useState([])
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
@@ -61,7 +65,40 @@ function ViewOrders() {
         { field: 'id', headerName: 'Order Number', minWidth: 150 },
         { field: 'order_date', headerName: 'Order Date & Time', minWidth: 200 },
         { field: 'email', headerName: 'Email', width: 300 },
-        { field: 'order_status', headerName: 'Status', minWidth: 200 },
+        {
+            field: 'order_status', 
+            headerName: 'Status', 
+            minWidth: 200,
+            valueGetter: (params) => {
+                return params.row.order_status;
+            },
+            renderCell: (params) => {
+                const statusText = params.row.order_status;
+                if (statusText === "Preparing" || statusText === "Refund Processing") {
+                    return <p style={{color: theme.palette.error.main}}>{params.row.order_status}</p>;
+                } else {
+                    return <p>{params.row.order_status}</p>;
+                }
+            }
+        },        
+        {
+            field: 'total_amount',
+            headerName: 'Total Price ($)',
+            headerAlign: 'left',
+            minWidth: 150,
+            valueGetter: (params) => {
+                return params.row.order_payment_method === "Points" ? '-' : `${params.row.total_amount}`;
+            }
+        },
+        { 
+            field: 'payment_method_check',
+            headerName: 'Points Used',
+            headerAlign: 'left',
+            minWidth: 150,
+            valueGetter: (params) => {
+                return params.row.order_payment_method === "Points" ? params.row.points_used : '-';
+            }
+        },
         { field: 'no_of_items', headerName: 'No of Items', minWidth: 200 },
         {
             field: 'actions', type: 'actions', width: 80, getActions: (params) => [

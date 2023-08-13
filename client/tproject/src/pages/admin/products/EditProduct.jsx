@@ -55,6 +55,7 @@ function EditProduct() {
   };
 
   const subCategories = {
+    'Pass': ['Bicycle Pass'],
     'Health and Beauty': ['Bath', 'Disinfectant', 'Feminine Care', 'Hair', 'Oral Care'],
     'Household': ['Bathroom', 'Bug & Insect Repellent'],
     'Take Away & Travel': ['Bag, pouch, carrier', 'Lunch Box', 'Straw', 'Toiletries'],
@@ -461,7 +462,7 @@ function EditProduct() {
                         name="product_price_greenmiles"
                         label="GreenMiles"
                         variant="outlined"
-                        value={formik.values.product_price_greenmiles = formik.values.product_price / 10}
+                        value={formik.values.product_price_greenmiles = formik.values.product_price * 100}
                         error={formik.touched.product_price_greenmiles && Boolean(formik.errors.product_price_greenmiles)}
                         helperText={formik.touched.product_price_greenmiles && formik.errors.product_price_greenmiles}
                       />
@@ -474,7 +475,7 @@ function EditProduct() {
                         name="product_discounted_price_greenmiles"
                         label="GreenMiles Discounted"
                         variant="outlined"
-                        value={formik.values.product_discounted_price_greenmiles = Math.floor(((1 - formik.values.product_discounted_percent / 100) * formik.values.product_price) / 10)}
+                        value={formik.values.product_discounted_price_greenmiles = Math.floor(((1 - formik.values.product_discounted_percent / 100) * formik.values.product_price) * 100)}
                         error={formik.touched.product_discounted_price_greenmiles && Boolean(formik.errors.product_discounted_price_greenmiles)}
                         helperText={formik.touched.product_discounted_price_greenmiles && formik.errors.product_discounted_price_greenmiles}
                       />

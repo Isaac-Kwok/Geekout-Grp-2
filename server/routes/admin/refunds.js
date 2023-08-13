@@ -3,6 +3,10 @@ const router = express.Router();
 const { Refund, Order, User } = require('../../models');
 const yup = require('yup');
 const { validateAdmin } = require('../../middleware/validateAdmin');
+const ejs = require("ejs")
+require('dotenv').config();
+const path = require('path')
+const { emailSender } = require("../../middleware/emailSender")
 
 const order_status = {
     1: "Preparing",
@@ -86,13 +90,57 @@ router.put('/:id', validateAdmin, async (req, res) => {
             refund_date: new Date()
         });
 
+        const user = await User.findByPk(order.user_id);
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        const link = process.env.CLIENT_URL + `/profile/orders/${order.id}`;
+
+        if (body.refund_status === 'Approved') {
+            // Render email content using EJS template
+            const html = await ejs.renderFile("templates/refundAcceptReply.ejs", {
+                name: user.name,
+                refund_id: refund.id,
+                url: link
+            });
+
+            await emailSender.sendMail({
+                from: process.env.EMAIL_USER,
+                to: user.email,
+                subject: 'Refund Reply',
+                html: html
+            });
+            
+
+        } else if (body.refund_status === 'Rejected') {
+            const html = await ejs.renderFile("templates/refundRejectedReply.ejs", {
+                name: user.name,
+                refund_id: refund.id,
+                url: link
+            });
+
+            await emailSender.sendMail({
+                from: process.env.EMAIL_USER,
+                to: user.email,
+                subject: 'Refund Reply',
+                html: html
+            });
+            
+        }
         res.json({
             refund: refund,
             order: order
         });
     } catch (error) {
-        res.status(400).json({ message: error.errors });
+        console.error(error);  // Log the error to get more details
+        if (error instanceof yup.ValidationError) {
+            res.status(400).json({ message: error.errors });
+        } else {
+            res.status(500).json({ message: "Internal server error" });
+        }
     }
+    
 });
 
 

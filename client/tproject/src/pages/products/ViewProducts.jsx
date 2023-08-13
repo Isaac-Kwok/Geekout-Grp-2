@@ -34,7 +34,7 @@ function ProductCard({ product }) {
             productPictures = [];
         }
     }
-    const shouldDisplayNavButtons =  productPictures > 1;
+    const shouldDisplayNavButtons = productPictures > 1;
 
     const AspectRatioBox = ({ children }) => (
         <div style={{
@@ -113,9 +113,9 @@ function ProductCard({ product }) {
                         position: 'absolute',
                         top: '8px',
                         right: '8px',
-                        zIndex: '1',
+                        zIndex: '10',
                         backgroundColor: 'red',
-                        color: 'white',
+                        color: 'white!important',
                         fontSize: '12px',
                         height: '20px',
                     }}
@@ -126,8 +126,8 @@ function ProductCard({ product }) {
                 <Carousel
                     autoPlay={false}
                     indicators={false}
-                    navButtonsAlwaysVisible={shouldDisplayNavButtons}
-                    cycleNavigation={shouldDisplayNavButtons}
+                    navButtonsAlwaysVisible={productPictures.length > 1}
+                    cycleNavigation={productPictures.length > 1}
                     animation='slide'
                     navButtonsProps={{
                         style: {
@@ -157,6 +157,7 @@ function ProductCard({ product }) {
                         </Paper>
                     )}
                 </Carousel>
+
             </Box>
 
 
@@ -206,6 +207,7 @@ function ProductCard({ product }) {
 }
 
 const categories = {
+    'Pass': ['Bicycle Pass'],
     'Health and Beauty': ['Bath', 'Disinfectant', 'Feminine Care', 'Hair', 'Oral Care'],
     'Household': ['Bathroom', 'Bug & Insect Repellent'],
     'Take Away & Travel': ['Bag, pouch, carrier', 'Lunch Box', 'Straw', 'Toiletries'],
