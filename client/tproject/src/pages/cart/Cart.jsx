@@ -15,6 +15,7 @@ import CardTitle from '../../components/CardTitle';
 import { useSnackbar } from 'notistack';
 import { CartContext } from './CartRoutes';
 import useUser from '../../context/useUser';
+import { set } from 'date-fns';
 
 
 function ViewCart() {
@@ -25,13 +26,16 @@ function ViewCart() {
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const navigate = useNavigate();
+    const [wishlistItems, setWishlistItems] = useState([]); 
+    const [cartItems, setCartItems] = useState([]);
     const { enqueueSnackbar } = useSnackbar();
     const productPath = `${import.meta.env.VITE_API_URL}/admin/products/productImage/`
 
     const handleGetCartItems = () => {
         http.get('/cart')
             .then((response) => {
-                const itemsData = response.data.map(item => {
+                console.log('Cart Response:', response.data);
+                const cartData = response.data.map(item => {
                     return {
                         ...item,
                         product_name: item.Product.product_name,
@@ -41,18 +45,53 @@ function ViewCart() {
                         product_discounted_percent: item.Product.product_discounted_percent
                     }
                 });
-                setItems(itemsData);
-                setLoading(false);
-                console.log('Cart items fetched: ', itemsData);
+                setItems(cartData);
+                setCartItems(cartData);
+                return { cartData, wishlistData: [] };  
+            })
+            .then(data => {
+                return http.get('/wishlist').then(wishlistResponse => {
+                    console.log('Wishlist Response:', wishlistResponse.data);
+                    const wishlistData = wishlistResponse.data.map(item => {
+                        return {
+                            ...item,
+                            product_name: item.Product.product_name,
+                            product_picture: item.Product.product_picture,
+                            product_price: item.Product.product_price
+                        }
+                    });
+    
+                    setWishlistItems(wishlistData);
+    
+                    return { ...data, wishlistData };  
+                });
+            })
+            .then(data => {
+                const overlappingItems = data.wishlistData.filter(wishlistItem => 
+                    data.cartData.some(cartItem => cartItem.product_id === wishlistItem.product_id)
+                );
+    
+                console.log('Overlapping Items:', overlappingItems);
+    
+                overlappingItems.forEach(item => {
+                    http.delete(`/wishlist/${item.product_id}`)
+                        .then(() => {
+                            console.log(`Removed item with id ${item.id} from wishlist`);
+                        })
+                        .catch(error => {
+                            console.error(`Error removing item with id ${item.id} from wishlist:`, error);
+                        });
+                });
             })
             .catch((error) => {
-                console.error('Error fetching cart items:', error);
+                console.error('Error fetching cart or wishlist items:', error);
             });
     }
+    
 
 
     const handleCheckboxChange = (event, item) => {
-        const isChecked = event.target.checked;  // Store the check status here
+        const isChecked = event.target.checked;  
         if (isChecked) {
             setSelectedItems(prevItems => {
                 const newItems = [...prevItems, item.id];

@@ -1,6 +1,6 @@
-import { Container, Box, Card, Typography, IconButton, InputBase, Grid, CardMedia, CardContent } from '@mui/material';
+import { Container, Box, Card, Typography, IconButton, InputBase, Grid, CardMedia, CardContent, CardActions, Button } from '@mui/material';
 import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike';
@@ -10,6 +10,8 @@ function App() {
     useEffect(() => {
         document.title = "Home - EnviroGo";
     }, []);
+
+    const navigate = useNavigate();
 
     const cardStyle = {
         borderRadius: "5px",
@@ -67,89 +69,23 @@ function App() {
                     </Grid>
                 </Grid>
                 <Box display={'flex'} alignItems={'center'} justifyContent={'center'} flexDirection={"column"} marginY={"3rem"}>
-                    <Typography variant="h4" fontWeight={700} marginTop={"1rem"}>Popular Destinations (WIP)</Typography>
-                    <Grid container spacing={2} marginTop={"1rem"}>
-                        <Grid item xs={12} sm={6} md={4}>
-                            <Card>
-                                <CardMedia
-                                    component="img"
-                                    height="150"
-                                    image="/main_background.jpg"
-                                    alt="green iguana"
-                                />
-                                <CardContent>
-                                    <Typography gutterBottom variant="h5" component="div">
-                                        Lizard
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Lizards are a widespread group of squamate reptiles, with over 6,000
-                                        species, ranging across all continents except Antarctica
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={4}>
-                            <Card>
-                                <CardMedia
-                                    component="img"
-                                    height="150"
-                                    image="/main_background.jpg"
-                                    alt="green iguana"
-                                />
-                                <CardContent>
-                                    <Typography gutterBottom variant="h5" component="div">
-                                        Lizard
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Lizards are a widespread group of squamate reptiles, with over 6,000
-                                        species, ranging across all continents except Antarctica
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={4}>
-                            <Card>
-                                <CardMedia
-                                    component="img"
-                                    height="150"
-                                    image="/main_background.jpg"
-                                    alt="green iguana"
-                                />
-                                <CardContent>
-                                    <Typography gutterBottom variant="h5" component="div">
-                                        Lizard
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Lizards are a widespread group of squamate reptiles, with over 6,000
-                                        species, ranging across all continents except Antarctica
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={4}>
-                            <Card>
-                                <CardMedia
-                                    component="img"
-                                    height="150"
-                                    image="/main_background.jpg"
-                                    alt="green iguana"
-                                />
-                                <CardContent>
-                                    <Typography gutterBottom variant="h5" component="div">
-                                        Lizard
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Lizards are a widespread group of squamate reptiles, with over 6,000
-                                        species, ranging across all continents except Antarctica
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                    </Grid>
-                </Box>
-                <Box display={'flex'} alignItems={'center'} justifyContent={'center'} flexDirection={"column"} marginY={"3rem"}>
                     <Typography variant="h4" fontWeight={700} marginTop={"1rem"}>About EnviroGo</Typography>
-                    <Typography variant="body1" marginTop={"1rem"} textAlign={"center"}>EnviroGo is a website that aims to help people find the best travel destinations that are environmentally friendly. We provide information about the environmental impact of a destination, and also provide information about the destination itself. We also provide a platform for users to share their experiences and tips about the destination.</Typography>
+                    <Grid container spacing={2} marginTop={"1rem"} justifyContent={"center"}>
+                        <Card style={{ padding: "20px" }}>
+                            <Typography
+                                variant="body1"
+                                textAlign={"center"}
+                                style={{ padding: "10px" }}
+                            >
+                                EnviroGo is at the forefront of eco-conscious travel, blending the thrill of exploration with sustainability. We understand that today's travelers seek destinations that align with their commitment to the environment. Thus, we offer a detailed analysis of the ecological footprint of various destinations, alongside vibrant insights into their unique cultures and landscapes.
+                                However, our mission extends beyond mere information. Recognizing the tales and experiences of fellow travelers, EnviroGo's platform invites users to share their personal stories and tips, fostering a global community of environmentally aware wanderers.
+                                <br /><br />
+                                Our dedication to reducing environmental impact has also led to the introduction of our eco-friendly rideshare and bicycle share services. We believe in not just reaching a destination but in doing so responsibly. These services, aimed at decreasing transportation-induced carbon footprints, offer travelers an immersive experience, connecting them more deeply to the places they visit.
+                                EnviroGo is more than a travel website; it's a call to action. A beckoning for travelers to venture forth mindfully, ensuring that the beauty of our planet is preserved for generations. Join us in championing responsible tourism and making each journey count.
+                            </Typography>
+                        </Card>
+
+                    </Grid>
                 </Box>
                 <Box display={'flex'} alignItems={'center'} justifyContent={'center'} flexDirection={"column"} marginY={"3rem"}>
                     <Typography variant="h4" fontWeight={700} marginTop={"1rem"}>Our Features</Typography>
@@ -157,7 +93,7 @@ function App() {
                         <Grid item xs={12} lg={4}>
                             <Card>
                                 <CardContent sx={featuredStyle}>
-                                    <DirectionsCarIcon color='primary' sx={{fontSize: "72px"}} />
+                                    <DirectionsCarIcon color='primary' sx={{ fontSize: "72px" }} />
                                     <Typography gutterBottom variant="h5" component="div" marginTop={"1rem"}>
                                         Car Ride Sharing
                                     </Typography>
@@ -165,12 +101,15 @@ function App() {
                                         Share a ride with others to reduce carbon footprint!
                                     </Typography>
                                 </CardContent>
+                                <CardActions>
+                                    <Button variant="contained" color="primary" fullWidth onClick={() => navigate("/riderequests/myrequests")}>Book a ride</Button>
+                                </CardActions>
                             </Card>
                         </Grid>
                         <Grid item xs={12} lg={4}>
                             <Card>
                                 <CardContent sx={featuredStyle}>
-                                    <DirectionsBikeIcon color='primary' sx={{fontSize: "72px"}} />
+                                    <DirectionsBikeIcon color='primary' sx={{ fontSize: "72px" }} />
                                     <Typography gutterBottom variant="h5" component="div" marginTop={"1rem"}>
                                         Bicycle Rentals
                                     </Typography>
@@ -178,12 +117,15 @@ function App() {
                                         Rent a bicycle to explore the destination!
                                     </Typography>
                                 </CardContent>
+                                <CardActions>
+                                    <Button variant="contained" color="primary" fullWidth onClick={() => navigate("/bicycle")}>Book a bicycle</Button>
+                                </CardActions>
                             </Card>
                         </Grid>
                         <Grid item xs={12} lg={4}>
                             <Card>
                                 <CardContent sx={featuredStyle}>
-                                    <ShopIcon color='primary' sx={{fontSize: "72px"}} />
+                                    <ShopIcon color='primary' sx={{ fontSize: "72px" }} />
                                     <Typography gutterBottom variant="h5" component="div" marginTop={"1rem"}>
                                         Online Store
                                     </Typography>
@@ -191,6 +133,9 @@ function App() {
                                         Buy environmentally friendly products!
                                     </Typography>
                                 </CardContent>
+                                <CardActions>
+                                    <Button variant="contained" color="primary" fullWidth onClick={() => navigate("/products")}>View Products</Button>
+                                </CardActions>
                             </Card>
                         </Grid>
                     </Grid>
