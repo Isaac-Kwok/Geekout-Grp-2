@@ -133,7 +133,6 @@ function CreateProduct() {
 
       console.log(productFileUploads);
       console.log(productFileUploads.length);
-      // Loop through the productFileUploads and append each to the form data
       productFileUploads.forEach((file) => {
         formData.append('product_picture', file);
       });
@@ -153,7 +152,6 @@ function CreateProduct() {
           data.product_description = descriptionValue;
           data.product_description = data.product_description.trim();
           if (uploadRes.status === 200) {
-            // Here, I'm assuming the server sends back an array of filenames for the uploaded images.
             data.product_picture = JSON.stringify(uploadRes.data.filenames);
             setUploadedFilenames(uploadRes.data.filenames);
             console.log(data);
@@ -182,12 +180,10 @@ function CreateProduct() {
     updatedFiles.splice(index, 1);
     setProductFiles(updatedFiles);
 
-    // Update the productFileUploads state (assuming this is where you hold the actual File objects)
     const updatedFileUploads = [...productFileUploads];
     updatedFileUploads.splice(index, 1);
     setProductFileUploads(updatedFileUploads);
 
-    // Since we're not making an HTTP request, directly show a success snackbar
     enqueueSnackbar("Image deleted successfully.", { variant: "success" });
   }
 

@@ -36,7 +36,6 @@ router.post('/upload', validateAdmin, upload_picture, (req, res) => {
 
 router.post("/create", validateAdmin,upload_picture,  async (req, res) => {
     let data = req.body;
-    // Create new product
     let validationSchema = yup.object().shape({
         product_name: yup.string().trim().min(3).max(100).required(),
         product_category: yup.string().trim().required(),
@@ -81,13 +80,11 @@ router.post("/create", validateAdmin,upload_picture,  async (req, res) => {
 router.get("/:id", validateAdmin, async (req, res) => {
     let id = req.params.id;
     let product = await Product.findByPk(id, {});
-    // Check id not found
     if (!product) {
         res.sendStatus(404);
         return;
     }
 
-    // If product_picture is stored as a JSON string, parse it
     if (typeof product.product_picture === "string") {
         product.product_picture = JSON.parse(product.product_picture);
     }
@@ -163,12 +160,10 @@ router.delete("/productImage/:filename", validateAdmin, (req, res) => {
     const fileName = req.params.filename;
     const directoryPath = path.join(__dirname, "../../public/uploads/products/");
 
-    // Check if file exists
     if (!fs.existsSync(directoryPath + fileName)) {
         return res.status(404).json({ message: "File not found" });
     }
 
-    // Delete the file
     fs.unlink(directoryPath + fileName, (err) => {
         if (err) {
             console.error("Error deleting the file:", err);

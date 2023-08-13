@@ -116,8 +116,8 @@ function ViewWishlist() {
                                                             <CardMedia
                                                                 component="img"
                                                                 sx={{
-                                                                    width: 340,  // Automatically adjust width based on aspect ratio
-                                                                    height: 140,    // Fixed height
+                                                                    width: 340,  
+                                                                    height: 140,    
                                                                     objectFit: 'cover'
                                                                 }}
                                                                 image={`${productPath}${productPictures[0]}`}

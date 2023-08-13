@@ -22,7 +22,6 @@ router.get("/:id", async (req, res) => {
     let id = req.params.id;
     let product = await Product.findByPk(id, {
     });
-    // Check id not found
     if (!product) {
         res.sendStatus(404);
         return;
