@@ -54,28 +54,16 @@ function App() {
                 <Grid container display={'flex'} alignItems={'center'} justifyContent={'center'} height={"500px"} sx={bannerStyle}>
                     <Grid item sx={cardStyle} xs={12} lg={6}>
                         <Typography variant="h3" fontSize={"24px"} fontWeight={700} textAlign={"center"}>Welcome to EnviroGo</Typography>
-                        <form>
-                            <Box display={"flex"} alignItems={"center"} justifyContent={"center"} marginTop={"1rem"} sx={searchStyle}>
-                                <InputBase
-                                    sx={{ ml: 1, flex: 1, width: "300px" }}
-                                    placeholder="Where do you want to go?"
-                                    inputProps={{ 'aria-label': 'Where do you want to go?' }}
-                                />
-                                <IconButton color="primary" aria-label="search">
-                                    <SearchIcon />
-                                </IconButton>
-                            </Box>
-                        </form>
+                        <Typography variant="h5" fontSize={"18px"} textAlign={"center"}>Your one-stop travel solution for eco-friendly travel</Typography>
                     </Grid>
                 </Grid>
                 <Box display={'flex'} alignItems={'center'} justifyContent={'center'} flexDirection={"column"} marginY={"3rem"}>
-                    <Typography variant="h4" fontWeight={700} marginTop={"1rem"}>About EnviroGo</Typography>
-                    <Grid container spacing={2} marginTop={"1rem"} justifyContent={"center"}>
-                        <Card style={{ padding: "20px" }}>
+                    <Typography variant="h4" fontWeight={700} marginY={"1rem"}>About EnviroGo</Typography>
+                    <Card>
+                        <CardContent>
                             <Typography
                                 variant="body1"
                                 textAlign={"center"}
-                                style={{ padding: "10px" }}
                             >
                                 EnviroGo is at the forefront of eco-conscious travel, blending the thrill of exploration with sustainability. We understand that today's travelers seek destinations that align with their commitment to the environment. Thus, we offer a detailed analysis of the ecological footprint of various destinations, alongside vibrant insights into their unique cultures and landscapes.
                                 However, our mission extends beyond mere information. Recognizing the tales and experiences of fellow travelers, EnviroGo's platform invites users to share their personal stories and tips, fostering a global community of environmentally aware wanderers.
@@ -83,9 +71,8 @@ function App() {
                                 Our dedication to reducing environmental impact has also led to the introduction of our eco-friendly rideshare and bicycle share services. We believe in not just reaching a destination but in doing so responsibly. These services, aimed at decreasing transportation-induced carbon footprints, offer travelers an immersive experience, connecting them more deeply to the places they visit.
                                 EnviroGo is more than a travel website; it's a call to action. A beckoning for travelers to venture forth mindfully, ensuring that the beauty of our planet is preserved for generations. Join us in championing responsible tourism and making each journey count.
                             </Typography>
-                        </Card>
-
-                    </Grid>
+                        </CardContent>
+                    </Card>
                 </Box>
                 <Box display={'flex'} alignItems={'center'} justifyContent={'center'} flexDirection={"column"} marginY={"3rem"}>
                     <Typography variant="h4" fontWeight={700} marginTop={"1rem"}>Our Features</Typography>
