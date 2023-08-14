@@ -62,16 +62,16 @@ function CreateNewPickupRequest({ userId }) {
       console.log("Data to be submitted:", data); // Log the data to be submitted
 
       http
-        .post("/admin/locations/create", data)
+        .post("/admin/locations/create/riderside", data)
         .then((res) => {
           console.log("Response:", res); // Log the response
           if (res.status === 200) {
-            enqueueSnackbar("Location created successfully!", {
+            enqueueSnackbar("Location request created successfully!", {
               variant: "success",
             });
             navigate("/riderequests/myrequests");
           } else {
-            enqueueSnackbar("Location creation failed!", {
+            enqueueSnackbar("Location request creation failed!", {
               variant: "error",
             });
           }
@@ -79,7 +79,7 @@ function CreateNewPickupRequest({ userId }) {
         .catch((err) => {
           console.error("Error:", err); // Log the error
           enqueueSnackbar(
-            "Location creation failed! " + err.response.data.message,
+            "Location request creation failed! " + err.response.data.message,
             { variant: "error" }
           );
         })

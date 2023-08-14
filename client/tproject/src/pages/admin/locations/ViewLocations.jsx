@@ -128,15 +128,9 @@ function LocationList() {
     { field: "notes", headerName: "Notes", minWidth: 200, flex: 1 },
     { field: "premium", headerName: "Premium", width: 150, type: "number" },
     {
-      field: "arrivals",
-      headerName: "Arrivals",
-      minWidth: 150,
-      type: "number",
-    },
-    {
       field: "departures",
       headerName: "Departures",
-      minWidth: 150,
+      minWidth: 300,
       type: "number",
     },
     { field: "status", headerName: "Status", minWidth: 80 },
