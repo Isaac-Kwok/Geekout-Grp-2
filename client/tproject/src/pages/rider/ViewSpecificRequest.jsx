@@ -113,10 +113,12 @@ const RideRequestDetails = () => {
       .then(() => {
         // Deduct the finalPrice from the user's cash attribute
         const updatedCash = user.cash - finalPrice;
+        const greenMiles = user.points + (finalPrice / 100).toFixed()
 
         // Update the user's cash attribute
         return http.put(`/riderequests/minuscash/user/${rideRequest.userId}`, {
           cash: updatedCash,
+          points: greenMiles
         });
       })
       .then(() => {
