@@ -18,7 +18,7 @@ const bicycleSchema = yup.object().shape({
     passkey: yup.string().nullable(),
     registered: yup.boolean(),
     unlocked: yup.boolean(),
-    unlockedAt: yup.date()
+    unlockedAt: yup.date().optional().nullable()
 });
 
 const BicycleReportsSchema = yup.object().shape({
