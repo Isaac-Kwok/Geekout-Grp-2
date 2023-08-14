@@ -78,17 +78,6 @@ const LocationDetails = () => {
                 <InfoBox title="Location name" value={location.name} />
               </Grid>
 
-              <Grid item xs={6} sm={6}>
-                {/* Display the image here */}
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                {/* <Typography variant="body1" gutterBottom>
-                  Premium: {location.premium}
-                </Typography> */}
-                <InfoBox title="Premium" value={location.premium} />
-              </Grid>
-
               <Grid item xs={12} sm={6}>
                 {location.status === "Pending" && (
                   <InfoBox title="Status" value={location.status} />
@@ -106,10 +95,14 @@ const LocationDetails = () => {
 
               <Grid item xs={12} sm={6}>
                 {/* <Typography variant="body1" gutterBottom>
-                  Arrivals: {location.arrivals}
+                  Premium: {location.premium}
                 </Typography> */}
-                <InfoBox title="Arrivals" value={location.arrivals} />
+                <InfoBox title="Premium" value={location.premium} />
               </Grid>
+
+              {/* <Grid item xs={12} sm={6}>
+                <InfoBox title="Arrivals" value={location.arrivals} />
+              </Grid> */}
 
               <Grid item xs={12} sm={6}>
                 {/* <Typography variant="body1" gutterBottom>
@@ -130,6 +123,7 @@ const LocationDetails = () => {
           </Grid>
         </CardContent>
       </Card>
+      <Box>&nbsp;</Box>
     </Container>
   );
 };

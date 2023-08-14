@@ -119,12 +119,18 @@ const RideRequestDetails = () => {
           cash: updatedCash,
         });
       })
-      // .then(() => {
-      //   // Update the user's cash attribute
-      //   return http.put(`/admin/locations/editdeparture/:id/${rideRequest.pickUp}`, {
-      //     arrival: arrival + 1,
-      //   });
-      // })
+      .then(() => {
+        // Update the location's departure count
+        const currentDepartures = rideRequest.pickUp.departures || 0; // If departures is null, assume 0
+        const updatedDepartures = currentDepartures + 1;
+
+        return http.put(
+          `/admin/locations/editdeparture/${rideRequest.pickUp}`,
+          {
+            departures: updatedDepartures,
+          }
+        );
+      })
       // /editdeparture/:id
       .then(() => {
         // Update the ride request list and navigate
@@ -246,24 +252,6 @@ const RideRequestDetails = () => {
     });
   };
 
-  const calculatePrice = (route) => {
-    if (!routeId || !route.routes[0]) {
-      return 0; // Or some default value, since routeId is not available yet
-    }
-  
-    const destinations = route.routes[0].destinationList.split("|");
-    const numberOfDestinations = destinations.length - 1; // Minus one because of the split
-    const pricePerPassenger = route.routes[0].total_cost / numberOfDestinations;
-  
-    // If there's only one destination, final price is just total cost divided by number of passengers
-    if (numberOfDestinations === 1) {
-      return pricePerPassenger;
-    }
-  
-    const finalPrice = pricePerPassenger * rideRequest.numberOfPassengers;
-    return finalPrice;
-  };
-
   if (!rideRequest || !imageFile) {
     // Check for imageFile instead of pickUpLocation
     return <CircularProgress />;
@@ -307,7 +295,7 @@ const RideRequestDetails = () => {
                             {/* <InfoBox title="Price ($)" value={route.routes[0].total_cost} /> */}
                             <InfoBox
                               title="Price ($)"
-                              value={route?.routes[routeId - 1].total_cost}
+                              value={((route?.routes[routeId - 1].total_cost)/((route.routes[routeId - 1].destinationList.split("|")).length - 1)).toFixed(2)}
                             />
                           </Grid>
 

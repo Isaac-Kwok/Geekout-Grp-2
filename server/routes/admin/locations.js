@@ -35,6 +35,32 @@ router.post("/create", validateAdmin, async (req, res) => {
   }
 });
 
+// create new location (staff)
+router.post("/create/riderside", async (req, res) => {
+  const schema = yup.object().shape({
+    name: yup.string().required(),
+    notes: yup.string().max(1024),
+    status: yup.string().required(),
+    premium: yup.number(),
+    imageFile: yup.string().required(),
+    // arrivals: yup.number(),
+    // departures: yup.number(),
+  });
+
+  try {
+    await schema.validate(req.body, { abortEarly: false });
+    let data = req.body;
+    let result = await Location.create(data);
+    res.json(result);
+  } catch (error) {
+    // check if name exists in database
+    if (error instanceof Sequelize.UniqueConstraintError) {
+      res.status(400).json({ message: "Location already exists." });
+      return;
+    }
+  }
+});
+
 // Get all locations (For location list) (staff)
 // Note: Add back validateAdmin. Removed for testing
 router.get("/all", async (req, res) => {

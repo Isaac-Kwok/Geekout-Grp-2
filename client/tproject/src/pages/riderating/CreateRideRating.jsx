@@ -98,19 +98,6 @@ function CreateRideRating() {
       });
   }, [userId]);
 
-  const calculatePrice = (route) => {
-    const destinations = route.routes[0].destinationList.split("|");
-    const numberOfDestinations = destinations.length - 1; // Minus one because of the split
-    const pricePerPassenger = route.routes[0].total_cost / numberOfDestinations;
-
-    if (numberOfDestinations === 1) {
-      return pricePerPassenger;
-    }
-
-    const finalPrice = pricePerPassenger * rideRequest.numberOfPassengers;
-    return finalPrice;
-  };
-
   // Formik
   const formik = useFormik({
     initialValues: {
@@ -209,12 +196,12 @@ function CreateRideRating() {
             {/* Wait for route to load */}
             {route && (
               <div>
-                <InfoBox title="Price ($)" value={calculatePrice(route)} />
-                <InfoBox title="Duration" value={route.routes[0].duration} />
-                <InfoBox title="Distance" value={route.routes[0].distance} />
+                <InfoBox title="Price ($)" value={((route?.routes[routeId - 1].total_cost)/((route.routes[routeId - 1].destinationList.split("|")).length - 1)).toFixed(2)} />
+                <InfoBox title="Duration" value={route.routes[routeId - 1].duration} />
+                <InfoBox title="Distance" value={route.routes[routeId - 1].distance} />
                 <InfoBox
                   title="Destination(s)"
-                  value={route.routes[0].destination}
+                  value={route.routes[routeId - 1].destination}
                 />
               </div>
             )}
