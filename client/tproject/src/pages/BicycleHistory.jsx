@@ -1,14 +1,16 @@
 import { GoogleMap, MarkerF, useLoadScript, DirectionsRenderer, DirectionsService } from "@react-google-maps/api";
-import { Button, Container, Grid } from '@mui/material';
+import { Button, CardContent, Container, Grid, Card } from '@mui/material';
 import React, { useMemo, useState, useEffect, useRef, useCallback } from "react";
-import { Link } from 'react-router-dom';
 import '../bicycle.css';
 import http from "../http";
-import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 import useUser from "../context/useUser";
+import PageTitle from "../components/PageTitle";
+import CardTitle from "../components/CardTitle";
+import { AutoGraph, Info } from "@mui/icons-material";
+import InfoBox from "../components/InfoBox";
 
 const libraries = ['geometry'];
 const mapContainerStyle = { width: '50%', marginBottom: '1rem' };
@@ -226,20 +228,26 @@ function BicycleHistory() {
                         />
                     )}
                 </GoogleMap>
-                <Grid container spacing={2} justifyContent="center">
-                    <Grid item xs={6}>
-                        <h2>Time: {returnTime(time)}</h2>
-                    </Grid>
-                    <Grid item xs={6}>
-                        <h2>Distance: {returnDistance(distance)}</h2>
-                    </Grid>
-                    <Grid item xs={6}>
-                        <h2>Average Pace: {Number((distance / 1000) / (time / 1000 / 60)).toFixed(2)}km/h</h2>
-                    </Grid>
-                    <Grid item xs={6}>
-                        <h2>${usage.transaction}</h2>
-                    </Grid>
-                </Grid>
+                <Card sx={{mb: "1rem"}}>
+                    <CardContent>
+                        <CardTitle title="Ride Statistics" icon={<AutoGraph />} />
+                        <Grid container spacing={2} justifyContent="center">
+                            <Grid item xs={6}>
+                                <InfoBox title="Time" value={returnTime(time)} />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <InfoBox title="Distance" value={returnDistance(distance)} />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <InfoBox title="Average Pace" value={Number((distance / 1000) / (time / 1000 / 60)).toFixed(2) + "km/h"} />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <InfoBox title="Usage Transaction" value={"$" + usage.transaction} />
+                            </Grid>
+                        </Grid>
+                    </CardContent>
+                </Card>
+
             </Container>
         );
     };
@@ -251,27 +259,26 @@ function BicycleHistory() {
     }, [user]);
 
     return (
-        <Container maxWidth="xl" sx={{ marginTop: '1rem' }}>
-            <Grid container spacing={1} justifyContent="center">
-                <Grid item xs={12} justifyContent="center">
-                    <h1 style={{ textAlign: "center" }}>Bicycle History</h1>
-                </Grid>
-            </Grid>
-            {isLoaded ? (
-                usages.length > 0 ? (
-                    usages.map((usage, index) => (
-                        <React.Fragment key={index}>
-                            {renderUsage(usage, index)}
-                            {index < usages.length - 1 && <hr />}
-                        </React.Fragment>
-                    ))
+        <>
+            <PageTitle title="Bicycle History" subtitle="View your statistics" />
+            <Container maxWidth="xl" sx={{ marginTop: '1rem' }}>
+                {isLoaded ? (
+                    usages.length > 0 ? (
+                        usages.map((usage, index) => (
+                            <React.Fragment key={index}>
+                                {renderUsage(usage, index)}
+                                {index < usages.length - 1 && <hr />}
+                            </React.Fragment>
+                        ))
+                    ) : (
+                        <p style={{ textAlign: "center" }}>No usages</p>
+                    )
                 ) : (
-                    <p style={{ textAlign: "center" }}>No usages</p>
-                )
-            ) : (
-                <h1>Loading...</h1>
-            )}
-        </Container>
+                    <h1>Loading...</h1>
+                )}
+            </Container>
+        </>
+
     );
 }
 
