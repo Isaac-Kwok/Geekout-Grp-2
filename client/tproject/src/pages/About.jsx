@@ -47,7 +47,7 @@ function About() {
                                 <InfoBox title="Driver Management & Routing System" value="Yuk Ka Chyun" />
                             </Grid>
                             <Grid item xs={12} md={6}>
-                                <InfoBox title="Ride Requests & Pick-Up Locations" value="Gregory Chua" />
+                                <InfoBox title="Ride Requests, Location Management & Reviews" value="Gregory Chua" />
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <InfoBox title="Bicycle Management" value="Azrel" />
