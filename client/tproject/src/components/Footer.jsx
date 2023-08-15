@@ -58,7 +58,9 @@ function Footer() {
                         </Grid>
                     </Grid>
                     <Divider sx={{ marginTop: "1rem", marginBottom: "1rem" }} />
-                    <Typography color={"inherit"} sx={{ textAlign: "center" }}>EnviroGo - 2023 - Full Stack Group 1</Typography>
+                    <Link to="/about" style={{ textDecoration: "none", color:"inherit" }}>
+                        <Typography color={"inherit"} sx={{ textAlign: "center" }}>EnviroGo - 2023 - Full Stack Group 1</Typography>
+                    </Link>
                 </Container>
             </Box>
 
