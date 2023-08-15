@@ -17,6 +17,7 @@ import BicycleHistory from './BicycleHistory'
 import ProductRoutes from './products/ProductRoutes'
 import CartRoutes from './cart/CartRoutes'
 import Wishlist from './wishlist/ViewWishlist'
+import About from './About'
 import { UserContext } from '..'
 
 
@@ -48,6 +49,7 @@ function UserRoutes() {
             <Route path="/cart/*" element={<CartRoutes />} />
             <Route path="/riderequests/*" element={<RiderRoutes />} />
             <Route path="/wishlist" element={<Wishlist/>} />
+            <Route path="/about" element={<About />} />
         </Routes>
     )
 }
