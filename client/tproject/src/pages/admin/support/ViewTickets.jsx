@@ -95,7 +95,7 @@ function ViewTickets() {
         
     return (
         <>
-            <Container maxWidth="xl" sx={{ marginY: "1rem" }}>
+            <Container maxWidth="xl" sx={{ marginY: "1rem", minWidth: 0  }}>
                 <AdminPageTitle title="Help Tickets" />
                 <DataGrid
                     rows={tickets}
