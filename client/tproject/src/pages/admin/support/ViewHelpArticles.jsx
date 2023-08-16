@@ -105,7 +105,7 @@ function ViewHelpArticles() {
         
     return (
         <>
-            <Container maxWidth="xl" sx={{ marginY: "1rem" }}>
+            <Container maxWidth="xl" sx={{ marginY: "1rem", minWidth: 0  }}>
                 <AdminPageTitle title="Help Articles" />
                 <Button LinkComponent={Link} variant="contained" color="primary" sx={{ marginBottom: "1rem" }} startIcon={<NoteAddIcon />} to="/admin/support/article/create">New Article</Button>
                 <DataGrid
