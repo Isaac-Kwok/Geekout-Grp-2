@@ -181,7 +181,7 @@ function DriverRegister() {
         for (let index = 0; index < file_array.length; index++) {
             let file = file_array[index];
             if (file) {
-                if (file.size > 1024 * 1024) {
+                if (file.size > 1024 * 1024 * 5) {
                     enqueueSnackbar("File size cannot exceed more than 1MB", { variant: "error" })
                     return;
                 }
