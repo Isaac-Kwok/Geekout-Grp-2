@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Container, Typography, Button, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, Grid, Avatar, Card, CardContent, Stack, Tabs, Tab } from '@mui/material'
+import { Container, Typography, Button, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, Grid, Avatar, Card, CardContent, Stack, Tabs, Tab, Box } from '@mui/material'
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
@@ -309,24 +309,27 @@ function ViewProducts() {
                 </Grid>
                 <Button LinkComponent={Link} variant="contained" color="primary" sx={{ marginBottom: "1rem" }} startIcon={<AddIcon />} to="/admin/products/create">Create Product</Button>
                 <TabContext value={tabValue}>
-                    <Tabs
-                        value={tabValue}
-                        onChange={(e, newVal) => setTabValue(newVal)}
-                        variant="scrollable"
-                        allowScrollButtonsMobile
-                        aria-label="Products tabs"
-                        indicatorColor="primary"
-                        textColor="primary"
-                    >
-                        <Tab label="All" value="all" />
-                        <Tab label="On Sale" value="onSale" />
-                        <Tab label="Active" value="active" />
-                        <Tab label="Deactivated" value="deactivated" />
-                        <Tab label="Out of Stock" value="outOfStock" />
-                    </Tabs>
+                    <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
+
+                        <Tabs
+                            value={tabValue}
+                            onChange={(e, newVal) => setTabValue(newVal)}
+                            variant="scrollable"
+                            allowScrollButtonsMobile
+                            aria-label="Products tabs"
+                            indicatorColor="primary"
+                            textColor="primary"
+                        >
+                            <Tab label="All" value="all" />
+                            <Tab label="On Sale" value="onSale" />
+                            <Tab label="Active" value="active" />
+                            <Tab label="Deactivated" value="deactivated" />
+                            <Tab label="Out of Stock" value="outOfStock" />
+                        </Tabs>
+                    </Box>
 
                     {['all', 'onSale', 'active', 'deactivated', 'outOfStock'].map(tab => (
-                        <TabPanel key={tab} value={tab} sx={{p: 0, mt: "1rem"}}>
+                        <TabPanel key={tab} value={tab} sx={{ p: 0, mt: "1rem" }}>
                             <DataGrid
                                 rows={filteredProducts(tab)}
                                 columns={columns}

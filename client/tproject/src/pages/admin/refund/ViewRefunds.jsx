@@ -284,16 +284,16 @@ function ViewRefunds() {
                             <Tab label="Rejected" value="Rejected" />
                         </TabList>
                     </Box>
-                    <TabPanel value="all">
+                    <TabPanel value="all" sx={{p: 0, mt: "1rem"}}>
                         <DataGrid rows={refunds} columns={columns} pageSize={10} slots={{ LoadingOverlay: LoadingSkeleton }} sortModel={sortModel} onSortModelChange={(model) => setSortModel(model)} loading={loading} autoHeight getRowId={(row) => row.id} />
                     </TabPanel>
-                    <TabPanel value="Pending">
+                    <TabPanel value="Pending" sx={{p: 0, mt: "1rem"}}>
                         <DataGrid rows={filteredRefunds('Pending')} columns={columns} pageSize={10} slots={{ LoadingOverlay: LoadingSkeleton }} sortModel={sortModel} onSortModelChange={(model) => setSortModel(model)} loading={loading} autoHeight getRowId={(row) => row.id} />
                     </TabPanel>
-                    <TabPanel value="Approved">
+                    <TabPanel value="Approved" sx={{p: 0, mt: "1rem"}}>
                         <DataGrid rows={filteredRefunds('Approved')} columns={columns} pageSize={10} slots={{ LoadingOverlay: LoadingSkeleton }} sortModel={sortModel} onSortModelChange={(model) => setSortModel(model)} loading={loading} autoHeight getRowId={(row) => row.id} />
                     </TabPanel>
-                    <TabPanel value="Rejected">
+                    <TabPanel value="Rejected" sx={{p: 0, mt: "1rem"}}>
                         <DataGrid rows={filteredRefunds('Rejected')} columns={columns} pageSize={10} slots={{ LoadingOverlay: LoadingSkeleton }} sortModel={sortModel} onSortModelChange={(model) => setSortModel(model)} loading={loading} autoHeight getRowId={(row) => row.id} />
                     </TabPanel>
                 </TabContext>
